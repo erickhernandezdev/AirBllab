@@ -21,6 +21,7 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('new_proposal/', include('apps.new_proposal.urls'))
 
     # URLs de autenticación 2FA
     #path('', include('two_factor.urls')),
