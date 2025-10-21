@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuenta Bloqueada - Airbnb</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #f8f9fa; 
+      margin: 0; 
+      padding: 20px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+    }
+    .lockout-container { 
+      background: white; 
+      padding: 40px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+      text-align: center; 
+      max-width: 500px; 
+    }
+    .warning-icon { 
+      font-size: 4em; 
+      color: #e74c3c; 
+      margin-bottom: 20px; 
+    }
+    h1 { 
+      color: #e74c3c; 
+      margin-bottom: 20px; 
+    }
+    .contact-info { 
+      margin-top: 30px; 
+      padding: 15px; 
+      background: #fff3cd; 
+      border: 1px solid #ffeaa7; 
+      border-radius: 4px; 
+    }
+  </style>
+</head>
+<body>
+  <div class="lockout-container">
+    <div class="warning-icon"></div>
+    <h1>Cuenta Temporalmente Bloqueada</h1>
+    <p>Has excedido el número máximo de intentos de inicio de sesión.</p>
+    <p>Tu cuenta ha sido bloqueada por seguridad durante <strong>1 hora</strong>.</p>
+    <p>Por favor, espera un momento e intenta nuevamente más tarde.</p>
+    
+    <div class="contact-info">
+      <p><strong>¿Necesitas ayuda?</strong></p>
+      <p>Si crees que esto es un error, contacta al administrador del sistema.</p>
+    </div>
+    
+    <p style="margin-top: 30px;">
+      <a href="{% url 'home' %}">← Volver al inicio</a>
+    </p>
+  </div>
+</body>
+</html>
