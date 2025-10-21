@@ -19,17 +19,18 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    path('new_proposal/', include('apps.new_proposal.urls'))
+  path('admin/', admin.site.urls),
+  path('', TemplateView.as_view(template_name='home.html'), name='home'),
 
-    # URLs de autenticación 2FA
-    #path('', include('two_factor.urls')),
-    #path('', include('two_factor.urls', 'two_factor')),
+  # URLs de autenticación 2FA
+  #path('account/', include('two_factor.urls')),
+  #path('account/', include('two_factor.urls', 'two_factor')),
 
-    # URLs de las apps
-    #path('users/', include('apps.users.urls')),
-    #path('properties/', include('apps.properties.urls')),
-    #path('bookings/', include('apps.bookings.urls')),
-    #path('payments/', include('apps.payments.urls')),
+  # URLs de las apps
+  #path('users/', include('apps.users.urls')),
+  #path('properties/', include('apps.properties.urls')),
+  #path('bookings/', include('apps.bookings.urls')),
+  #path('payments/', include('apps.payments.urls')),
+  path('admin-panel/', include('apps.admin_panel.urls')),
+  path('new_proposal/', include('apps.new_proposal.urls')),
 ]
