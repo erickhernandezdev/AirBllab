@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+#import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 import environ
@@ -20,6 +21,8 @@ import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -44,17 +47,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Seguridad
-    'django_otp',
-    'django_otp.plugins.otp_totp',
-    'django_otp.plugins.otp_static',
-    'two_factor',
-    'axes', # Esto es para limitar intentos de login fallidos
+    #'django_otp',
+    #'django_otp.plugins.otp_totp',
+    #'django_otp.plugins.otp_static',
+    #'two_factor',
+    #'axes', # Esto es para limitar intentos de login fallidos
 
     # Apps
     'apps.users',
     'apps.properties',
     'apps.bookings',
     'apps.payments',
+    'apps.admin_panel',
 ]
 
 MIDDLEWARE = [
@@ -74,7 +78,9 @@ ROOT_URLCONF = 'airbnb_app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -156,12 +162,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CONFIGURACIONES DE SEGURIDAD ADICIONALES
 
 # Configuración para django-two-factor-auth
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = 'two_factor:profile'
+LOGIN_URL = 'admin:login'
+LOGIN_REDIRECT_URL = 'home'
+#TWO_FACTOR_PATCH_ADMIN = True
 
 # Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesStandaloneBackend',
+    'axes.backends.AxesBackend',
+    #'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -169,8 +177,15 @@ AUTHENTICATION_BACKENDS = [
 AXES_FAILURE_LIMIT = 5
 AXES_COOLOFF_TIME = 1  # en horas
 AXES_RESET_ON_SUCCESS = True
-AXES_LOCKOUT_TEMPLATE = 'registration/lockout.html'
+AXES_LOCKOUT_TEMPLATE = 'lockout.html'
 AXES_VERBOSE = True
+
+# Configuración de login para Axes
+AXES_LOGIN_URL = 'two_factor:login'
+AXES_USERNAME_FORM_FIELD = 'auth-username'
+
+# Configuración OPT
+OTP_TOTP_ISSUER = 'Sistema de seguridad del Airbnb'
 
 # SSL/HTTPS (hay que activarlo en producción)
 if not DEBUG:

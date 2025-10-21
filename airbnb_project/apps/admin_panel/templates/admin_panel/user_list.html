@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios Registrados - Admin Airbnb</title>
+  <style>
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .nav-menu { background: #34495e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+    .nav-menu a { color: white; text-decoration: none; margin-right: 20px; padding: 10px 15px; border-radius: 4px; }
+    .nav-menu a:hover { background: #2c3e50; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+    .stat-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+    .user-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .user-table th, .user-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ecf0f1; }
+    .user-table th { background: #34495e; color: white; }
+    .user-table tr:hover { background: #f8f9fa; }
+    .role-admin { background: #e8f5e8; }
+    .role-user { background: #f0f8ff; }
+    .badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; }
+    .badge-admin { background: #27ae60; color: white; }
+    .badge-user { background: #3498db; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Usuarios Registrados</h1>
+    
+    <div class="nav-menu">
+      <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
+      <a href="{% url 'admin_panel:admin_pending_approval' %}">Pendientes de Aprobación</a>
+      <a href="{% url 'admin_panel:admin_user_list' %}">Usuarios Registrados</a>
+      <a href="{% url 'home' %}">Volver al Sitio</a>
+    </div>
+
+    <!-- Estadísticas de usuarios -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div style="font-size: 1.5em; font-weight: bold;">{{ user_stats.total }}</div>
+        <div>Total Usuarios</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 1.5em; font-weight: bold;">{{ user_stats.admins }}</div>
+        <div>Administradores</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 1.5em; font-weight: bold;">{{ user_stats.regular_users }}</div>
+        <div>Usuarios Regulares</div>
+      </div>
+      <div class="stat-card">
+        <div style="font-size: 1.5em; font-weight: bold;">{{ user_stats.active_today }}</div>
+        <div>Activos Hoy</div>
+      </div>
+    </div>
+
+    <!-- Tabla de Usuarios -->
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Fecha Registro</th>
+          <th>Último Login</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr class="role-{{ user.role|lower }}">
+          <td>
+            <strong>{{ user.username }}</strong>
+            {% if user == request.user %}
+              <em>(Tú)</em>
+            {% endif %}
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge badge-{{ user.role|lower }}">
+              {% if user.role == 'ADMIN' %}Administrador{% else %}Usuario{% endif %}
+            </span>
+          </td>
+          <td>{{ user.date_joined|date:"M d, Y" }}</td>
+          <td>
+            {% if user.last_login %}
+              {{ user.last_login|date:"M d, Y H:i" }}
+            {% else %}
+              Nunca
+            {% endif %}
+          </td>
+          <td>
+            {% if user.is_active %}
+              <span style="color: #27ae60;">● Activo</span>
+            {% else %}
+              <span style="color: #e74c3c;">● Inactivo</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
