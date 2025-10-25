@@ -1,17 +1,17 @@
 from django.db import models
 
-class Accomodations(models.Model):
-    STATUS_CHOICES = [
-        ('active', 'aprobado'),
-        ('rejected', 'rechazado'),
-        ('pending', 'pendiente'),
-    ]
-    TYPE_CHOICES = [
-        ('accomodation', 'alojamiento'),
-        ('activity', 'actividad'),
-        ('service', 'servicio'),
-    ]
+STATUS_CHOICES = [
+    ('active', 'aprobado'),
+    ('rejected', 'rechazado'),
+    ('pending', 'pendiente'),
+]
+TYPE_CHOICES = [
+    ('accomodation', 'alojamiento'),
+    ('activity', 'actividad'),
+    ('service', 'servicio'),
+]
 
+class Accomodations(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -25,17 +25,6 @@ class Accomodations(models.Model):
         return self.name
     
 class Services(models.Model):
-    STATUS_CHOICES = [
-        ('active', 'aprobado'),
-        ('rejected', 'rechazado'),
-        ('pending', 'pendiente'),
-    ]
-    TYPE_CHOICES = [
-        ('accomodation', 'alojamiento'),
-        ('activity', 'actividad'),
-        ('service', 'servicio'),
-    ]
-
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -48,17 +37,6 @@ class Services(models.Model):
         return self.name
     
 class Activities(models.Model):
-    STATUS_CHOICES = [
-        ('active', 'aprobado'),
-        ('rejected', 'rechazado'),
-        ('pending', 'pendiente'),
-    ]
-    TYPE_CHOICES = [
-        ('accomodation', 'alojamiento'),
-        ('activity', 'actividad'),
-        ('service', 'servicio'),
-    ]
-
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
