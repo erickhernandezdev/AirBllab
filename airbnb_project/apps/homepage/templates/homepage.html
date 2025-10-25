@@ -1,0 +1,168 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'homepage/homepage.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="homepage">
+  <section class="banner">
+    <img src="{% static 'img/banner-bienvenida.png' %}" alt="banner-bienvenida" class="banner-img">
+  </section>
+
+  <section class="welcome">
+    <div class="welcome-text">
+      <h2>¿Qué buscas hoy?</h2>
+      <p>¡Los mejores alojamientos, experiencias y servicios en un mismo lugar!</p>
+    </div>
+
+    <div class="welcome-cards">
+      <div class="card">
+        <img src="{% static 'img/alojamientos/alojamientos.jpg' %}" alt="Alojamiento">
+        <h3>Encuentra el lugar perfecto para tu estadía</h3>
+        <a href="#" class="card-button">Ver más</a>
+      </div>
+
+      <div class="card">
+        <img src="{% static 'img/experiencias/experiencias.jpg' %}" alt="Experiencia">
+        <h3>Descubre experiencias únicas</h3>
+        <a href="#" class="card-button">Ver más</a>
+      </div>
+
+      <div class="card">
+        <img src="{% static 'img/servicios.jpg' %}" alt="Servicios">
+        <h3>Agrega extras para tu comodidad</h3>
+        <a href="#" class="card-button">Ver más</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="collections">
+    <h2>Favoritos</h2>
+    <div class="collection-grid">
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/alojamientos/alojamientos.jpg' %}" alt="Villa en Tamarindo">
+        <h3>Villa en Tamarindo</h3>
+        <p class="price">₡80.000 por noche</p>
+        <p class="rating">★4.5</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/alojamientos/alojamientos2.jpg' %}" alt="Cabaña Don Quijote">
+        <h3>Cabaña Don Quijote</h3>
+        <p class="price">₡42.000 por noche</p>
+        <p class="rating">★4.2</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/alojamientos/alojamientos5.jpg' %}" alt="Alojamiento en La Fortuna">
+        <h3>Alojamiento en La Fortuna</h3>
+        <p class="price">₡61.000 por noche</p>
+        <p class="rating">★5.0</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/alojamientos/alojamientos4.jpeg' %}" alt="Villa en Cahuita">
+        <h3>Villa en Cahuita</h3>
+        <p class="price">₡54.000 por noche</p>
+        <p class="rating">★4.5</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/alojamientos/alojamientos3.jpg' %}" alt="Apartamento en Jacó">
+        <h3>Apartamento en Jacó</h3>
+        <p class="price">₡46.000 por noche</p>
+        <p class="rating">★4.8</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="collections">
+    <h2>Experiencias cerca de ti</h2>
+    <div class="collection-grid">
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/experiencias/experiencias.jpg' %}" alt="Tour en bote">
+        <h3>Tour en bote</h3>
+        <p class="price">₡64.000</p>
+        <p class="rating">★4.8</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/experiencias/experiencias2.jpg' %}" alt="Clases de cocina">
+        <h3>Clases de cocina</h3>
+        <p class="price">₡7.000 por clase</p>
+        <p class="rating">★4.1</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/experiencias/experiencias3.jpg' %}" alt="Clases de fotografía">
+        <h3>Clases de fotografía</h3>
+        <p class="price">₡5.000 por clase</p>
+        <p class="rating">★4.4</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/experiencias/experiencias4.jpg' %}" alt="Canopy">
+        <h3>Canopy</h3>
+        <p class="price">₡28.000</p>
+        <p class="rating">★4.9</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/experiencias/experiencias5.png' %}" alt="Clases de baile">
+        <h3>Clases de baile</h3>
+        <p class="price">₡4.000 por clase</p>
+        <p class="rating">★5.0</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="collections">
+    <h2>Los mejores servicios</h2>
+    <div class="collection-grid">
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/servicios/servicios.jpg' %}" alt="Catering">
+        <h3>Catering</h3>
+        <p class="price">₡40.000</p>
+        <p class="rating">★4.8</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/servicios/servicios2.jpeg' %}" alt="Spa">
+        <h3>Spa</h3>
+        <p class="price">₡18.000</p>
+        <p class="rating">★4.7</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/servicios/servicios3.jpg' %}" alt="Masajes">
+        <h3>Masajes</h3>
+        <p class="price">₡21.000</p>
+        <p class="rating">★4.0</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/servicios/servicios4.jpg' %}" alt="Maquillaje">
+        <h3>Maquillaje</h3>
+        <p class="price">₡10.000</p>
+        <p class="rating">★4.1</p>
+      </a>
+
+      <a href="#" class="collection-item">
+        <img src="{% static 'img/servicios/servicios5.jpg' %}" alt="Chef personal">
+        <h3>Chef personal</h3>
+        <p class="price">₡8.000 por día</p>
+        <p class="rating">★4.9</p>
+      </a>
+    </div>
+  </section>
+
+  <section class="opinions">
+
+  </section>
+</main>
+{% endblock %}
