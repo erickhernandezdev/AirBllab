@@ -32,4 +32,5 @@ urlpatterns = [
   #path('bookings/', include('apps.bookings.urls')),
   #path('payments/', include('apps.payments.urls')),
   path('admin-panel/', include('apps.admin_panel.urls')),
+  path('new_proposal/', include('apps.new_proposal.urls')),
 ]

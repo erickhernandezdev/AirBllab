@@ -14,10 +14,14 @@ import os
 #import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
-import environ
+try:
+    import environ
+except Exception:
+    # django-environ may be incompatible with this Python version (e.g. pkgutil.find_loader missing)
+    # or simply not installed. Fall back to os.getenv usage in that case.
+    environ = None
 
-#env = environ.Env()
-#environ.Env.read_env()
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -58,6 +62,8 @@ INSTALLED_APPS = [
     'apps.properties',
     'apps.bookings',
     'apps.payments',
+    'apps.admin_panel',
+    'apps.new_proposal',
     'apps.admin_panel',
 ]
 

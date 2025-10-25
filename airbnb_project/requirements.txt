@@ -2,7 +2,7 @@ Django==4.2.7
 django-two-factor-auth==1.15.0
 django-axes==6.0.0
 django-environ==0.9.0
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.11
 cryptography==41.0.7
 Werkzeug==2.3.7
 phonenumbers==9.0.16
