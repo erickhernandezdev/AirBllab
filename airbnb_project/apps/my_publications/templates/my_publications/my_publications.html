@@ -1,62 +1,55 @@
-{% load static %}
+{% extends 'layout.html' %} {% load static %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'my_publications/styles.css'%}" />
+{% endblock %} {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My publications</title>
-    <link rel="stylesheet" href="{% static 'my_publications/styles.css'%}" />
-  </head>
+<main id="my_publications-main">
+  <h1>Mis publicaciones y propuestas</h1>
+  <div>
+    <div id="publications-proposals-buttons">
+      <button id="publications-btn">Publicaciones</button>
+      <button id="proposals-btn">Propuestas</button>
+    </div>
 
-  <body>
-    <h1>Mis publicaciones y propuestas</h1>
-    <div>
-      <div id="publications-proposals-buttons">
-        <button id="publications-btn">Publicaciones</button>
-        <button id="proposals-btn">Propuestas</button>
+    <h2 id="section-title">Publicaciones</h2>
+
+    <div id="search-add-div">
+      <div id="search-bar">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar publicaciones..."
+        />
+        <button id="search-btn">Buscar</button>
       </div>
+      <button id="add-btn">+ Nueva propuesta</button>
+    </div>
 
-      <h2 id="section-title">Publicaciones</h2>
-
-      <div id="search-add-div">
-        <div id="search-bar">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="Buscar publicaciones..."
-          />
-          <button id="search-btn">Buscar</button>
+    <div class="cards-grid">
+      {% for publication in publications %}
+      <div class="card" data-status="{{ publication.status }}">
+        <img
+          src="{% static 'my_publications/default.jpg' %}"
+          alt="publication img"
+        />
+        <div class="card-info">
+          <h3>Nombre: {{ publication.name }}</h3>
+          <p>Descripcion: {{ publication.description }}</p>
+          <p>Tipo: {{ publication.type }}</p>
+          <p>Fecha inicio: {{publication.start_date }}</p>
+          <p>Fecha final: {{publication.end_date }}</p>
+          <p>Precio: {{publication.price }}</p>
+          <p class="status">
+            {% if publication.status != 'Aprobado' %} Estado: {{
+            publication.status }} {% endif %}
+          </p>
         </div>
-        <button id="add-btn">+ Nueva propuesta</button>
       </div>
-
-      <div class="cards-grid">
-        {% for publication in publications %}
-        <div class="card" data-status="{{ publication.status }}">
-          <img
-            src="{% static 'my_publications/default.jpg' %}"
-            alt="publication img"
-          />
-          <div class="card-info">
-            <h3>Nombre: {{ publication.name }}</h3>
-            <p>Descripcion: {{ publication.description }}</p>
-            <p>Tipo: {{ publication.type }}</p>
-            <p>Fecha inicio: {{publication.start_date }}</p>
-            <p>Fecha final: {{publication.end_date }}</p>
-            <p>Precio: {{publication.price }}</p>
-            <p class="status">
-              {% if publication.status != 'Aprobado' %}
-                Estado: {{ publication.status }}
-              {% endif %}
-            </p>
-          </div>
-        </div>
-        {% empty %}
-          <p>Aún no has hecho publicaciones o propuestas.</p>
-        {% endfor %}
+      {% empty %}
+      <p>Aún no has hecho publicaciones o propuestas.</p>
+      {% endfor %}
     </div>
 
     <script src="{% static 'my_publications/scripts.js' %}"></script>
-  </body>
-</html>
+  </div>
+</main>
+{% endblock %}

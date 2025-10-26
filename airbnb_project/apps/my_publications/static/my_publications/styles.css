@@ -1,20 +1,23 @@
-/* Styles for my_publications */
-/* Image on top, info below; grid of cards with 3 columns by default */
-
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	margin: 0;
-	padding: 24px;
+	padding: 0;
 	background: #f5f7fb;
 	color: #222;
 }
 
-h1 {
-	text-align: center;
-	margin: 8px 0 14px;
+#my_publications-main {
+	padding: 0px 16px;
+	box-sizing: border-box;
+	min-height: 100vh;
 }
 
-h2 {
+#my_publications-main h1 {
+	text-align: center;
+	margin: 30px 0 14px;
+}
+
+#my_publications-main h2 {
 	text-align: center;
 	margin: 6px 0 18px;
 }
@@ -23,17 +26,17 @@ h2 {
 	display: flex;
 	justify-content: center;
 	gap: 12px;
-	margin: 10px auto 40px;
+	margin: 30px auto 40px;
 }
 
 #publications-proposals-buttons button {
 	padding: 10px 16px;
 	border-radius: 8px;
 	border: 1px solid #d0d7e0;
-	background: #ffffff;
+	background: #ff0054;
 	cursor: pointer;
 	font-weight: 600;
-	color: #2b3a4a;
+	color: white;
 	box-shadow: 0 2px 6px rgba(30,40,60,0.06);
 	transition: transform 120ms ease, box-shadow 120ms ease, background 120ms;
 }
@@ -74,7 +77,7 @@ h2 {
 	padding: 10px 16px;
 	border-radius: 8px;
 	background: rgb(255, 255, 255);
-    border: rgb(164, 185, 255) solid 1px;
+    border: #ff0054 solid 1px;
 	color: #2b3a4a;
 	font-weight: 700;
 	cursor: pointer;
@@ -86,7 +89,7 @@ h2 {
 	padding: 10px 16px;
 	border-radius: 8px;
 	border: none;
-	background: linear-gradient(180deg, #3b82f6, #2563eb);
+	background: linear-gradient(180deg, #ff0054, #ce0045);
 	color: #fff;
 	font-weight: 700;
     text-decoration: none;
@@ -101,8 +104,7 @@ h2 {
 	opacity: 0.98;
 }
 
-/* Grid of cards: 3 columns on desktop */
-.cards-grid {
+#my_publications-main .cards-grid {
 	width: 100%;
 	max-width: 1500px;
     align-self: center;
@@ -113,8 +115,7 @@ h2 {
 	align-items: start;
 }
 
-/* Card layout: vertical (image on top) */
-.card {
+#my_publications-main .card {
 	display: flex;
 	flex-direction: column;
 	background: #ffffff;
@@ -124,14 +125,14 @@ h2 {
 	min-height: 320px;
 }
 
-.card img {
+#my_publications-main .card img {
 	width: 100%;
 	height: 250px;
 	object-fit: cover;
 	display: block;
 }
 
-.card .card-info {
+#my_publications-main .card .card-info {
 	padding: 16px 18px;
 	box-sizing: border-box;
 	display: flex;
@@ -140,35 +141,35 @@ h2 {
 	gap: 6px;
 }
 
-.card .card-info h3 {
+#my_publications-main .card .card-info h3 {
 	margin: 0 0 8px 0;
 	font-size: 1.1rem;
 }
 
-.card .card-info p {
+#my_publications-main .card .card-info p {
 	margin: 6px 0;
 	color: #4b5563;
 }
 
-.card:hover {
+#my_publications-main .card:hover {
 	transform: translateY(-4px);
 	transition: transform 160ms ease;
 }
 
 /* Responsive grid: 2 columns on medium screens, 1 column on small screens */
 @media (max-width: 1000px) {
-	.cards-grid {
+	#my_publications-main .cards-grid {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
 
 @media (max-width: 700px) {
-	.cards-grid {
+	#my_publications-main .cards-grid {
 		grid-template-columns: 1fr;
 		width: 94%;
 	}
 
-	.card img {
+	#my_publications-main .card img {
 		height: 220px;
 	}
 
@@ -190,7 +191,6 @@ h2 {
 	}
 }
 
-/* Accessibility focus */
 #publications-proposals-buttons button:focus {
 	outline: 3px solid rgba(66,153,225,0.22);
 	outline-offset: 2px;

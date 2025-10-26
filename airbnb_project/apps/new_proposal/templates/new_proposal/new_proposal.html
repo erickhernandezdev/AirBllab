@@ -1,29 +1,23 @@
-{% load static %}
+{% extends 'layout.html' %} {% load static %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'new_proposal/styles.css'%}" />
+{% endblock %} {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New proposal</title>
-    <link rel="stylesheet" href="{% static 'new_proposal/style.css'%}" />
-  </head>
+<main>
+  <div id="form-container">
+    <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
+    <form method="post" id="proposal-form">
+      {% csrf_token %} {{ form.as_p}}
+      <button id="submit-btn" type="submit">Enviar</button>
+    </form>
+  </div>
 
-  <body>
-    <div>
-      <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
-      <form method="post" id="proposal-form">
-        {% csrf_token %} {{ form.as_p}}
-        <button id="submit-btn" type="submit">Enviar</button>
-      </form>
-    </div>
+  {% if messages %}
+  <div id="toast" class="toast">
+    {% for message in messages %} {{ message }} {% endfor %}
+  </div>
+  {% endif %}
 
-    {% if messages %}
-    <div id="toast" class="toast">
-      {% for message in messages %} {{ message }} {% endfor %}
-    </div>
-    {% endif %}
+  <script src="{% static 'new_proposal/scripts.js' %}"></script>
+</main>
 
-    <script src="{% static 'new_proposal/scripts.js' %}"></script>
-  </body>
-</html>
+{% endblock %}
