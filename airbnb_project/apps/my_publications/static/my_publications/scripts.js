@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const proposalsBtn = document.getElementById("proposals-btn");
   const sectionTitle = document.getElementById("section-title");
   const addBtn = document.getElementById("add-btn");
+  const cards = document.querySelectorAll('.card');
 
   addBtn.style.display = "none";
 
@@ -10,7 +11,13 @@ document.addEventListener("DOMContentLoaded", () => {
   publicationsBtn.addEventListener("click", () => {
     sectionTitle.textContent = "Publicaciones";
     addBtn.style.display = "none";
-    removeEstadoFromCards();
+    for (const card of cards) {
+      if (card.dataset.status === 'Aprobado') {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    }
   });
 
   // Función para mostrar propuestas
@@ -18,6 +25,27 @@ document.addEventListener("DOMContentLoaded", () => {
     sectionTitle.textContent = "Propuestas";
     addBtn.style.display = "inline-block";
     addEstadoToCards();
+    for (const card of cards) {
+      if (card.dataset.status === 'Pendiente' || card.dataset.status === 'Rechazado') {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+  });
+
+  window.onload = () => {
+    for (const card of cards) {
+      if (card.dataset.status === 'Aprobado') {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    }
+  };
+
+  addBtn.addEventListener("click", () => {
+    globalThis.location.href = "/new_proposal/";
   });
 
   function addEstadoToCards() {
@@ -29,13 +57,6 @@ document.addEventListener("DOMContentLoaded", () => {
         estado.classList.add("estado");
         cardInfo.appendChild(estado);
       }
-    }
-  }
-
-  function removeEstadoFromCards() {
-    const estados = document.querySelectorAll(".card .card-info .estado");
-    for (const estado of estados) {
-      estado.remove();
     }
   }
 });

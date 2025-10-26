@@ -12,23 +12,18 @@
   <body>
     <div>
       <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
-      <form method="post">
+      <form method="post" id="proposal-form">
         {% csrf_token %} {{ form.as_p}}
-        <button type="submit">Enviar</button>
+        <button id="submit-btn" type="submit">Enviar</button>
       </form>
     </div>
 
-    {% if success %}
-    <div id="toast" class="toast">¡Propuesta enviada con éxito!</div>
-    <script>
-      window.onload = function () {
-        var toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(function () {
-          toast.classList.remove("show");
-        }, 3500);
-      };
-    </script>
+    {% if messages %}
+    <div id="toast" class="toast">
+      {% for message in messages %} {{ message }} {% endfor %}
+    </div>
     {% endif %}
+
+    <script src="{% static 'new_proposal/scripts.js' %}"></script>
   </body>
 </html>

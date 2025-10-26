@@ -6,9 +6,9 @@ from django.core.exceptions import ValidationError
 
 class NewProposalForm(forms.Form):
     TYPE_CHOICES = [
-        ('accomodation', 'Alojamiento'),
-        ('activity', 'Actividad'),
-        ('service', 'Servicio'),
+        ('Alojamiento', 'Alojamiento'),
+        ('Actividad', 'Actividad'),
+        ('Servicio', 'Servicio'),
     ]
 
     name = forms.CharField(max_length=100, label='Nombre')

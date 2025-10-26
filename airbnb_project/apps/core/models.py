@@ -1,25 +1,25 @@
 from django.db import models
 
 STATUS_CHOICES = [
-    ('active', 'aprobado'),
-    ('rejected', 'rechazado'),
-    ('pending', 'pendiente'),
+    ('Aprobado', 'Aprobado'),
+    ('Rechazado', 'Rechazado'),
+    ('Pendiente', 'Pendiente'),
 ]
 TYPE_CHOICES = [
-    ('accomodation', 'alojamiento'),
-    ('activity', 'actividad'),
-    ('service', 'servicio'),
+    ('Alojamiento', 'Alojamiento'),
+    ('Actividad', 'Actividad'),
+    ('Servicio', 'Servicio'),
 ]
 
-class Accomodations(models.Model):
+class Accommodations(models.Model):
     id = models.AutoField(primary_key=True)
     host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='Alojamiento')
     start_date = models.DateField()
     end_date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
@@ -30,10 +30,10 @@ class Services(models.Model):
     host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='Servicio')
     start_date = models.DateField()
     end_date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
@@ -44,10 +44,10 @@ class Activities(models.Model):
     host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
-    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='Actividad')
     start_date = models.DateField()
     end_date = models.DateField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=20, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):

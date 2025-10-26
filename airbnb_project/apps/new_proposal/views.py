@@ -1,10 +1,10 @@
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import render, redirect
 from .forms import NewProposalForm
-from .models import Accomodations, Services, Activities
+from ..core.models import Accommodations, Services, Activities
 
 def add_new_proposal(request):
   form = NewProposalForm()
-  success = False
 
   if request.method == 'POST':
     form = NewProposalForm(request.POST)
@@ -17,8 +17,8 @@ def add_new_proposal(request):
       price = form.cleaned_data['price']
 
       #TODO: Obtener y guardar el id del usuario que crea la propuesta
-      if proposal_type == 'accomodation':
-        new_accomodation = Accomodations (
+      if proposal_type == 'Alojamiento':
+        new_accomodation = Accommodations (
           host_id=1,
           name=name,
           description=description,
@@ -26,10 +26,10 @@ def add_new_proposal(request):
           start_date=start_date,
           end_date=end_date,
           price=price,
-          status='pendiente'
+          status='Pendiente'
         )
         new_accomodation.save()
-      elif proposal_type == 'activity':
+      elif proposal_type == 'Actividad':
         new_activity = Activities (
           host_id=1,
           name=name,
@@ -38,7 +38,7 @@ def add_new_proposal(request):
           start_date=start_date,
           end_date=end_date,
           price=price,
-          status='pendiente'
+          status='Pendiente'
         )
         new_activity.save()
       else:
@@ -50,12 +50,13 @@ def add_new_proposal(request):
           start_date=start_date,
           end_date=end_date,
           price=price,
-          status='pendiente'
+          status='Pendiente'
         )
 
         new_service.save()
         
-      success = True  
-      form = NewProposalForm()
-
-  return render(request, 'new_proposal/new_proposal.html', {'form': form, 'success': success})
+      messages.success(request, "¡Propuesta enviada con éxito!")
+      return redirect('my_publications')
+    
+    form = NewProposalForm()
+  return render(request, 'new_proposal/new_proposal.html', {'form': form})
