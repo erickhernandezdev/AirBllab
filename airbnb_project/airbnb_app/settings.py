@@ -62,8 +62,10 @@ INSTALLED_APPS = [
     'apps.properties',
     'apps.bookings',
     'apps.payments',
+    'apps.core',
     'apps.admin_panel',
     'apps.new_proposal',
+    'apps.my_publications',
     'apps.homepage',
     'apps.listings',
 ]

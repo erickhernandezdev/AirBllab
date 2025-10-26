@@ -33,6 +33,7 @@ urlpatterns = [
   #path('payments/', include('apps.payments.urls')),
   path('admin-panel/', include('apps.admin_panel.urls')),
   path('new_proposal/', include('apps.new_proposal.urls')),
+  path('my_publications/', include('apps.my_publications.urls')),
   path('', include('apps.homepage.urls')),
   path('listings/', include('apps.listings.urls')),
 ]
