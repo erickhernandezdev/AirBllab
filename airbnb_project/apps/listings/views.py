@@ -1,27 +1,7 @@
 from django.shortcuts import render
-from django.urls import reverse
+from django.http import Http404
 
-def homepage(request):
-    cards = [
-        {
-            'image': 'img/alojamientos/alojamientos.jpg',
-            'alt': 'Alojamiento',
-            'title': 'Encuentra el lugar perfecto para tu estadía',
-            'link': reverse('listing', kwargs={'tipo': 'accomodations'})
-        },
-        {
-            'image': 'img/experiencias/experiencias.jpg',
-            'alt': 'Experiencia',
-            'title': 'Descubre experiencias únicas',
-            'link': reverse('listing', kwargs={'tipo': 'experiences'})
-        },
-        {
-            'image': 'img/servicios/servicios.jpg',
-            'alt': 'Servicios',
-            'title': 'Agrega extras para tu comodidad',
-            'link': reverse('listing', kwargs={'tipo': 'services'})
-        }
-    ]
+def listings_view(request, tipo):
     favorites = [
         {
             'image': 'img/alojamientos/alojamientos.jpg',
@@ -148,9 +128,50 @@ def homepage(request):
             'link': '#'
         },
     ]
-    return render(request, 'homepage.html', {
-        'cards': cards,
+
+    if tipo == 'accomodations':
+        title = "Tu próximo destino te espera"
+        subtitle = "Explora alojamientos únicos en los rincones más hermosos de Costa Rica"
+        items = favorites
+        banner = 'img/alojamientos/alojamientos.jpg'
+        sections = [
+            {'title': 'Cerca de ti', 'items': favorites},
+            {'title': 'Disponibles el próximo fin de semana', 'items': favorites},
+            {'title': 'Lugares para quedarse cerca de Tamarindo', 'items': favorites},
+            {'title': 'Mejor valorados', 'items': favorites},
+        ]
+    elif tipo == 'experiences':
+        title = "Vive momentos que dejan huella"
+        subtitle = "Sumérgete en experiencias que transformarán tu vida"
+        items = experiences
+        banner = 'img/experiencias/experiencias.jpg'
+        sections = [
+            {'title': 'Experiencias cerca de ti', 'items': experiences},
+            {'title': 'Para el fin de semana', 'items': experiences},
+            {'title': 'Actividades en Tamarindo', 'items': experiences},
+            {'title': 'Las más valoradas', 'items': experiences},
+        ]
+    elif tipo == 'services':
+        title = "Cuida tu cuerpo, tu tiempo y tu espacio"
+        subtitle = "Servicios pensados para tu bienestar, productividad y comodidad personal"
+        items = services
+        banner = 'img/servicios/servicios.jpg'
+        sections = [
+            {'title': 'Servicios cerca de ti', 'items': services},
+            {'title': 'Disponibles este fin de semana', 'items': services},
+            {'title': 'Servicios en Tamarindo', 'items': services},
+            {'title': 'Mejor valorados', 'items': services},
+        ]
+    else:
+        raise Http404("Tipo de listado no válido")
+
+    return render(request, 'listings.html', {
+        'title': title,
+        'subtitle': subtitle,
+        'items': items,
+        'banner': banner,
         'favorites': favorites,
         'experiences': experiences,
         'services': services,
+        'sections': sections,
     })
