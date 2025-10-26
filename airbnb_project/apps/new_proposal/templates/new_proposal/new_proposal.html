@@ -1,34 +1,23 @@
-{% load static %}
+{% extends 'layout.html' %} {% load static %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'new_proposal/styles.css'%}" />
+{% endblock %} {% block content %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add new options</title>
-    <link rel="stylesheet" href="{% static 'new_proposal/style.css'%}" />
-  </head>
+<main>
+  <div id="form-container">
+    <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
+    <form method="post" id="proposal-form">
+      {% csrf_token %} {{ form.as_p}}
+      <button id="submit-btn" type="submit">Enviar</button>
+    </form>
+  </div>
 
-  <body>
-    <div>
-      <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
-      <form method="post">
-        {% csrf_token %} {{ form.as_p}}
-        <button type="submit">Enviar</button>
-      </form>
-    </div>
+  {% if messages %}
+  <div id="toast" class="toast">
+    {% for message in messages %} {{ message }} {% endfor %}
+  </div>
+  {% endif %}
 
-    {% if success %}
-    <div id="toast" class="toast">¡Propuesta enviada con éxito!</div>
-    <script>
-      window.onload = function () {
-        var toast = document.getElementById("toast");
-        toast.classList.add("show");
-        setTimeout(function () {
-          toast.classList.remove("show");
-        }, 3500);
-      };
-    </script>
-    {% endif %}
-  </body>
-</html>
+  <script src="{% static 'new_proposal/scripts.js' %}"></script>
+</main>
+
+{% endblock %}
