@@ -20,13 +20,9 @@
         </div>
     </section>
 
-    {% include 'components/collection_grid.html' with title="Cerca de ti" items=favorites %}
-
-    {% include 'components/collection_grid.html' with title="Disponibles el próximo fin de semana" items=favorites %}
-
-    {% include 'components/collection_grid.html' with title="Lugares para quedarse cerca de Tamarindo" items=favorites %}
-
-    {% include 'components/collection_grid.html' with title="Mejor valorados" items=favorites %}
+    {% for section in sections %}
+    {% include 'components/collection_grid.html' with title=section.title items=section.items %}
+    {% endfor %}
 
 </main>
 {% endblock %}
