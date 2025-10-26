@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'apps.admin_panel',
     'apps.new_proposal',
     'apps.homepage',
+    'apps.listings',
 ]
 
 MIDDLEWARE = [

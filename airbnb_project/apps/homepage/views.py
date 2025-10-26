@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.urls import reverse
 
 def homepage(request):
     cards = [
@@ -6,19 +7,19 @@ def homepage(request):
             'image': 'img/alojamientos/alojamientos.jpg',
             'alt': 'Alojamiento',
             'title': 'Encuentra el lugar perfecto para tu estadía',
-            'link': '#'
+            'link': reverse('listing', kwargs={'tipo': 'accomodations'})
         },
         {
             'image': 'img/experiencias/experiencias.jpg',
             'alt': 'Experiencia',
             'title': 'Descubre experiencias únicas',
-            'link': '#'
+            'link': reverse('listing', kwargs={'tipo': 'experiences'})
         },
         {
             'image': 'img/servicios/servicios.jpg',
             'alt': 'Servicios',
             'title': 'Agrega extras para tu comodidad',
-            'link': '#'
+            'link': reverse('listing', kwargs={'tipo': 'services'})
         }
     ]
     favorites = [

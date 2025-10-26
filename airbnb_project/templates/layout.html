@@ -16,13 +16,13 @@
       <header class="header">
         <div class="header-container">
           <div class="logo">
-            <h2>LOGO</h2>
+            <a href="/" class="logo"><h2>LOGO</h2></a>
           </div>
 
           <nav class="nav">
-            <a href="#alojamientos" class="nav-link">Alojamientos</a>
-            <a href="#experiencias" class="nav-link">Experiencias</a>
-            <a href="#servicios" class="nav-link">Servicios</a>
+            <a href="{% url 'listing' tipo='accomodations' %}" class="nav-link">Alojamientos</a>
+            <a href="{% url 'listing' tipo='experiences' %}" class="nav-link">Experiencias</a>
+            <a href="{% url 'listing' tipo='services' %}" class="nav-link">Servicios</a>
           </nav>
 
           <div class="user-actions">
