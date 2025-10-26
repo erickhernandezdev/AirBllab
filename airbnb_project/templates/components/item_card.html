@@ -1,0 +1,7 @@
+{% load static %}
+<a href="{{ link }}" class="collection-item">
+  <img src="{% static image %}" alt="{{ alt }}">
+  <h3>{{ title }}</h3>
+  <p class="price">{{ price }}</p>
+  <p class="rating">★{{ rating }}</p>
+</a>

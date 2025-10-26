@@ -1,0 +1,11 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/collection_grid.css' %}">
+
+<section class="collections">
+  <h2>{{ title }}</h2>
+  <div class="collection-grid">
+    {% for item in items %}
+      {% include 'components/item_card.html' with image=item.image alt=item.alt title=item.title price=item.price rating=item.rating link=item.link %}
+    {% endfor %}
+  </div>
+</section>

@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'homepage/homepage.css' %}">
+<link rel="stylesheet" href="{% static 'css/item_card.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="homepage">
+  <section class="banner">
+    <img src="{% static 'img/banner-bienvenida.png' %}" alt="banner-bienvenida" class="banner-img">
+  </section>
+
+  <section class="welcome">
+    <div class="welcome-text">
+      <h2>¿Qué buscas hoy?</h2>
+      <p>¡Los mejores alojamientos, experiencias y servicios en un mismo lugar!</p>
+    </div>
+
+    <div class="welcome-cards">
+      {% for card in cards %}
+      {% include 'homepage/components/card.html' with image=card.image alt=card.alt title=card.title link=card.link %}
+      {% endfor %}
+    </div>
+  </section>
+
+  {% include 'components/collection_grid.html' with title="Favoritos" items=favorites %}
+
+  {% include 'components/collection_grid.html' with title="Experiencias cerca de ti" items=experiences %}
+
+  {% include 'components/collection_grid.html' with title="Los mejores servicios" items=services %}
+
+  <section class="opinions">
+
+  </section>
+</main>
+{% endblock %}
