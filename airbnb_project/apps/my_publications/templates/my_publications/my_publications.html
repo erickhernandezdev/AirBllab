@@ -1,0 +1,55 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My publications</title>
+    <link rel="stylesheet" href="{% static 'my_publications/styles.css'%}" />
+  </head>
+
+  <body>
+    <h1>Mis publicaciones y propuestas</h1>
+    <div>
+      <div id="publications-proposals-buttons">
+        <button id="publications-btn">Publicaciones</button>
+        <button id="proposals-btn">Propuestas</button>
+      </div>
+
+      <h2 id="section-title">Publicaciones</h2>
+
+      <div id="search-add-div">
+        <div id="search-bar">
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Buscar publicaciones..."
+          />
+          <button id="search-btn">Buscar</button>
+        </div>
+        <button id="add-btn">+ Nueva propuesta</button>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <img
+            src="{% static 'my_publications/default.jpg' %}"
+            alt="publication img"
+          />
+          <div class="card-info">
+            <h3>Nombre:</h3>
+            <p>Descripcion:</p>
+            <p>Tipo:</p>
+            <p>Fecha inicio:</p>
+            <p>Fecha final:</p>
+            <p>Precio:</p>
+          </div>
+        </div>
+        <!-- Añade más div.card aquí o generalos con un loop de Django para múltiples publicaciones -->
+      </div>
+    </div>
+
+    <script src="{% static 'my_publications/scripts.js' %}"></script>
+  </body>
+</html>

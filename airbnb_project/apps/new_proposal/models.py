@@ -13,6 +13,7 @@ TYPE_CHOICES = [
 
 class Accomodations(models.Model):
     id = models.AutoField(primary_key=True)
+    host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')
@@ -26,6 +27,7 @@ class Accomodations(models.Model):
     
 class Services(models.Model):
     id = models.AutoField(primary_key=True)
+    host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')
@@ -33,11 +35,13 @@ class Services(models.Model):
     end_date = models.DateField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
     def __str__(self):
         return self.name
     
 class Activities(models.Model):
     id = models.AutoField(primary_key=True)
+    host_id = models.IntegerField(null=True)
     name = models.CharField(max_length=100)
     description = models.TextField()
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='accomodation')

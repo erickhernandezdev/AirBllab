@@ -16,8 +16,10 @@ def add_new_proposal(request):
       end_date = form.cleaned_data['end_date']
       price = form.cleaned_data['price']
 
+      #TODO: Obtener y guardar el id del usuario que crea la propuesta
       if proposal_type == 'accomodation':
         new_accomodation = Accomodations (
+          host_id=1,
           name=name,
           description=description,
           type=proposal_type,
@@ -29,6 +31,7 @@ def add_new_proposal(request):
         new_accomodation.save()
       elif proposal_type == 'activity':
         new_activity = Activities (
+          host_id=1,
           name=name,
           description=description,
           type=proposal_type,
@@ -40,6 +43,7 @@ def add_new_proposal(request):
         new_activity.save()
       else:
         new_service = Services (
+          host_id=1,
           name=name,
           description=description,
           type=proposal_type,
