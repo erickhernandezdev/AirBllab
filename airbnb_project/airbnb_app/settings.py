@@ -173,7 +173,7 @@ LOGIN_REDIRECT_URL = 'home'
 
 # Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
-    'axes.backends.AxesBackend',
+    # 'axes.backends.AxesBackend',  # Comentado: activar cuando 'axes' esté en INSTALLED_APPS
     #'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]

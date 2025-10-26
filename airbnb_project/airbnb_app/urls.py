@@ -28,7 +28,7 @@ urlpatterns = [
 
   # URLs de las apps
   #path('users/', include('apps.users.urls')),
-  #path('properties/', include('apps.properties.urls')),
+  path('properties/', include('apps.properties.urls')),
   #path('bookings/', include('apps.bookings.urls')),
   #path('payments/', include('apps.payments.urls')),
   path('admin-panel/', include('apps.admin_panel.urls')),

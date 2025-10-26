@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.db.models import Q
 from apps.properties.models import Property, Activity
 from apps.users.models import CustomUser
+from apps.new_proposal.models import Accomodations, Activities as ProposalActivities, Services
 from .models import ApprovalLog
 
 def admin_required(view_func):
@@ -26,6 +27,10 @@ def admin_dashboard(request):
     'total_activities': Activity.objects.count(),
     'pending_properties': Property.objects.filter(is_approved=False).count(),
     'pending_activities': Activity.objects.filter(is_approved=False).count(),
+    # Propuestas nuevas
+    'pending_accomodations': Accomodations.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
+    'pending_proposal_activities': ProposalActivities.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
+    'pending_services': Services.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
     'recent_approvals': ApprovalLog.objects.order_by('-created_at')[:5]
   }
   
@@ -37,9 +42,17 @@ def pending_approval_list(request):
   pending_properties = Property.objects.filter(is_approved=False)
   pending_activities = Activity.objects.filter(is_approved=False)
   
+  # Propuestas del módulo new_proposal
+  pending_accomodations = Accomodations.objects.filter(Q(status='pending') | Q(status='pendiente'))
+  pending_proposal_activities = ProposalActivities.objects.filter(Q(status='pending') | Q(status='pendiente'))
+  pending_services = Services.objects.filter(Q(status='pending') | Q(status='pendiente'))
+  
   context = {
     'pending_properties': pending_properties,
-    'pending_activities': pending_activities
+    'pending_activities': pending_activities,
+    'pending_accomodations': pending_accomodations,
+    'pending_proposal_activities': pending_proposal_activities,
+    'pending_services': pending_services,
   }
 
   return render(request, 'admin_panel/pending_approval.html', context)
@@ -49,10 +62,10 @@ def approval_detail(request, item_type, item_id):
   """Detalle de un item para aprobación/rechazo"""
   if item_type == 'property':
     item = get_object_or_404(Property, id=item_id)
-    template = 'admin_panel/approval_property_detail.html'
+    template = 'admin_panel/approval_detail.html'
   elif item_type == 'activity':
     item = get_object_or_404(Activity, id=item_id)
-    template = 'admin_panel/approval_activity_detail.html'
+    template = 'admin_panel/approval_detail.html'
   else:
     messages.error(request, "Tipo de ítem inválido.")
     return redirect('admin_pending_approval')
@@ -162,3 +175,74 @@ def user_list(request):
   }
 
   return render(request, 'admin_panel/user_list.html', context)
+
+@admin_required
+def proposal_detail(request, item_type, item_id):
+  """Detalle de una propuesta para aprobación/rechazo"""
+  if item_type == 'accomodation':
+    item = get_object_or_404(Accomodations, id=item_id)
+  elif item_type == 'proposal_activity':
+    item = get_object_or_404(ProposalActivities, id=item_id)
+  elif item_type == 'service':
+    item = get_object_or_404(Services, id=item_id)
+  else:
+    messages.error(request, "Tipo de propuesta inválido.")
+    return redirect('admin_panel:admin_pending_approval')
+
+  context = {
+    'item': item,
+    'item_type': item_type,
+  }
+
+  return render(request, 'admin_panel/proposal_detail.html', context)
+
+@admin_required
+def approve_proposal(request, item_type, item_id):
+  """Aprobar una propuesta (alojamiento, actividad o servicio)"""
+  if request.method == 'POST':
+    if item_type == 'accomodation':
+      item = get_object_or_404(Accomodations, id=item_id)
+    elif item_type == 'proposal_activity':
+      item = get_object_or_404(ProposalActivities, id=item_id)
+    elif item_type == 'service':
+      item = get_object_or_404(Services, id=item_id)
+    else:
+      messages.error(request, "Tipo de propuesta inválido.")
+      return redirect('admin_panel:admin_pending_approval')
+    
+    # Cambiar estado a aprobado
+    item.status = 'active'
+    item.save()
+
+    # Crear registro en el log
+    notes = request.POST.get('notes', f'Propuesta de {item_type} aprobada')
+    
+    messages.success(request, f"¡Propuesta '{item.name}' aprobada exitosamente!")
+    return redirect('admin_panel:admin_pending_approval')
+  
+  return redirect('admin_panel:admin_pending_approval')
+
+@admin_required
+def reject_proposal(request, item_type, item_id):
+  """Rechazar una propuesta (alojamiento, actividad o servicio)"""
+  if request.method == 'POST':
+    if item_type == 'accomodation':
+      item = get_object_or_404(Accomodations, id=item_id)
+    elif item_type == 'proposal_activity':
+      item = get_object_or_404(ProposalActivities, id=item_id)
+    elif item_type == 'service':
+      item = get_object_or_404(Services, id=item_id)
+    else:
+      messages.error(request, "Tipo de propuesta inválido.")
+      return redirect('admin_panel:admin_pending_approval')
+    
+    notes = request.POST.get('notes', 'Razón no especificada')
+    
+    # Cambiar estado a rechazado (mantener el registro)
+    item.status = 'rejected'
+    item.save()
+
+    messages.warning(request, f"Propuesta '{item.name}' rechazada.")
+    return redirect('admin_panel:admin_pending_approval')
+  
+  return redirect('admin_panel:admin_pending_approval')
