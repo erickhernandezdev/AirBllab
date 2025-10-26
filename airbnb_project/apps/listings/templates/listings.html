@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/listings.css' %}">
+<link rel="stylesheet" href="{% static 'css/item_card.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="homepage">
+    <section class="banner">
+        <div class="banner-image" style="background-image: url('{% static banner %}');">
+            <div class="banner-overlay">
+                <div class="banner-content">
+                    <h1>{{ title }}</h1>
+                    <p>{{ subtitle }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% for section in sections %}
+    {% include 'components/collection_grid.html' with title=section.title items=section.items %}
+    {% endfor %}
+
+</main>
+{% endblock %}
