@@ -3,6 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const proposalsBtn = document.getElementById("proposals-btn");
   const sectionTitle = document.getElementById("section-title");
   const addBtn = document.getElementById("add-btn");
+  const searchInput = document.getElementById('search-input');
+  const searchBtn = document.getElementById('search-btn');
   const cards = document.querySelectorAll('.card');
 
   addBtn.style.display = "none";
@@ -49,14 +51,45 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function addEstadoToCards() {
-    const cards = document.querySelectorAll(".card .card-info");
-    for (const cardInfo of cards) {
-      if (!cardInfo.querySelector(".estado")) {
-        const estado = document.createElement("p");
-        estado.textContent = "Estado:";
-        estado.classList.add("estado");
+    const cardsInfo = document.querySelectorAll(".card .card-info");
+    for (const cardInfo of cardsInfo) {
+      if (cardInfo.querySelector(".status")) {
+        const status = cardInfo.querySelector(".status");
+        status.textContent = "Estado: " + cardInfo.parentElement.dataset.status;
+      } else {
+        const status = document.createElement("p");
+        status.textContent = "Estado: " + cardInfo.parentElement.dataset.status;
+        status.classList.add("status");
         cardInfo.appendChild(estado);
       }
     }
   }
+
+  // Función de búsqueda
+  function filterCards() {
+    const query = searchInput.value.toLowerCase();
+    const section = sectionTitle.textContent.toLowerCase();
+
+    for (const card of cards) {
+      const text = card.querySelector('.card-info').innerText.toLowerCase();
+      const status = card.dataset.status.toLowerCase();
+
+      let showCard = false;
+
+      if (
+        (section.includes('publicaciones') && status === 'aprobado') ||
+        (section.includes('propuestas') && (status === 'pendiente' || status === 'rechazado'))
+      ) {
+        showCard = text.includes(query);
+      }
+
+      card.style.display = showCard ? 'block' : 'none';
+    }
+  }
+
+  // Buscar al presionar el botón
+  searchBtn.addEventListener('click', filterCards);
+
+  // Búsqueda en tiempo real mientras se escribe
+  searchInput.addEventListener('input', filterCards);
 });
