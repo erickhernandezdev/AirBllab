@@ -1,0 +1,36 @@
+.collection-item {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.collection-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.collection-item img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.collection-item h3 {
+  font-size: 1.1rem;
+  margin: 0.75rem 1rem 0.25rem;
+}
+
+.collection-item .price,
+.collection-item .rating {
+  margin: 0 1rem 0.5rem;
+  color: #555;
+}
