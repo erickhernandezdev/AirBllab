@@ -27,7 +27,15 @@
 
           <div class="user-actions">
             <a href="#carrito" class="action-link">Carrito</a>
-            <a href="#cuenta" class="action-link">Cuenta</a>
+
+            <div class="dropdown">
+              <button class="dropbtn">Cuenta ▾</button>
+              <div class="dropdown-content">
+                <a href="{% url 'my_publications' %}">Tus pedidos</a>
+                <a href="#">Tus publicaciones</a>
+                <a href="#">Cerrar sesión</a>
+              </div>
+            </div>
           </div>
         </div>
       </header>
