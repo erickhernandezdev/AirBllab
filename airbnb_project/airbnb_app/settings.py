@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'axes',
 
     # Seguridad
     #'django_otp',
@@ -79,7 +80,7 @@ MIDDLEWARE = [
     #'django_otp.middleware.OTPMiddleware', # Para 2FA Middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
+    'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
 ]
 
 ROOT_URLCONF = 'airbnb_app.urls'
