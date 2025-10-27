@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 #import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
@@ -21,10 +22,9 @@ except Exception:
     # or simply not installed. Fall back to os.getenv usage in that case.
     environ = None
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
@@ -33,6 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'

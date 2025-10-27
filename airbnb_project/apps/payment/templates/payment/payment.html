@@ -3,13 +3,10 @@
 {% endblock %} {% block content %}
 
 <div id="payment-form-container">
-  <h1>Ingrese la informacion de pago</h1>
-  <!--
-  <form method="post" id="proposal-form">
-    {% csrf_token %} {{ form.as_p}}
-    <button id="submit-btn" type="submit">Enviar</button>
+  <form action="{% url 'checkout' %}" method="POST">
+    {% csrf_token %}
+    <button type="submit">Pagar con Stripe</button>
   </form>
-  -->
 </div>
 
 {% endblock %}
