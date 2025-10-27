@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     #'django_otp.plugins.otp_totp',
     #'django_otp.plugins.otp_static',
     #'two_factor',
-    #'axes', # Esto es para limitar intentos de login fallidos
+    'axes',
 
     # Apps
     'apps.users',
@@ -80,7 +80,7 @@ MIDDLEWARE = [
     #'django_otp.middleware.OTPMiddleware', # Para 2FA Middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
+    'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
 ]
 
 ROOT_URLCONF = 'airbnb_app.urls'
@@ -180,7 +180,7 @@ LOGOUT_REDIRECT_URL = '/homepage/'
 # Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
-    #'axes.backends.AxesStandaloneBackend',
+    'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
