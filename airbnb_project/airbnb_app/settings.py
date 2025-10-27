@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.properties',
     'apps.bookings',
-    'apps.payments',
+    'apps.payment',
     'apps.core',
     'apps.admin_panel',
     'apps.new_proposal',

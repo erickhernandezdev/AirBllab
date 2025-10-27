@@ -30,10 +30,11 @@ urlpatterns = [
   #path('users/', include('apps.users.urls')),
   #path('properties/', include('apps.properties.urls')),
   #path('bookings/', include('apps.bookings.urls')),
-  #path('payments/', include('apps.payments.urls')),
+  #path('payment/', include('apps.payment.urls')),
   path('admin-panel/', include('apps.admin_panel.urls')),
   path('new_proposal/', include('apps.new_proposal.urls')),
   path('my_publications/', include('apps.my_publications.urls')),
   path('', include('apps.homepage.urls')),
   path('listings/', include('apps.listings.urls')),
+  path('payment/', include('apps.payment.urls')),
 ]
