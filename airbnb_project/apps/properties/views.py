@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Property, Activity
-from apps.new_proposal.models import Accomodations, Activities as ProposalActivities, Services
+from apps.core.models import Accommodations, Activities as CoreActivities, Services
 
 @login_required
 def approved_items_list(request):
@@ -11,10 +11,10 @@ def approved_items_list(request):
     approved_properties = Property.objects.filter(is_approved=True)
     approved_activities = Activity.objects.filter(is_approved=True)
     
-    # Propuestas aprobadas (status='active')
-    approved_accomodations = Accomodations.objects.filter(status='active')
-    approved_proposal_activities = ProposalActivities.objects.filter(status='active')
-    approved_services = Services.objects.filter(status='active')
+    # Elementos aprobados en el nuevo sistema (status='Aprobado')
+    approved_accomodations = Accommodations.objects.filter(status='Aprobado')
+    approved_proposal_activities = CoreActivities.objects.filter(status='Aprobado')
+    approved_services = Services.objects.filter(status='Aprobado')
     
     context = {
         'properties': approved_properties,

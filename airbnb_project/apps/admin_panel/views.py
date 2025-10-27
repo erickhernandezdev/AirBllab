@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.db.models import Q
 from apps.properties.models import Property, Activity
 from apps.users.models import CustomUser
-from apps.new_proposal.models import Accomodations, Activities as ProposalActivities, Services
+from apps.core.models import Accommodations, Activities as CoreActivities, Services
 from .models import ApprovalLog
 
 def admin_required(view_func):
@@ -28,9 +28,9 @@ def admin_dashboard(request):
     'pending_properties': Property.objects.filter(is_approved=False).count(),
     'pending_activities': Activity.objects.filter(is_approved=False).count(),
     # Propuestas nuevas
-    'pending_accomodations': Accomodations.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
-    'pending_proposal_activities': ProposalActivities.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
-    'pending_services': Services.objects.filter(Q(status='pending') | Q(status='pendiente')).count(),
+  'pending_accomodations': Accommodations.objects.filter(Q(status='pending') | Q(status='Pendiente')).count(),
+  'pending_proposal_activities': CoreActivities.objects.filter(Q(status='pending') | Q(status='Pendiente')).count(),
+  'pending_services': Services.objects.filter(Q(status='pending') | Q(status='Pendiente')).count(),
     'recent_approvals': ApprovalLog.objects.order_by('-created_at')[:5]
   }
   
@@ -43,9 +43,9 @@ def pending_approval_list(request):
   pending_activities = Activity.objects.filter(is_approved=False)
   
   # Propuestas del módulo new_proposal
-  pending_accomodations = Accomodations.objects.filter(Q(status='pending') | Q(status='pendiente'))
-  pending_proposal_activities = ProposalActivities.objects.filter(Q(status='pending') | Q(status='pendiente'))
-  pending_services = Services.objects.filter(Q(status='pending') | Q(status='pendiente'))
+  pending_accomodations = Accommodations.objects.filter(Q(status='pending') | Q(status='Pendiente'))
+  pending_proposal_activities = CoreActivities.objects.filter(Q(status='pending') | Q(status='Pendiente'))
+  pending_services = Services.objects.filter(Q(status='pending') | Q(status='Pendiente'))
   
   context = {
     'pending_properties': pending_properties,
@@ -180,9 +180,9 @@ def user_list(request):
 def proposal_detail(request, item_type, item_id):
   """Detalle de una propuesta para aprobación/rechazo"""
   if item_type == 'accomodation':
-    item = get_object_or_404(Accomodations, id=item_id)
+    item = get_object_or_404(Accommodations, id=item_id)
   elif item_type == 'proposal_activity':
-    item = get_object_or_404(ProposalActivities, id=item_id)
+    item = get_object_or_404(CoreActivities, id=item_id)
   elif item_type == 'service':
     item = get_object_or_404(Services, id=item_id)
   else:
@@ -201,9 +201,9 @@ def approve_proposal(request, item_type, item_id):
   """Aprobar una propuesta (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
     if item_type == 'accomodation':
-      item = get_object_or_404(Accomodations, id=item_id)
+      item = get_object_or_404(Accommodations, id=item_id)
     elif item_type == 'proposal_activity':
-      item = get_object_or_404(ProposalActivities, id=item_id)
+      item = get_object_or_404(CoreActivities, id=item_id)
     elif item_type == 'service':
       item = get_object_or_404(Services, id=item_id)
     else:
@@ -211,10 +211,10 @@ def approve_proposal(request, item_type, item_id):
       return redirect('admin_panel:admin_pending_approval')
     
     # Cambiar estado a aprobado
-    item.status = 'active'
+    item.status = 'Aprobado'
     item.save()
 
-    # Crear registro en el log
+    # Crear registro en el log (placeholder para auditoría futura)
     notes = request.POST.get('notes', f'Propuesta de {item_type} aprobada')
     
     messages.success(request, f"¡Propuesta '{item.name}' aprobada exitosamente!")
@@ -227,9 +227,9 @@ def reject_proposal(request, item_type, item_id):
   """Rechazar una propuesta (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
     if item_type == 'accomodation':
-      item = get_object_or_404(Accomodations, id=item_id)
+      item = get_object_or_404(Accommodations, id=item_id)
     elif item_type == 'proposal_activity':
-      item = get_object_or_404(ProposalActivities, id=item_id)
+      item = get_object_or_404(CoreActivities, id=item_id)
     elif item_type == 'service':
       item = get_object_or_404(Services, id=item_id)
     else:
@@ -239,7 +239,7 @@ def reject_proposal(request, item_type, item_id):
     notes = request.POST.get('notes', 'Razón no especificada')
     
     # Cambiar estado a rechazado (mantener el registro)
-    item.status = 'rejected'
+    item.status = 'Rechazado'
     item.save()
 
     messages.warning(request, f"Propuesta '{item.name}' rechazada.")
