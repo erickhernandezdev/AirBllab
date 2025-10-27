@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'apps.my_publications',
     'apps.homepage',
     'apps.listings',
+    'apps.login',
 ]
 
 MIDDLEWARE = [
@@ -125,7 +126,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'core.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -171,8 +172,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CONFIGURACIONES DE SEGURIDAD ADICIONALES
 
 # Configuración para django-two-factor-auth
-LOGIN_URL = 'admin:login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = '/account/login/'
+LOGIN_REDIRECT_URL = '/homepage/'
+LOGOUT_REDIRECT_URL = '/homepage/'
 #TWO_FACTOR_PATCH_ADMIN = True
 
 # Autenticación personalizada

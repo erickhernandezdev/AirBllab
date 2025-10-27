@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from ..core.models import Accommodations, Services, Activities
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def my_publications(request):
   host_id = 1  # TODO: Reemplazar con el id del usuario autenticado
 

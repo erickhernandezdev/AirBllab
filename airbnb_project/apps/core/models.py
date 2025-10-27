@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 STATUS_CHOICES = [
     ('Aprobado', 'Aprobado'),
@@ -10,6 +11,17 @@ TYPE_CHOICES = [
     ('Actividad', 'Actividad'),
     ('Servicio', 'Servicio'),
 ]
+
+class CustomUser(AbstractUser):
+    user_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, unique=True)
+    role = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
+    password = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 class Accommodations(models.Model):
     id = models.AutoField(primary_key=True)
