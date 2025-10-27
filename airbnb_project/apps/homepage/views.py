@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse
-from apps.core.models import Property, Activity, Service
+from apps.core.models import Accommodation, Activity, Service
 
 def homepage(request):
     cards = [
@@ -24,11 +24,11 @@ def homepage(request):
         }
     ]
 
-    accommodations = Property.objects.filter(status='Aprobado')[:5]
+    accommodations = Accommodation.objects.filter(status='Aprobado')[:5]
     experiences = Activity.objects.filter(status='Aprobado')[:5]
     services = Service.objects.filter(status='Aprobado')[:5]
 
-    property_images = {
+    accomodation_images = {
         'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
         'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
         'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
@@ -56,7 +56,7 @@ def homepage(request):
     }
 
     def build_card(item, image_map, default_image):
-        if isinstance(item, Property):
+        if isinstance(item, Accommodation):
             tipo = 'accomodations'
         elif isinstance(item, Activity):
             tipo = 'experiences'
@@ -74,7 +74,7 @@ def homepage(request):
             'link': reverse('listing', kwargs={'tipo': 'accomodations'})
         }
 
-    accommodations_cards = [build_card(p, property_images, property_images['default']) for p in accommodations]
+    accommodations_cards = [build_card(p, accomodation_images, accomodation_images['default']) for p in accommodations]
     experiences_cards = [build_card(a, activity_images, activity_images['default']) for a in experiences]
     services_cards = [build_card(s, service_images, service_images['default']) for s in services]
 
