@@ -98,7 +98,7 @@ class ReservationService(models.Model):
     date = models.DateField()
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='cart')
     property = models.ForeignKey(Property, on_delete=models.SET_NULL, null=True, blank=True)
 
 class CartActivity(models.Model):
