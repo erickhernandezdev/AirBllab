@@ -1,10 +1,10 @@
 from django.shortcuts import render
-from ..core.models import Property, Service, Activity
+from ..core.models import Accommodation, Service, Activity
 
 def my_publications(request):
     host_id = 1  # TODO: Reemplazar con el id del usuario autenticado
 
-    properties = Property.objects.filter(host_id=host_id)
+    properties = Accommodation.objects.filter(host_id=host_id)
     services = Service.objects.filter(host_id=host_id)
     activities = Activity.objects.filter(host_id=host_id)
 

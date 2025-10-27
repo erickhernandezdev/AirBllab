@@ -4,7 +4,7 @@ from django.contrib import admin
 from django.contrib import admin
 from .models import (
     User, UserRole,
-    Property, PropertyType,
+    Accommodation, AccommodationType,
     Activity, ActivityType,
     Service, ServiceType,
     Reservation, ReservationService, ReservationActivity,
@@ -14,8 +14,8 @@ from .models import (
 
 admin.site.register(User)
 admin.site.register(UserRole)
-admin.site.register(Property)
-admin.site.register(PropertyType)
+admin.site.register(Accommodation)
+admin.site.register(AccommodationType)
 admin.site.register(Activity)
 admin.site.register(ActivityType)
 admin.site.register(Service)

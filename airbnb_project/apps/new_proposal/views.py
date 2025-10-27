@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from .forms import NewProposalForm
-from ..core.models import Property, Service, Activity, PropertyType, ActivityType, ServiceType
+from ..core.models import Accommodation, Service, Activity, AccommodationType, ActivityType, ServiceType
 
 def add_new_proposal(request):
     form = NewProposalForm()
@@ -17,10 +17,10 @@ def add_new_proposal(request):
             price = form.cleaned_data['price']
 
             if proposal_type == 'Alojamiento':
-                property_type = PropertyType.objects.get(name='Alojamiento')
-                new_property = Property(
+                accommodation_type = AccommodationType.objects.get(name='Alojamiento')
+                new_accommodation = Accommodation(
                     host=1,
-                    property_type=property_type,
+                    Accommodation_type=accommodation_type,
                     name=name,
                     description=description,
                     location='Sin ubicación',
@@ -29,7 +29,7 @@ def add_new_proposal(request):
                     available_to=end_date,
                     status='Pendiente'
                 )
-                new_property.save()
+                new_accommodation.save()
 
             elif proposal_type == 'Actividad':
                 activity_type = ActivityType.objects.get(name='Actividad')

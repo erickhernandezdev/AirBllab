@@ -25,7 +25,7 @@ class User(models.Model):
     def __str__(self):
         return self.name
 
-class PropertyType(models.Model):
+class AccommodationType(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
 
@@ -46,9 +46,9 @@ class ServiceType(models.Model):
     def __str__(self):
         return self.name
 
-class Property(models.Model):
+class Accommodation(models.Model):
     host = models.ForeignKey(User, on_delete=models.CASCADE)
-    property_type = models.ForeignKey(PropertyType, on_delete=models.CASCADE)
+    accomodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
@@ -61,7 +61,7 @@ class Property(models.Model):
 
 class Reservation(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE)
-    property = models.ForeignKey(Property, on_delete=models.SET_NULL, null=True, blank=True)
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20)
@@ -102,7 +102,7 @@ class ReservationService(models.Model):
 
 class Cart(models.Model):
     user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='cart')
-    property = models.ForeignKey(Property, on_delete=models.SET_NULL, null=True, blank=True)
+    accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
 
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
