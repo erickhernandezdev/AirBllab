@@ -54,11 +54,11 @@ class ServiceType(models.Model):
 
 class Accommodation(models.Model):
     host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    accomodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
+    accommodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     available_from = models.DateField(null=True, blank=True)
     available_to = models.DateField(null=True, blank=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
