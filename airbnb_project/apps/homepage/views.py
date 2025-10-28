@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse
+from apps.core.models import Accommodation, Activity, Service
 
 def homepage(request):
     cards = [
@@ -22,135 +23,64 @@ def homepage(request):
             'link': reverse('listing', kwargs={'tipo': 'services'})
         }
     ]
-    favorites = [
-        {
-            'image': 'img/alojamientos/alojamientos.jpg',
-            'alt': 'Villa en Tamarindo',
-            'title': 'Villa en Tamarindo',
-            'price': '₡80.000 por noche',
-            'rating': '4.5',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos2.jpg',
-            'alt': 'Cabaña Don Quijote',
-            'title': 'Cabaña Don Quijote',
-            'price': '₡42.000 por noche',
-            'rating': '4.2',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos5.jpg',
-            'alt': 'Alojamiento en La Fortuna',
-            'title': 'Alojamiento en La Fortuna',
-            'price': '₡61.000 por noche',
-            'rating': '5.0',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos4.jpeg',
-            'alt': 'Villa en Cahuita',
-            'title': 'Villa en Cahuita',
-            'price': '₡54.000 por noche',
-            'rating': '4.5',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos3.jpg',
-            'alt': 'Apartamento en Jacó',
-            'title': 'Apartamento en Jacó',
-            'price': '₡46.000 por noche',
-            'rating': '4.8',
-            'link': '#'
-        },
-    ]
-    experiences = [
-        {
-            'image': 'img/experiencias/experiencias.jpg',
-            'alt': 'Tour en bote',
-            'title': 'Tour en bote',
-            'price': '₡64.000',
-            'rating': '4.8',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias2.jpg',
-            'alt': 'Clases de cocina',
-            'title': 'Clases de cocina',
-            'price': '₡7.000 por clase',
-            'rating': '4.1',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias3.jpg',
-            'alt': 'Clases de fotografía',
-            'title': 'Clases de fotografía',
-            'price': '₡5.000 por clase',
-            'rating': '4.4',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias4.jpg',
-            'alt': 'Canopy',
-            'title': 'Canopy',
-            'price': '₡28.000',
-            'rating': '4.9',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias5.png',
-            'alt': 'Clases de baile',
-            'title': 'Clases de baile',
-            'price': '₡4.000 por clase',
-            'rating': '5.0',
-            'link': '#'
-        },
-    ]
-    services = [
-        {
-            'image': 'img/servicios/servicios.jpg',
-            'alt': 'Catering',
-            'title': 'Catering',
-            'price': '₡40.000',
-            'rating': '4.8',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios2.jpeg',
-            'alt': 'Spa',
-            'title': 'Spa',
-            'price': '₡18.000',
-            'rating': '4.7',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios3.jpg',
-            'alt': 'Masajes',
-            'title': 'Masajes',
-            'price': '₡21.000',
-            'rating': '4.0',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios4.jpg',
-            'alt': 'Maquillaje',
-            'title': 'Maquillaje',
-            'price': '₡10.000',
-            'rating': '4.1',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios5.jpg',
-            'alt': 'Chef personal',
-            'title': 'Chef personal',
-            'price': '₡8.000 por día',
-            'rating': '4.9',
-            'link': '#'
-        },
-    ]
+
+    accommodations = Accommodation.objects.filter(status='Aprobado')[:5]
+    experiences = Activity.objects.filter(status='Aprobado')[:5]
+    services = Service.objects.filter(status='Aprobado')[:5]
+
+    accomodation_images = {
+        'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
+        'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
+        'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
+        'Villa en Cahuita': 'img/alojamientos/alojamientos4.jpeg',
+        'Apartamento en Jacó': 'img/alojamientos/alojamientos3.jpg',
+        'default': 'img/alojamientos/alojamientos.jpg'
+    }
+
+    activity_images = {
+        'Tour en bote': 'img/experiencias/experiencias.jpg',
+        'Clases de cocina': 'img/experiencias/experiencias2.jpg',
+        'Clases de fotografía': 'img/experiencias/experiencias3.jpg',
+        'Canopy': 'img/experiencias/experiencias4.jpg',
+        'Clases de baile': 'img/experiencias/experiencias5.png',
+        'default': 'img/experiencias/experiencias.jpg'
+    }
+
+    service_images = {
+        'Catering': 'img/servicios/servicios.jpg',
+        'Spa': 'img/servicios/servicios2.jpeg',
+        'Masajes': 'img/servicios/servicios3.jpg',
+        'Maquillaje': 'img/servicios/servicios4.jpg',
+        'Chef personal': 'img/servicios/servicios5.jpg',
+        'default': 'img/servicios/servicios.jpg'
+    }
+
+    def build_card(item, image_map, default_image):
+        if isinstance(item, Accommodation):
+            tipo = 'accomodations'
+        elif isinstance(item, Activity):
+            tipo = 'experiences'
+        elif isinstance(item, Service):
+            tipo = 'services'
+        else:
+            tipo = 'unknown'
+
+        return {
+            'image': image_map.get(item.name, default_image),
+            'alt': item.name,
+            'title': item.name,
+            'price': f"₡{getattr(item, 'price', getattr(item, 'price_per_night', 0)):,}",
+            'rating': f"{getattr(item, 'rating', 4.5):.1f}",
+            'link': reverse('listing', kwargs={'tipo': 'accomodations'})
+        }
+
+    accommodations_cards = [build_card(p, accomodation_images, accomodation_images['default']) for p in accommodations]
+    experiences_cards = [build_card(a, activity_images, activity_images['default']) for a in experiences]
+    services_cards = [build_card(s, service_images, service_images['default']) for s in services]
+
     return render(request, 'homepage.html', {
         'cards': cards,
-        'favorites': favorites,
-        'experiences': experiences,
-        'services': services,
+        'accommodations': accommodations_cards,
+        'experiences': experiences_cards,
+        'services': services_cards,
     })
