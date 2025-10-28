@@ -112,6 +112,10 @@ class ReservationService(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='cart')
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    nights = models.IntegerField()
+    price_total = models.IntegerField()
 
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)

@@ -87,3 +87,16 @@
 .add-to-cart:hover {
   background-color: #e6004c;
 }
+
+.add-to-cart:disabled {
+  background-color: #ff0054;
+  color: white;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.flatpickr-day.selected {
+  background-color: #f26c99 !important;
+  color: white;
+  border: none;
+}
