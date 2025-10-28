@@ -23,8 +23,8 @@
       <h1>{{ item.name }}</h1>
 
       {% if tipo == 'accomodations' %}
-      <p><strong>Tipo:</strong> {{ item.accomodation_type.name }}</p>
-      <p><strong>Precio por noche:</strong> ₡{{ item.price_per_night|floatformat:0 }}</p>
+      <p><strong>Tipo:</strong> {{ item.accommodation_type.name }}</p>
+      <p><strong>Precio por noche:</strong> ₡{{ item.price|floatformat:0 }}</p>
       <p><strong>Ubicación:</strong> {{ item.location }}</p>
       {% elif tipo == 'services' %}
       <p><strong>Tipo:</strong> {{ item.service_type.name }}</p>

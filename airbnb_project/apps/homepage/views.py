@@ -69,7 +69,7 @@ def homepage(request):
             'image': image_map.get(item.name, default_image),
             'alt': item.name,
             'title': item.name,
-            'price': f"₡{getattr(item, 'price', getattr(item, 'price_per_night', 0)):,}",
+            'price': f"₡{getattr(item, 'price', getattr(item, 'price', 0)):,}",
             'rating': f"{getattr(item, 'rating', 4.5):.1f}",
             'link': reverse('detail', kwargs={'tipo': tipo, 'id': item.id})
         }

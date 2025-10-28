@@ -54,11 +54,11 @@ class ServiceType(models.Model):
 
 class Accommodation(models.Model):
     host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    accomodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
+    accommodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='items/', blank=True, null=True)
     available_from = models.DateField(null=True, blank=True)
     available_to = models.DateField(null=True, blank=True)
@@ -112,10 +112,10 @@ class ReservationService(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='cart')
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    nights = models.IntegerField()
-    price_total = models.IntegerField()
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    nights = models.IntegerField(null=True)
+    price_total = models.IntegerField(null=True)
 
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)

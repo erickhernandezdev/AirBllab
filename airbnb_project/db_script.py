@@ -81,7 +81,7 @@ for name in accommodations:
         name=name,
         defaults={
             'host': user,
-            'accomodation_type': tipo,
+            'accommodation_type': tipo,
             'description': (
                 'Esta es una opcion ideal para quienes buscan comodidad, privacidad y una experiencia autentica en Costa Rica. '
                 'Este alojamiento ofrece espacios bien distribuidos, acabados acogedores y una atmosfera tranquila rodeada de naturaleza. '
@@ -89,7 +89,7 @@ for name in accommodations:
                 'cada estancia esta equipada para brindar confort y funcionalidad durante toda la visita.'
             ),
             'location': 'Costa Rica',
-            'price_per_night': 32000,
+            'price': 32000,
             'available_from': '2025-11-01',
             'available_to': '2025-12-31',
             'rating': 4.2,

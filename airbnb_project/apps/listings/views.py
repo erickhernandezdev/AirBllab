@@ -9,7 +9,7 @@ def build_card(obj, image_dict, tipo):
         'image': image_dict.get(name, image_dict['default']),
         'alt': name,
         'title': name,
-        'price': f"₡{obj.price_per_night:,} por noche" if hasattr(obj, 'price_per_night') else f"₡{obj.price:,}",
+        'price': f"₡{obj.price:,} por noche" if hasattr(obj, 'price') else f"₡{obj.price:,}",
         'rating': f"{obj.rating:.1f}",
         'link': reverse('detail', kwargs={'tipo': tipo, 'id': obj.id})
     }
