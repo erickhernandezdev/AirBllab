@@ -1,0 +1,22 @@
+{% extends 'layout.html' %} {% load static %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'login/styles.css'%}" />
+{% endblock %} {% block content %}
+
+<main id="login-main">
+  <div class="login-container">
+    <h2 class="login-title">Iniciar sesión</h2>
+    <form method="post" class="login-form">
+      {% csrf_token %} {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }} {{ field }} {% if field.errors %}
+        <span class="error-message">{{ field.errors|join:", " }}</span>
+        {% endif %}
+      </div>
+      {% endfor %} {% if form.non_field_errors %}
+      <div class="error-message">{{ form.non_field_errors|join:", " }}</div>
+      {% endif %}
+      <button type="submit" class="login-button">Iniciar sesión</button>
+    </form>
+  </div>
+</main>
+{% endblock %}

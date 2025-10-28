@@ -13,3 +13,11 @@
   gap: 2rem;
   justify-items: center;
 }
+
+.no-items {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+  margin-top: 7rem;
+  margin-bottom: 7rem;
+}
