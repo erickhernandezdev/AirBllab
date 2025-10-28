@@ -18,11 +18,10 @@ class CustomUser(AbstractUser):
     identity_document = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
     username = models.CharField(max_length=100, unique=True)
-    role = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
-    user_role = models.ForeignKey(UserRole, on_delete=models.CASCADE)
-    date_of_birth = models.DateField()
+    user_role = models.ForeignKey(UserRole, on_delete=models.CASCADE, null=True, blank=True)
+    date_of_birth = models.DateField(null=True, blank=True)
     contact_phone = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
