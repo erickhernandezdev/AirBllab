@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 from django.contrib import admin
 from .models import (
-    User, UserRole,
+    CustomUser, UserRole,
     Accommodation, AccommodationType,
     Activity, ActivityType,
     Service, ServiceType,
@@ -12,7 +12,7 @@ from .models import (
     Invoice, InvoiceItem
 )
 
-admin.site.register(User)
+admin.site.register(CustomUser)
 admin.site.register(UserRole)
 admin.site.register(Accommodation)
 admin.site.register(AccommodationType)

@@ -2,7 +2,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from .forms import NewProposalForm
 from ..core.models import Accommodation, Service, Activity, AccommodationType, ActivityType, ServiceType
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def add_new_proposal(request):
     form = NewProposalForm()
 

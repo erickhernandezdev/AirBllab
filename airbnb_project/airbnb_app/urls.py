@@ -36,4 +36,5 @@ urlpatterns = [
   path('my_publications/', include('apps.my_publications.urls')),
   path('', include('apps.homepage.urls')),
   path('listings/', include('apps.listings.urls')),
+  path('account/', include('apps.login.urls')),
 ]

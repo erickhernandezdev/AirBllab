@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 STATUS_CHOICES = [
     ('Aprobado', 'Aprobado'),
@@ -12,15 +13,21 @@ class UserRole(models.Model):
     def __str__(self):
         return self.name
 
-class User(models.Model):
+class CustomUser(AbstractUser):
+    user_id = models.AutoField(primary_key=True)
     identity_document = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
+    username = models.CharField(max_length=100, unique=True)
+    role = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
+    password = models.CharField(max_length=100)
     user_role = models.ForeignKey(UserRole, on_delete=models.CASCADE)
     date_of_birth = models.DateField()
     contact_phone = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username']
 
     def __str__(self):
         return self.name
@@ -47,7 +54,7 @@ class ServiceType(models.Model):
         return self.name
 
 class Accommodation(models.Model):
-    host = models.ForeignKey(User, on_delete=models.CASCADE)
+    host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     accomodation_type = models.ForeignKey(AccommodationType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -60,7 +67,7 @@ class Accommodation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Reservation(models.Model):
-    guest = models.ForeignKey(User, on_delete=models.CASCADE)
+    guest = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
@@ -68,7 +75,7 @@ class Reservation(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Service(models.Model):
-    host = models.ForeignKey(User, on_delete=models.CASCADE)
+    host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     service_type = models.ForeignKey(ServiceType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -77,7 +84,7 @@ class Service(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
 class Activity(models.Model):
-    host = models.ForeignKey(User, on_delete=models.CASCADE)
+    host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     activity_type = models.ForeignKey(ActivityType, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -101,7 +108,7 @@ class ReservationService(models.Model):
     date = models.DateField()
 
 class Cart(models.Model):
-    user = models.OneToOneField('User', on_delete=models.CASCADE, related_name='cart')
+    user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='cart')
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
 
 class CartActivity(models.Model):
