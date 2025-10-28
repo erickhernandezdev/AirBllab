@@ -34,10 +34,24 @@
         <div class="card-info">
           <h3>Nombre: {{ publication.name }}</h3>
           <p>Descripcion: {{ publication.description }}</p>
-          <p>Tipo: {{ publication.type }}</p>
-          <p>Fecha inicio: {{publication.start_date }}</p>
-          <p>Fecha final: {{publication.end_date }}</p>
-          <p>Precio: {{publication.price }}</p>
+          <p>
+            Tipo: 
+            {% if publication.accommodation_type %}
+                {{ publication.accommodation_type }}
+            {% elif publication.service_type %}
+                {{ publication.service_type }}
+            {% elif publication.activity_type %}
+                {{ publication.activity_type }}
+            {% else %}
+                {{ publication.type }}
+            {% endif %}
+          </p>
+          {% if publication.accommodation_type %}
+            <p>Localización: {{ publication.location }}</p>
+            <p>Disponible desde: {{publication.available_from }}</p>
+            <p>Disponible hasta: {{publication.available_to }}</p>
+          {% endif %}
+          <p>Precio: {{publication.price}}</p>
           <p class="status">
             {% if publication.status != 'Aprobado' %} Estado: {{
             publication.status }} {% endif %}
