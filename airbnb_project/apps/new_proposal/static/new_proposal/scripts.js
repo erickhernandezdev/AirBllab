@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   const typeField = document.getElementById("id_type");
   const subtypeField = document.getElementById("id_subtype");
+  const locationFieldWrapper = document.getElementById("id_location").parentElement;
+  const startDateWrapper = document.getElementById("id_start_date").parentElement;
+  const endDateWrapper = document.getElementById("id_end_date").parentElement;
   const form = document.getElementById("proposal-form");
 
   form.addEventListener("submit", function (event) {
@@ -38,4 +41,20 @@ document.addEventListener("DOMContentLoaded", () => {
   if (typeField.value) {
     loadSubtypes(typeField.value);
   }
+  
+  function toggleFields() {
+    const selectedType = typeField.value;
+    if (selectedType === "Alojamiento") {
+      locationFieldWrapper.style.display = "block";
+      startDateWrapper.style.display = "block";
+      endDateWrapper.style.display = "block";
+    } else {
+      locationFieldWrapper.style.display = "none";
+      startDateWrapper.style.display = "none";
+      endDateWrapper.style.display = "none";
+    }
+  }
+
+  toggleFields();
+  typeField.addEventListener("change", toggleFields);
 });
