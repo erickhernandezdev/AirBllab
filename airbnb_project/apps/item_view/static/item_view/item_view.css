@@ -1,0 +1,35 @@
+.item-view {
+  padding: 5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.item-header {
+  display: flex;
+  gap: 6rem;
+  margin: 3rem 7rem 3rem 7rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.item-image img {
+  width: 800px;
+  height: 525px;
+  border-radius: 30px;
+  object-fit: cover;
+}
+
+.item-details {
+  flex: 1;
+  min-width: 280px;
+}
+
+.item-details h1 {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.item-details p {
+  margin: 1.5rem 0;
+  font-size: 1.075rem;
+}

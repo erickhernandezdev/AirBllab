@@ -1,0 +1,43 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="item_view">
+  <section class="item-header">
+    <div class="item-image">
+      {% if item.image %}
+        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+      {% else %}
+        <img src="{% static 'img/alojamientos/alojamientos.jpg' %}" alt="Imagen por defecto">
+      {% endif %}
+    </div>
+
+    <div class="item-details">
+      <h1>{{ item.name }}</h1>
+
+      {% if tipo == 'accomodations' %}
+        <p><strong>Tipo:</strong> {{ item.accomodation_type.name }}</p>
+        <p><strong>Precio por noche:</strong> ₡{{ item.price_per_night|floatformat:0 }}</p>
+        <p><strong>Ubicación:</strong> {{ item.location }}</p>
+      {% elif tipo == 'service' %}
+        <p><strong>Tipo:</strong> {{ item.service_type.name }}</p>
+        <p><strong>Precio:</strong> ₡{{ item.price|floatformat:0 }}</p>
+      {% elif tipo == 'activity' %}
+        <p><strong>Tipo:</strong> {{ item.activity_type.name }}</p>
+        <p><strong>Precio por unidad:</strong> ₡{{ item.unity_price|floatformat:0 }}</p>
+        <p><strong>Ubicación:</strong> {{ item.location }}</p>
+      {% endif %}
+
+      <p><strong>Anfitrión:</strong> {{ item.host.name }}</p>
+      <p><strong>Calificación:</strong> ★{{ item.rating }}</p>
+      <p><strong>Acerca de esta propiedad::</strong></p>
+      <p>{{ item.description }}</p>
+    </div>
+  </section>
+</main>
+{% endblock %}
