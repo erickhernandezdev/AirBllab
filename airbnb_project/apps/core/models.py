@@ -88,7 +88,7 @@ class Activity(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     location = models.CharField(max_length=100)
-    unity_price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
