@@ -1,177 +1,78 @@
 from django.shortcuts import render
+from django.urls import reverse
 from django.http import Http404
+from apps.core.models import Accommodation, Activity, Service
+
+def build_card(obj, image_dict, tipo):
+    name = getattr(obj, 'name', 'Sin nombre')
+    return {
+        'image': image_dict.get(name, image_dict['default']),
+        'alt': name,
+        'title': name,
+        'price': f"₡{obj.price_per_night:,} por noche" if hasattr(obj, 'price_per_night') else f"₡{obj.price:,}",
+        'rating': f"{obj.rating:.1f}",
+        'link': reverse('listing', kwargs={'tipo': tipo})
+    }
 
 def listings_view(request, tipo):
-    favorites = [
-        {
-            'image': 'img/alojamientos/alojamientos.jpg',
-            'alt': 'Villa en Tamarindo',
-            'title': 'Villa en Tamarindo',
-            'price': '₡80.000 por noche',
-            'rating': '4.5',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos2.jpg',
-            'alt': 'Cabaña Don Quijote',
-            'title': 'Cabaña Don Quijote',
-            'price': '₡42.000 por noche',
-            'rating': '4.2',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos5.jpg',
-            'alt': 'Alojamiento en La Fortuna',
-            'title': 'Alojamiento en La Fortuna',
-            'price': '₡61.000 por noche',
-            'rating': '5.0',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos4.jpeg',
-            'alt': 'Villa en Cahuita',
-            'title': 'Villa en Cahuita',
-            'price': '₡54.000 por noche',
-            'rating': '4.5',
-            'link': '#'
-        },
-        {
-            'image': 'img/alojamientos/alojamientos3.jpg',
-            'alt': 'Apartamento en Jacó',
-            'title': 'Apartamento en Jacó',
-            'price': '₡46.000 por noche',
-            'rating': '4.8',
-            'link': '#'
-        },
-    ]
-    experiences = [
-        {
-            'image': 'img/experiencias/experiencias.jpg',
-            'alt': 'Tour en bote',
-            'title': 'Tour en bote',
-            'price': '₡64.000',
-            'rating': '4.8',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias2.jpg',
-            'alt': 'Clases de cocina',
-            'title': 'Clases de cocina',
-            'price': '₡7.000 por clase',
-            'rating': '4.1',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias3.jpg',
-            'alt': 'Clases de fotografía',
-            'title': 'Clases de fotografía',
-            'price': '₡5.000 por clase',
-            'rating': '4.4',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias4.jpg',
-            'alt': 'Canopy',
-            'title': 'Canopy',
-            'price': '₡28.000',
-            'rating': '4.9',
-            'link': '#'
-        },
-        {
-            'image': 'img/experiencias/experiencias5.png',
-            'alt': 'Clases de baile',
-            'title': 'Clases de baile',
-            'price': '₡4.000 por clase',
-            'rating': '5.0',
-            'link': '#'
-        },
-    ]
-    services = [
-        {
-            'image': 'img/servicios/servicios.jpg',
-            'alt': 'Catering',
-            'title': 'Catering',
-            'price': '₡40.000',
-            'rating': '4.8',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios2.jpeg',
-            'alt': 'Spa',
-            'title': 'Spa',
-            'price': '₡18.000',
-            'rating': '4.7',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios3.jpg',
-            'alt': 'Masajes',
-            'title': 'Masajes',
-            'price': '₡21.000',
-            'rating': '4.0',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios4.jpg',
-            'alt': 'Maquillaje',
-            'title': 'Maquillaje',
-            'price': '₡10.000',
-            'rating': '4.1',
-            'link': '#'
-        },
-        {
-            'image': 'img/servicios/servicios5.jpg',
-            'alt': 'Chef personal',
-            'title': 'Chef personal',
-            'price': '₡8.000 por día',
-            'rating': '4.9',
-            'link': '#'
-        },
-    ]
-
     if tipo == 'accomodations':
+        queryset = Accommodation.objects.filter(status='Aprobado')[:5]
+        image_dict = {
+            'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
+            'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
+            'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
+            'Villa en Cahuita': 'img/alojamientos/alojamientos4.jpeg',
+            'Apartamento en Jacó': 'img/alojamientos/alojamientos3.jpg',
+            'default': 'img/alojamientos/alojamientos.jpg'
+        }
         title = "Tu próximo destino te espera"
         subtitle = "Explora alojamientos únicos en los rincones más hermosos de Costa Rica"
-        items = favorites
         banner = 'img/alojamientos/alojamientos.jpg'
-        sections = [
-            {'title': 'Cerca de ti', 'items': favorites},
-            {'title': 'Disponibles el próximo fin de semana', 'items': favorites},
-            {'title': 'Lugares para quedarse cerca de Tamarindo', 'items': favorites},
-            {'title': 'Mejor valorados', 'items': favorites},
-        ]
+
     elif tipo == 'experiences':
+        queryset = Activity.objects.filter(status='Aprobado')[:5]
+        image_dict = {
+            'Tour en bote': 'img/experiencias/experiencias.jpg',
+            'Clases de cocina': 'img/experiencias/experiencias2.jpg',
+            'Clases de fotografía': 'img/experiencias/experiencias3.jpg',
+            'Canopy': 'img/experiencias/experiencias4.jpg',
+            'Clases de baile': 'img/experiencias/experiencias5.png',
+            'default': 'img/experiencias/experiencias.jpg'
+        }
         title = "Vive momentos que dejan huella"
         subtitle = "Sumérgete en experiencias que transformarán tu vida"
-        items = experiences
         banner = 'img/experiencias/experiencias.jpg'
-        sections = [
-            {'title': 'Experiencias cerca de ti', 'items': experiences},
-            {'title': 'Para el fin de semana', 'items': experiences},
-            {'title': 'Actividades en Tamarindo', 'items': experiences},
-            {'title': 'Las más valoradas', 'items': experiences},
-        ]
+
     elif tipo == 'services':
+        queryset = Service.objects.filter(status='Aprobado')[:5]
+        image_dict = {
+            'Catering': 'img/servicios/servicios.jpg',
+            'Spa': 'img/servicios/servicios2.jpeg',
+            'Masajes': 'img/servicios/servicios3.jpg',
+            'Maquillaje': 'img/servicios/servicios4.jpg',
+            'Chef personal': 'img/servicios/servicios5.jpg',
+            'default': 'img/servicios/servicios.jpg'
+        }
         title = "Cuida tu cuerpo, tu tiempo y tu espacio"
         subtitle = "Servicios pensados para tu bienestar, productividad y comodidad personal"
-        items = services
         banner = 'img/servicios/servicios.jpg'
-        sections = [
-            {'title': 'Servicios cerca de ti', 'items': services},
-            {'title': 'Disponibles este fin de semana', 'items': services},
-            {'title': 'Servicios en Tamarindo', 'items': services},
-            {'title': 'Mejor valorados', 'items': services},
-        ]
+
     else:
         raise Http404("Tipo de listado no válido")
+
+    cards = [build_card(obj, image_dict, tipo) for obj in queryset]
+
+    sections = [
+        {'title': 'Cerca de ti', 'items': cards},
+        {'title': 'Disponibles el próximo fin de semana', 'items': cards},
+        {'title': 'Te podrían gustar', 'items': cards},
+        {'title': 'Mejor valorados', 'items': cards},
+    ]
 
     return render(request, 'listings.html', {
         'title': title,
         'subtitle': subtitle,
-        'items': items,
+        'items': cards,
         'banner': banner,
-        'favorites': favorites,
-        'experiences': experiences,
-        'services': services,
         'sections': sections,
     })
