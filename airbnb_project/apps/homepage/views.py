@@ -30,17 +30,17 @@ def homepage(request):
 
     accomodation_images = {
         'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
-        'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
+        'Casa Don Quijote': 'img/alojamientos/alojamientos2.jpg',
         'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
         'Villa en Cahuita': 'img/alojamientos/alojamientos4.jpeg',
-        'Apartamento en Jacó': 'img/alojamientos/alojamientos3.jpg',
+        'Apartamento en Liberia': 'img/alojamientos/alojamientos3.jpg',
         'default': 'img/alojamientos/alojamientos.jpg'
     }
 
     activity_images = {
         'Tour en bote': 'img/experiencias/experiencias.jpg',
         'Clases de cocina': 'img/experiencias/experiencias2.jpg',
-        'Clases de fotografía': 'img/experiencias/experiencias3.jpg',
+        'Clases de fotografia': 'img/experiencias/experiencias3.jpg',
         'Canopy': 'img/experiencias/experiencias4.jpg',
         'Clases de baile': 'img/experiencias/experiencias5.png',
         'default': 'img/experiencias/experiencias.jpg'
@@ -71,7 +71,7 @@ def homepage(request):
             'title': item.name,
             'price': f"₡{getattr(item, 'price', getattr(item, 'price_per_night', 0)):,}",
             'rating': f"{getattr(item, 'rating', 4.5):.1f}",
-            'link': reverse('listing', kwargs={'tipo': 'accomodations'})
+            'link': reverse('detail', kwargs={'tipo': tipo, 'id': item.id})
         }
 
     accommodations_cards = [build_card(p, accomodation_images, accomodation_images['default']) for p in accommodations]
