@@ -9,9 +9,6 @@ from apps.core.models import (
     Accommodation, Service, Activity
 )
 
-def payment(request):
-  return render(request, 'payment/payment.html')
-
 class CreateCheckoutSessionView(View):
     def post(self, request, *args, **kwargs):
         stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -65,16 +62,15 @@ class CreateCheckoutSessionView(View):
                     'quantity': 1,
                 })
 
-        #TODO: cambiar los urls a los del carrito
         if not line_items:
-            return redirect(YOUR_DOMAIN + '/payment/')
+            return redirect(YOUR_DOMAIN + '/cart/')
 
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',
-            success_url=YOUR_DOMAIN + '/payment/',
-            cancel_url=YOUR_DOMAIN + '/homepage/',
+            success_url=YOUR_DOMAIN + '/cart/',
+            cancel_url=YOUR_DOMAIN + '/cart/',
         )
 
         return redirect(checkout_session.url, code=303)
