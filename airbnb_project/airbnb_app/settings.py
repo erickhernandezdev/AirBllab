@@ -68,11 +68,12 @@ INSTALLED_APPS = [
     'apps.core',
     'apps.admin_panel',
     'apps.new_proposal',
-    'apps.my_publications',
+    'apps.core',
     'apps.homepage',
     'apps.listings',
     'apps.login',
     'apps.cart',
+    'apps.my_publications',
 ]
 
 MIDDLEWARE = [

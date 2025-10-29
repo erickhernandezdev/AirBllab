@@ -29,6 +29,10 @@ python manage.py createsuperuser
 
 # Ejecutar el servidor
 python manage.py runserver
+
+# Para salirse del venv
+deactivate
+
 ```
 
 Se accede al sistema con los siguientes links:
