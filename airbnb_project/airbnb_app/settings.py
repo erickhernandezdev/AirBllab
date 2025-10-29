@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 #import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
@@ -21,10 +22,9 @@ except Exception:
     # or simply not installed. Fall back to os.getenv usage in that case.
     environ = None
 
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
@@ -33,6 +33,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
@@ -55,18 +58,21 @@ INSTALLED_APPS = [
     #'django_otp.plugins.otp_totp',
     #'django_otp.plugins.otp_static',
     #'two_factor',
-    #'axes', # Esto es para limitar intentos de login fallidos
+    'axes',
 
     # Apps
     'apps.users',
     'apps.properties',
     'apps.bookings',
-    'apps.payments',
+    'apps.payment',
+    'apps.core',
     'apps.admin_panel',
     'apps.new_proposal',
     'apps.core',
     'apps.homepage',
     'apps.listings',
+    'apps.login',
+    'apps.cart',
     'apps.my_publications',
 ]
 
@@ -79,7 +85,7 @@ MIDDLEWARE = [
     #'django_otp.middleware.OTPMiddleware', # Para 2FA Middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
+    'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
 ]
 
 ROOT_URLCONF = 'airbnb_app.urls'
@@ -125,7 +131,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'core.CustomUser'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -171,14 +177,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CONFIGURACIONES DE SEGURIDAD ADICIONALES
 
 # Configuración para django-two-factor-auth
-LOGIN_URL = 'admin:login'
-LOGIN_REDIRECT_URL = 'home'
+LOGIN_URL = '/account/login/'
+LOGIN_REDIRECT_URL = '/homepage/'
+LOGOUT_REDIRECT_URL = '/homepage/'
 #TWO_FACTOR_PATCH_ADMIN = True
 
 # Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
-    # 'axes.backends.AxesBackend',  # Comentado: activar cuando 'axes' esté en INSTALLED_APPS
-    #'axes.backends.AxesStandaloneBackend',
+    'axes.backends.AxesBackend',
+    'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
