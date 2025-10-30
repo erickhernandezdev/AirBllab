@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
 STATUS_CHOICES = [
     ('Aprobado', 'Aprobado'),
@@ -14,22 +15,65 @@ class UserRole(models.Model):
         return self.name
 
 class CustomUser(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = 'ADMIN', _('Administrador')
+        USER = 'USER', _('Usuario normal')
+    
     user_id = models.AutoField(primary_key=True)
-    identity_document = models.CharField(max_length=20)
+    identity_document = models.CharField(max_length=20, blank=True)
     name = models.CharField(max_length=100)
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     user_role = models.ForeignKey(UserRole, on_delete=models.CASCADE, null=True, blank=True)
+    role = models.CharField(
+        max_length=10,
+        choices=Role.choices,
+        default=Role.USER,
+        help_text='Rol del usuario en el sistema'
+    )
     date_of_birth = models.DateField(null=True, blank=True)
     contact_phone = models.CharField(max_length=20, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Campos para auditoría de seguridad
+    last_login_ip = models.GenericIPAddressField(null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
+    
+    # related_name personalizado para evitar conflictos
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='groups',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        related_name='core_customuser_set',
+        related_query_name='user',
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='user permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        related_name='core_customuser_set',
+        related_query_name='user'
+    )
 
     def __str__(self):
-        return self.name
+        return self.name or self.username
+    
+    @property
+    def is_admin(self):
+        """Retorna True si el usuario tiene rol de administrador"""
+        return self.role == self.Role.ADMIN
+    
+    class Meta:
+        permissions = [
+            ("can_approve_properties", "Puede aprobar propiedades"),
+            ("can_manage_users", "Puede gestionar usuarios"),
+        ]
 
 class AccommodationType(models.Model):
     name = models.CharField(max_length=50)
