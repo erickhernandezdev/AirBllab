@@ -3,8 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
-from apps.properties.models import Property, Activity
-from apps.users.models import CustomUser
+from apps.core.models import Accommodation, Activity, Service, CustomUser
 from .models import ApprovalLog
 
 def admin_required(view_func):
@@ -12,7 +11,7 @@ def admin_required(view_func):
   def _wrapped_view(request, *args, **kwargs):
     if not request.user.is_authenticated or request.user.role != 'ADMIN':
       messages.error(request, "No tienes permisos para acceder a esta sección.")
-      return redirect('home')
+      return redirect('homepage')
     return view_func(request, *args, **kwargs)
   return _wrapped_view
 
@@ -22,10 +21,12 @@ def admin_dashboard(request):
   # Estadísticas
   stats = {
     'total_users': CustomUser.objects.count(),
-    'total_properties': Property.objects.count(),
+    'total_accommodations': Accommodation.objects.count(),
     'total_activities': Activity.objects.count(),
-    'pending_properties': Property.objects.filter(is_approved=False).count(),
-    'pending_activities': Activity.objects.filter(is_approved=False).count(),
+    'total_services': Service.objects.count(),
+    'pending_accommodations': Accommodation.objects.filter(status='Pendiente').count(),
+    'pending_activities': Activity.objects.filter(status='Pendiente').count(),
+    'pending_services': Service.objects.filter(status='Pendiente').count(),
     'recent_approvals': ApprovalLog.objects.order_by('-created_at')[:5]
   }
   
@@ -33,13 +34,15 @@ def admin_dashboard(request):
 
 @admin_required
 def pending_approval_list(request):
-  """Lista de propiedades y actividades pendientes de aprobación"""
-  pending_properties = Property.objects.filter(is_approved=False)
-  pending_activities = Activity.objects.filter(is_approved=False)
+  """Lista de alojamientos, actividades y servicios pendientes de aprobación"""
+  pending_accommodations = Accommodation.objects.filter(status='Pendiente')
+  pending_activities = Activity.objects.filter(status='Pendiente')
+  pending_services = Service.objects.filter(status='Pendiente')
   
   context = {
-    'pending_properties': pending_properties,
-    'pending_activities': pending_activities
+    'pending_accommodations': pending_accommodations,
+    'pending_activities': pending_activities,
+    'pending_services': pending_services
   }
 
   return render(request, 'admin_panel/pending_approval.html', context)
@@ -47,23 +50,28 @@ def pending_approval_list(request):
 @admin_required
 def approval_detail(request, item_type, item_id):
   """Detalle de un item para aprobación/rechazo"""
-  if item_type == 'property':
-    item = get_object_or_404(Property, id=item_id)
-    template = 'admin_panel/approval_property_detail.html'
+  if item_type == 'accommodation':
+    item = get_object_or_404(Accommodation, id=item_id)
+    template = 'admin_panel/approval_accommodation_detail.html'
   elif item_type == 'activity':
     item = get_object_or_404(Activity, id=item_id)
     template = 'admin_panel/approval_activity_detail.html'
+  elif item_type == 'service':
+    item = get_object_or_404(Service, id=item_id)
+    template = 'admin_panel/approval_service_detail.html'
   else:
     messages.error(request, "Tipo de ítem inválido.")
-    return redirect('admin_pending_approval')
+    return redirect('admin_panel:admin_pending_approval')
 
-  # Obetener historial de aprobaciones
+  # Obtener historial de aprobaciones
   approval_logs = ApprovalLog.objects.filter(
-    Q(property=item) if item_type == 'property' else Q(activity=item)
+    Q(accommodation=item) if item_type == 'accommodation' 
+    else Q(activity=item) if item_type == 'activity' 
+    else Q(service=item)
   ).order_by('-created_at')
 
   context = {
-    'item' : item,
+    'item': item,
     'item_type': item_type,
     'approval_logs': approval_logs
   }
@@ -72,20 +80,20 @@ def approval_detail(request, item_type, item_id):
 
 @admin_required
 def approve_item(request, item_type, item_id):
-  """Aprobar un item (propiedad o actividad)"""
+  """Aprobar un item (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
-    if item_type == 'property':
-      item = get_object_or_404(Property, id=item_id)
+    if item_type == 'accommodation':
+      item = get_object_or_404(Accommodation, id=item_id)
     elif item_type == 'activity':
       item = get_object_or_404(Activity, id=item_id)
+    elif item_type == 'service':
+      item = get_object_or_404(Service, id=item_id)
     else:
       messages.error(request, "Tipo de ítem inválido.")
-      return redirect('admin_pending_approval')
+      return redirect('admin_panel:admin_pending_approval')
     
     # Aprobar el item
-    item.is_approved = True
-    item.approved_by = request.user
-    item.approved_at = timezone.now()
+    item.status = 'Aprobado'
     item.save()
 
     # Crear registro en el log
@@ -95,65 +103,73 @@ def approve_item(request, item_type, item_id):
       'notes': request.POST.get('notes', '')
     }
 
-    if item_type == 'property':
-      approval_data['property'] = item
-    else:
+    if item_type == 'accommodation':
+      approval_data['accommodation'] = item
+    elif item_type == 'activity':
       approval_data['activity'] = item
+    else:
+      approval_data['service'] = item
 
     ApprovalLog.objects.create(**approval_data)
 
-    messages.success(request, f"{item_type.capitalize()} aprobado exitosamente!")
-    return redirect('admin_pending_approval')
+    messages.success(request, f"{item_type.capitalize()} '{item.name}' aprobado exitosamente!")
+    return redirect('admin_panel:admin_pending_approval')
   
-  return redirect('admin_pending_approval')
+  return redirect('admin_panel:admin_pending_approval')
 
 @admin_required
 def reject_item(request, item_type, item_id):
-  """Rechazar un item (propiedad o actividad)"""
+  """Rechazar un item (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
-    if item_type == 'property':
-      item = get_object_or_404(Property, id=item_id)
+    if item_type == 'accommodation':
+      item = get_object_or_404(Accommodation, id=item_id)
     elif item_type == 'activity':
       item = get_object_or_404(Activity, id=item_id)
+    elif item_type == 'service':
+      item = get_object_or_404(Service, id=item_id)
     else:
       messages.error(request, "Tipo de ítem inválido.")
-      return redirect('admin_pending_approval')
+      return redirect('admin_panel:admin_pending_approval')
     
     notes = request.POST.get('notes', 'Razón no especificada')
 
-    # Crear registro en el log antes de eliminar
+    # Crear registro en el log antes de actualizar el estado
     approval_data = {
       'admin_user': request.user,
       'status': 'rejected',
       'notes': notes
     }
 
-    if item_type == 'property':
-      approval_data['property'] = item
-    else:
+    if item_type == 'accommodation':
+      approval_data['accommodation'] = item
+    elif item_type == 'activity':
       approval_data['activity'] = item
+    else:
+      approval_data['service'] = item
 
     ApprovalLog.objects.create(**approval_data)
 
-    item_name = item.name
-    item.delete()
+    # Actualizar estado a Rechazado en lugar de eliminar
+    item.status = 'Rechazado'
+    item.save()
 
-    messages.warning(request, f"{item_type.capitalize()} '{item_name}' rechazado y eliminado.")
-    return redirect('admin_pending_approval')
+    item_name = item.name
+    messages.warning(request, f"{item_type.capitalize()} '{item_name}' ha sido rechazado.")
+    return redirect('admin_panel:admin_pending_approval')
   
-  return redirect('admin_pending_approval')
+  return redirect('admin_panel:admin_pending_approval')
 
 @admin_required
 def user_list(request):
   """Lista de todos los usuarios registrados"""
-  users = CustomUser.objects.all().order_by('-date_joined')
+  users = CustomUser.objects.all().order_by('-created_at')
 
   # Estadísticas de usuarios
   user_stats = {
     'total': users.count(),
     'admins': users.filter(role='ADMIN').count(),
     'regular_users': users.filter(role='USER').count(),
-    'active_today': users.filter(last_login__date=timezone.now().date()).count()
+    'active_today': users.filter(last_login__date=timezone.now().date()).count() if users.filter(last_login__isnull=False).exists() else 0
   }
 
   context = {
