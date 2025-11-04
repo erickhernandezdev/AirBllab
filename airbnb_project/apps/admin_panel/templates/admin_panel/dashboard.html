@@ -1,76 +1,126 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Administrador - Airbnb</title>
-  <style>
-    .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-    .stat-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
-    .stat-number { font-size: 2em; font-weight: bold; color: #2c3e50; }
-    .stat-label { color: #7f8c8d; margin-top: 5px; }
-    .pending { color: #e74c3c; }
-    .approved { color: #27ae60; }
-    .nav-menu { background: #34495e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    .nav-menu a { color: white; text-decoration: none; margin-right: 20px; padding: 10px 15px; border-radius: 4px; }
-    .nav-menu a:hover { background: #2c3e50; }
-  </style>
-</head>
-<body>
-  <div class="dashboard-container">
-    <h1>Panel de Administración - Airbnb</h1>
-    
-    <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
-      <a href="{% url 'admin_panel:admin_pending_approval' %}">Pendientes de Aprobación</a>
-      <a href="{% url 'admin_panel:admin_user_list' %}">Usuarios Registrados</a>
-      <a href="{% url 'home' %}">Volver al Sitio</a>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Administrador - Airbnb</title>
+    <style>
+      .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .stat-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .stat-number {
+        font-size: 2em;
+        font-weight: bold;
+        color: #2c3e50;
+      }
+      .stat-label {
+        color: #7f8c8d;
+        margin-top: 5px;
+      }
+      .pending {
+        color: #e74c3c;
+      }
+      .approved {
+        color: #27ae60;
+      }
+      .nav-menu {
+        background: #34495e;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        margin-right: 20px;
+        padding: 10px 15px;
+        border-radius: 4px;
+      }
+      .nav-menu a:hover {
+        background: #2c3e50;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <h1>Panel de Administración - Airbnb</h1>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.total_users }}</div>
-        <div class="stat-label">Usuarios Totales</div>
+      <div class="nav-menu">
+        <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin_panel:admin_pending_approval' %}"
+          >Pendientes de Aprobación</a
+        >
+        <a href="{% url 'admin_panel:admin_user_list' %}"
+          >Usuarios Registrados</a
+        >
+        <a href="{% url 'homepage' %}">Volver al Sitio</a>
       </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.total_properties }}</div>
-        <div class="stat-label">Propiedades Totales</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.total_activities }}</div>
-        <div class="stat-label">Actividades Totales</div>
-      </div>
-      <div class="stat-card pending">
-        <div class="stat-number">{{ stats.pending_properties }}</div>
-        <div class="stat-label">Propiedades Pendientes</div>
-      </div>
-      <div class="stat-card pending">
-        <div class="stat-number">{{ stats.pending_activities }}</div>
-        <div class="stat-label">Actividades Pendientes</div>
-      </div>
-    </div>
 
-    <div class="recent-activity">
-      <h2>Actividad Reciente de Aprobaciones</h2>
-      {% if stats.recent_approvals %}
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_users }}</div>
+          <div class="stat-label">Usuarios Totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_accommodations }}</div>
+          <div class="stat-label">Alojamientos Totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_activities }}</div>
+          <div class="stat-label">Actividades Totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">{{ stats.total_services }}</div>
+          <div class="stat-label">Servicios Totales</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-number">{{ stats.pending_accommodations }}</div>
+          <div class="stat-label">Alojamientos Pendientes</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-number">{{ stats.pending_activities }}</div>
+          <div class="stat-label">Actividades Pendientes</div>
+        </div>
+        <div class="stat-card pending">
+          <div class="stat-number">{{ stats.pending_services }}</div>
+          <div class="stat-label">Servicios Pendientes</div>
+        </div>
+      </div>
+
+      <div class="recent-activity">
+        <h2>Actividad Reciente de Aprobaciones</h2>
+        {% if stats.recent_approvals %}
         <ul>
-        {% for approval in stats.recent_approvals %}
+          {% for approval in stats.recent_approvals %}
           <li>
-            <strong>{{ approval.get_status_display }}</strong> - 
-            {% if approval.property %}
-              {{ approval.property.name }}
-            {% elif approval.activity %}
-              {{ approval.activity.name }}
-            {% endif %}
-            <small>({{ approval.created_at|date:"M d, Y H:i" }})</small>
+            <strong>{{ approval.get_status_display }}</strong> - {{
+            approval.item_name }}
+            <small
+              >({{ approval.created_at|date:"M d, Y H:i" }} - por {{
+              approval.admin_user.username }})</small
+            >
           </li>
-        {% endfor %}
+          {% endfor %}
         </ul>
-      {% else %}
+        {% else %}
         <p>No hay actividad reciente de aprobaciones.</p>
-      {% endif %}
+        {% endif %}
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
