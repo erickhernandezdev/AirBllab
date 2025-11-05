@@ -13,6 +13,8 @@ class UserRole(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        db_table = 'users"."roles'
 
 class CustomUser(AbstractUser):
     class Role(models.TextChoices):
@@ -74,6 +76,7 @@ class CustomUser(AbstractUser):
             ("can_approve_properties", "Puede aprobar propiedades"),
             ("can_manage_users", "Puede gestionar usuarios"),
         ]
+        db_table = 'users"."users'
 
 class AccommodationType(models.Model):
     name = models.CharField(max_length=50)
@@ -81,6 +84,8 @@ class AccommodationType(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        db_table = 'experiences_types"."accommodation_types'
 
 class ActivityType(models.Model):
     name = models.CharField(max_length=50)
@@ -88,6 +93,8 @@ class ActivityType(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        db_table = 'experiences_types"."activity_types'
 
 class ServiceType(models.Model):
     name = models.CharField(max_length=50)
@@ -95,6 +102,8 @@ class ServiceType(models.Model):
 
     def __str__(self):
         return self.name
+    class Meta:
+        db_table = 'experiences_types"."service_types'
 
 class Accommodation(models.Model):
     host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -109,6 +118,9 @@ class Accommodation(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'experiences"."accommodations'
+
 class Reservation(models.Model):
     guest = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
@@ -116,6 +128,9 @@ class Reservation(models.Model):
     end_date = models.DateField(null=True, blank=True)
     status = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'reservations"."reservations'
 
 class Service(models.Model):
     host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -125,6 +140,9 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+
+    class Meta:
+        db_table = 'experiences"."services'
 
 class Activity(models.Model):
     host = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
@@ -136,12 +154,18 @@ class Activity(models.Model):
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
+    class Meta:
+        db_table = 'experiences"."activities'
+
 class ReservationActivity(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
+
+    class Meta:
+        db_table = 'reservations"."reservation_activities'
 
 class ReservationService(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
@@ -150,17 +174,29 @@ class ReservationService(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 
+    class Meta:
+        db_table = 'reservations"."reservation_services'
+
 class Cart(models.Model):
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='cart')
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
+
+    class Meta:
+        db_table = 'carts"."carts'
 
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'carts"."cart_activities'
+
 class CartService(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'carts"."cart_services'
 
 class Invoice(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
@@ -168,8 +204,14 @@ class Invoice(models.Model):
     payment_method = models.CharField(max_length=50)
     paid_at = models.DateTimeField()
 
+    class Meta:
+        db_table = 'invoices"."invoices'
+
 class InvoiceItem(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     total = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        db_table = 'invoices"."invoice_items'

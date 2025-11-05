@@ -115,14 +115,27 @@ WSGI_APPLICATION = 'airbnb_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.postgresql'
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        #'NAME': env('DB_NAME', default='airbnb_dev'),
-        #'USER': env('DB_USER', default='airbnb_user'),
-        #'PASSWORD': env('DB_PASSWORD', default='airbnb_password'),
-        #'HOST': env('DB_HOST', default='localhost'),
-        #'PORT': env('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'airbnb_db',
+        'USER': 'airbnb_admin',
+        'PASSWORD': 'AirbnbAdmin25!',
+        'HOST': '172.24.131.77',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
+        }
+    },
+
+    'airbnb_user': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'airbnb_db',
+        'USER': 'airbnb_user',
+        'PASSWORD': 'AirbnbUser25!',
+        'HOST': '172.24.131.77',
+        'PORT': '5432',
+        'OPTIONS': {
+            'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
+        }
     }
 }
 
