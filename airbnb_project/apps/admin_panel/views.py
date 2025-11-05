@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.db.models import Q
 from apps.core.models import Accommodation, Activity, Service, CustomUser
+from multifactor.decorators import multifactor_protected
 from .models import ApprovalLog
 
 def admin_required(view_func):
@@ -16,6 +17,7 @@ def admin_required(view_func):
   return _wrapped_view
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def admin_dashboard(request):
   """Dashboard principal del administrador"""
   # Estadísticas
@@ -33,6 +35,7 @@ def admin_dashboard(request):
   return render(request, 'admin_panel/dashboard.html', {'stats': stats})
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def pending_approval_list(request):
   """Lista de alojamientos, actividades y servicios pendientes de aprobación"""
   pending_accommodations = Accommodation.objects.filter(status='Pendiente')
@@ -48,6 +51,7 @@ def pending_approval_list(request):
   return render(request, 'admin_panel/pending_approval.html', context)
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def approval_detail(request, item_type, item_id):
   """Detalle de un item para aprobación/rechazo"""
   if item_type == 'accommodation':
@@ -79,6 +83,7 @@ def approval_detail(request, item_type, item_id):
   return render(request, template, context)
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def approve_item(request, item_type, item_id):
   """Aprobar un item (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
@@ -118,6 +123,7 @@ def approve_item(request, item_type, item_id):
   return redirect('admin_panel:admin_pending_approval')
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def reject_item(request, item_type, item_id):
   """Rechazar un item (alojamiento, actividad o servicio)"""
   if request.method == 'POST':
@@ -160,6 +166,7 @@ def reject_item(request, item_type, item_id):
   return redirect('admin_panel:admin_pending_approval')
 
 @admin_required
+@multifactor_protected(factors=1, user_filter={'role': 'ADMIN'}, max_age=60*60*24, advertise=True)
 def user_list(request):
   """Lista de todos los usuarios registrados"""
   users = CustomUser.objects.all().order_by('-created_at')
