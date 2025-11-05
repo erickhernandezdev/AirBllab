@@ -1,9 +1,274 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usuarios Registrados - Admin Airbnb</title>
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+  .container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 20px;
+  }
+
+  .admin-header {
+    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .admin-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+  }
+
+  .admin-header p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .nav-menu {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-menu a {
+    color: #667eea;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .nav-menu a:hover {
+    background: #f0f4ff;
+    border-color: #667eea;
+  }
+
+  .nav-menu a.active {
+    background: #667eea;
+    color: white;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-left: 4px solid #8b5cf6;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+  }
+
+  .stat-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .table-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+  }
+
+  .user-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .user-table th,
+  .user-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .user-table th {
+    background: #f9fafb;
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .user-table tbody tr {
+    transition: background 0.2s;
+  }
+
+  .user-table tbody tr:hover {
+    background: #f9fafb;
+  }
+
+  .user-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .user-you {
+    background: #fef3c7 !important;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .badge-admin {
+    background: #dcfce7;
+    color: #166534;
+  }
+
+  .badge-user {
+    background: #dbeafe;
+    color: #1e40af;
+  }
+
+  .status-active {
+    color: #10b981;
+    font-weight: 600;
+  }
+
+  .status-inactive {
+    color: #ef4444;
+    font-weight: 600;
+  }
+
+  .user-name {
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .you-tag {
+    display: inline-block;
+    margin-left: 0.5rem;
+    padding: 0.125rem 0.5rem;
+    background: #fbbf24;
+    color: #78350f;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="admin-header">
+    <h1>👥 Usuarios Registrados</h1>
+    <p>Gestiona y monitorea todos los usuarios de la plataforma</p>
+  </div>
+
+  <div class="nav-menu">
+    <a href="{% url 'admin_panel:admin_dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'admin_panel:admin_pending_approval' %}">⏳ Pendientes de Aprobación</a>
+    <a href="{% url 'admin_panel:admin_user_list' %}" class="active">👥 Usuarios Registrados</a>
+    <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-number">{{ user_stats.total }}</div>
+      <div class="stat-label">Total Usuarios</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ user_stats.admins }}</div>
+      <div class="stat-label">Administradores</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ user_stats.regular_users }}</div>
+      <div class="stat-label">Usuarios Regulares</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{ user_stats.active_today }}</div>
+      <div class="stat-label">Activos Hoy</div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <table class="user-table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Fecha Registro</th>
+          <th>Último Login</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr {% if user == request.user %}class="user-you"{% endif %}>
+          <td>
+            <span class="user-name">{{ user.username }}</span>
+            {% if user == request.user %}
+              <span class="you-tag">TÚ</span>
+            {% endif %}
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge badge-{{ user.role|lower }}">
+              {% if user.role == 'ADMIN' %}🛡️ Admin{% else %}👤 Usuario{% endif %}
+            </span>
+          </td>
+          <td>{{ user.created_at|date:"d/m/Y" }}</td>
+          <td>
+            {% if user.last_login %}
+              {{ user.last_login|date:"d/m/Y H:i" }}
+            {% else %}
+              <span style="color: #9ca3af;">Nunca</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if user.is_active %}
+              <span class="status-active">● Activo</span>
+            {% else %}
+              <span class="status-inactive">● Inactivo</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
   <style>
     .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
     .nav-menu { background: #34495e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
