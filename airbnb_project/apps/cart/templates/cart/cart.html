@@ -1,12 +1,120 @@
-{% extends 'layout.html' %} {% load static %} {% block extra_head %}
-<link rel="stylesheet" href="{% static 'cart/styles.css'%}" />
-{% endblock %} {% block content %}
+{% extends 'layout.html' %}
+{% load static %}
 
-<div id="payment-form-container">
-  <form action="{% url 'checkout' %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Pagar con Stripe</button>
-  </form>
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'cart/cart.css' %}" />
+{% endblock %}
+
+{% block content %}
+{% if cart.accommodation or activities or services %}
+<div class="cart-container">
+  <div class="cart-section">
+    <div class="cart-header">
+      <h1>Tu carrito</h1>
+      <span class="item-count">1 ítem</span>
+    </div>
+
+    <form method="POST" action="{% url 'clear_cart' %}">
+      {% csrf_token %}
+      <button class="empty-cart-btn" type="submit">Vaciar carrito</button>
+    </form>
+
+    {% if cart.accommodation %}
+    <div class="cart-item">
+      <img src="{{ cart.accommodation.image.url }}" alt="Alojamiento" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Nombre:</strong> {{ cart.accommodation.name }}</p>
+        <p class="item-info"><strong>Fecha de entrada:</strong> {{ cart.start_date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+        <p class="item-info"><strong>Fecha de salida:</strong> {{ cart.end_date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ cart.price_total|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_from_cart' %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    {% for activity in activities %}
+    <div class="cart-item">
+      <img src="{{ activity.activity.image.url }}" alt="Actividad" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Actividad:</strong> {{ activity.activity.name }}</p>
+        <p class="item-info"><strong>Fecha:</strong> {{ activity.date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+        <p class="item-info"><strong>Cantidad:</strong> {{ activity.quantity }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ activity.total_price|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_activity' activity.id %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% for service in services %}
+    <div class="cart-item">
+      <img src="{{ service.service.image.url }}" alt="Servicio" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Servicio:</strong> {{ service.service.name }}</p>
+        <p class="item-info"><strong>Fecha:</strong> {{ service.date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ service.total_price|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_service' service.id %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="summary-section">
+    <h2>Resumen de compra</h2>
+
+    {% if cart.accommodation %}
+    <div class="summary-item">
+      <span>{{ cart.accommodation.name }}</span>
+      <span class="summary-price">₡{{ total_accommodation|floatformat:0 }}</span>
+    </div>
+    {% endif %}
+
+    {% for activity in activities %}
+    <div class="summary-item">
+      <span>{{ activity.activity.name }}</span>
+      <span class="summary-price">₡{{ activity.total_price|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+
+    {% for service in services %}
+    <div class="summary-item">
+      <span>{{ service.service.name }}</span>
+      <span class="summary-price">₡{{ service.total_price|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+
+    <div class="summary-divider"></div>
+
+    <div class="summary-total">
+      <span class="total-label">Total</span>
+      <span class="total-price">₡{{ grand_total|floatformat:0 }}</span>
+    </div>
+  </div>
 </div>
 
+  {% else %}
+  <div class="no-item">
+    <p> No tienes ningún elemento en tu carrito.</p>
+  </div>
+  {% endif %}
 {% endblock %}
