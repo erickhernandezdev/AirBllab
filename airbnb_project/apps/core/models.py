@@ -98,14 +98,12 @@ class Activity(models.Model):
 class ReservationActivity(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 
 class ReservationService(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 
@@ -120,10 +118,14 @@ class Cart(models.Model):
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    date = models.DateField(null=True)
 
 class CartService(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    date = models.DateField(null=True)
 
 class Invoice(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
