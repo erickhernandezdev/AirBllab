@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from dotenv import load_dotenv
-#import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
+
 try:
     import environ
 except Exception:
@@ -24,12 +24,11 @@ except Exception:
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
@@ -38,10 +37,10 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-
+#ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+ALLOWED_HOSTS = ['172.24.131.77', 'localhost', '127.0.0.1', 'vm_131-077.unac.ucr.ac.cr']
 
 # Application definition
 
@@ -81,7 +80,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django_otp.middleware.OTPMiddleware', # Para 2FA Middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
@@ -107,7 +105,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'airbnb_app.wsgi.application'
+	WSGI_APPLICATION = 'airbnb_app.wsgi.application'
 
 
 # Database
@@ -116,11 +114,11 @@ WSGI_APPLICATION = 'airbnb_app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'airbnb_db',
-        'USER': 'airbnb_admin',
-        'PASSWORD': 'AirbnbAdmin25!',
-        'HOST': '172.24.131.78',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'airbnb_db'),
+        'USER': os.getenv('DB_USER', 'airbnb_admin'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
         }
@@ -128,11 +126,11 @@ DATABASES = {
 
     'airbnb_user': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'airbnb_db',
-        'USER': 'airbnb_user',
-        'PASSWORD': 'AirbnbUser25!',
-        'HOST': '172.24.131.78',
-        'PORT': '5432',
+        'NAME': os.getenv('DB_NAME', 'airbnb_db'),
+        'USER': os.getenv('DB_USER_READONLY', 'airbnb_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD_READONLY'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
         }
@@ -151,7 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 12}, # mayor cantidad que la mínima por defecto
+        'OPTIONS': {'min_length': 12}, # more than default
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -166,11 +164,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'es-cr'
-
 TIME_ZONE = 'America/Costa_Rica'
-
 USE_I18N = True
-
 USE_TZ = True
 
 
@@ -181,34 +176,33 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# MEDIA_URL = '/media/'
+# MEDIA_ROOT = BASE_DIR / 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CONFIGURACIONES DE SEGURIDAD ADICIONALES
+# OTHER SECURITY CONFIGURATIONS
 
 # Configuración para django-two-factor-auth
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/homepage/'
 LOGOUT_REDIRECT_URL = '/homepage/'
-#TWO_FACTOR_PATCH_ADMIN = True
 
-# Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
     'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# Configuración de Axes
+# Axes configuration
 AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1  # en horas
+AXES_COOLOFF_TIME = 1  # hours
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_TEMPLATE = 'lockout.html'
 AXES_VERBOSE = True
-
-# Configuración de login para Axes
 AXES_LOGIN_URL = 'two_factor:login'
 AXES_USERNAME_FORM_FIELD = 'auth-username'
 
@@ -224,6 +218,11 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # Configuración de logs para auditoría
 LOGGING = {
     'version': 1,
@@ -232,23 +231,8 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'security.log',
+            'filename': BASE_DIR / 'logs/security.log',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file', 'console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'axes': {
-            'handlers': ['file'],
-            'level': 'WARNING',
-            'propagate': False,
-        },
-    },
-}
