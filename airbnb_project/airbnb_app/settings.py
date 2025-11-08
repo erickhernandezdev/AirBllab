@@ -119,7 +119,7 @@ DATABASES = {
         'NAME': 'airbnb_db',
         'USER': 'airbnb_admin',
         'PASSWORD': 'AirbnbAdmin25!',
-        'HOST': '172.24.131.77',
+        'HOST': '172.24.131.78',
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
@@ -131,7 +131,7 @@ DATABASES = {
         'NAME': 'airbnb_db',
         'USER': 'airbnb_user',
         'PASSWORD': 'AirbnbUser25!',
-        'HOST': '172.24.131.77',
+        'HOST': '172.24.131.78',
         'PORT': '5432',
         'OPTIONS': {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
