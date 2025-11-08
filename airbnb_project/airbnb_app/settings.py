@@ -105,7 +105,7 @@ TEMPLATES = [
     },
 ]
 
-	WSGI_APPLICATION = 'airbnb_app.wsgi.application'
+WSGI_APPLICATION = 'airbnb_app.wsgi.application'
 
 
 # Database
@@ -149,7 +149,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {'min_length': 12}, # more than default
+        'OPTIONS': {'min_length': 12}, # mayor cantidad que la mínima por defecto
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -164,8 +164,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'es-cr'
+
 TIME_ZONE = 'America/Costa_Rica'
+
 USE_I18N = True
+
 USE_TZ = True
 
 
@@ -176,33 +179,34 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# MEDIA_URL = '/media/'
-# MEDIA_ROOT = BASE_DIR / 'media'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# OTHER SECURITY CONFIGURATIONS
+# CONFIGURACIONES DE SEGURIDAD ADICIONALES
 
 # Configuración para django-two-factor-auth
 LOGIN_URL = '/account/login/'
 LOGIN_REDIRECT_URL = '/homepage/'
 LOGOUT_REDIRECT_URL = '/homepage/'
+#TWO_FACTOR_PATCH_ADMIN = True
 
+# Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
     'axes.backends.AxesBackend',
     'axes.backends.AxesStandaloneBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# Axes configuration
+# Configuración de Axes
 AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1  # hours
+AXES_COOLOFF_TIME = 1  # en horas
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_TEMPLATE = 'lockout.html'
 AXES_VERBOSE = True
+
+# Configuración de login para Axes
 AXES_LOGIN_URL = 'two_factor:login'
 AXES_USERNAME_FORM_FIELD = 'auth-username'
 
@@ -218,11 +222,6 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # Configuración de logs para auditoría
 LOGGING = {
     'version': 1,
@@ -231,8 +230,23 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/security.log',
+            'filename': BASE_DIR / 'security.log',
         },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'axes': {
+            'handlers': ['file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+    },
+}
