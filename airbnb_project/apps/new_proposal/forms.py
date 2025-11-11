@@ -17,8 +17,8 @@ class NewProposalForm(forms.Form):
     type = forms.ChoiceField(choices=TYPE_CHOICES, label='Tipo')
     subtype = forms.ChoiceField(choices=[], label='Subtipo')
     location = forms.CharField(max_length=100, required=False, label='Ubicación')
-    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible desde')
-    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible hasta')
+    start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible desde', required=False)
+    end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible hasta', required=False)
     price = forms.DecimalField(max_digits = 20, decimal_places = 2, min_value=0, label='Precio')
 
     def __init__(self, *args, **kwargs):
@@ -31,11 +31,11 @@ class NewProposalForm(forms.Form):
             self.fields['end_date'].widget.attrs.setdefault('min', today_iso)
 
         if selected_type == 'Alojamiento':
-            self.fields['subtype'].choices = [(a.name, a.name) for a in AccommodationType.objects.all()]
+            self.fields['subtype'].choices = [(a.name, a.name) for a in AccommodationType.objects.using('airbnb_user').all()]
         elif selected_type == 'Actividad':
-            self.fields['subtype'].choices = [(a.name, a.name) for a in ActivityType.objects.all()]
+            self.fields['subtype'].choices = [(a.name, a.name) for a in ActivityType.objects.using('airbnb_user').all()]
         elif selected_type == 'Servicio':
-            self.fields['subtype'].choices = [(s.name, s.name) for s in ServiceType.objects.all()]
+            self.fields['subtype'].choices = [(s.name, s.name) for s in ServiceType.objects.using('airbnb_user').all()]
         else:
             self.fields['subtype'].choices = []
 

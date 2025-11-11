@@ -48,7 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
       locationFieldWrapper.style.display = "block";
       startDateWrapper.style.display = "block";
       endDateWrapper.style.display = "block";
-    } else {
+    } else if (selectedType === "Actividad") {
+      locationFieldWrapper.style.display = "block";
+      startDateWrapper.style.display = "none";
+      endDateWrapper.style.display = "none";
+    } else if (selectedType === "Servicio") {
       locationFieldWrapper.style.display = "none";
       startDateWrapper.style.display = "none";
       endDateWrapper.style.display = "none";

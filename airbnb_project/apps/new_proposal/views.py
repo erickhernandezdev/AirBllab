@@ -23,11 +23,11 @@ def add_new_proposal(request):
 
             proposal_subtype = form.cleaned_data['subtype']
             if proposal_type == 'Alojamiento':
-                proposal_subtype = AccommodationType.objects.get(name=proposal_subtype)
+                proposal_subtype = AccommodationType.objects.using('airbnb_user').get(name=proposal_subtype)
             elif proposal_type == 'Actividad':
-                proposal_subtype = ActivityType.objects.get(name=proposal_subtype)
+                proposal_subtype = ActivityType.objects.using('airbnb_user').get(name=proposal_subtype)
             else:
-                proposal_subtype = ServiceType.objects.get(name=proposal_subtype)
+                proposal_subtype = ServiceType.objects.using('airbnb_user').get(name=proposal_subtype)
 
             if proposal_type == 'Alojamiento':
                 new_accommodation = Accommodation(
@@ -41,7 +41,7 @@ def add_new_proposal(request):
                     available_to=end_date,
                     status='Pendiente'
                 )
-                new_accommodation.save()
+                new_accommodation.save(using='airbnb_user')
 
             elif proposal_type == 'Actividad':
                 new_activity = Activity(
@@ -53,7 +53,7 @@ def add_new_proposal(request):
                     price=price,
                     status='Pendiente'
                 )
-                new_activity.save()
+                new_activity.save(using='airbnb_user')
 
             else:
                 new_service = Service(
@@ -64,7 +64,7 @@ def add_new_proposal(request):
                     price=price,
                     status='Pendiente'
                 )
-                new_service.save()
+                new_service.save(using='airbnb_user')
 
             messages.success(request, "¡Propuesta enviada con éxito!")
             return redirect('my_publications')

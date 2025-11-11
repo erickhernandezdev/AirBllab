@@ -21,6 +21,7 @@ class ApprovalLog(models.Model):
   class Meta:
     verbose_name = 'Registro de Aprobación'
     verbose_name_plural = 'Registros de Aprobación'
+    db_table = 'experiences"."approval_log'
 
   def __str__(self):
     if self.accommodation:
