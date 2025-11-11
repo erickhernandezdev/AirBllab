@@ -3,6 +3,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'cart/cart.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}
 
 {% block content %}
@@ -109,12 +110,28 @@
       <span class="total-label">Total</span>
       <span class="total-price">₡{{ grand_total|floatformat:0 }}</span>
     </div>
+    <form action="{% url 'checkout' %}" method="POST">
+      {% csrf_token %}
+      <button type="submit" class="pay-button">Pagar</button>
+    </form>
   </div>
 </div>
 
-  {% else %}
-  <div class="no-item">
-    <p> No tienes ningún elemento en tu carrito.</p>
-  </div>
-  {% endif %}
+{% else %}
+<div class="no-item">
+  <p> No tienes ningún elemento en tu carrito.</p>
+</div>
+{% endif %}
+
+{% if message %}
+<script>
+  Swal.fire({
+    icon: '{% if "éxito" in message %}success{% elif "cancelado" in message %}error{% else %}info{% endif %}',
+    title: '{{ message }}',
+    timer: 5000,
+    showConfirmButton: false
+  });
+</script>
+{% endif %}
+
 {% endblock %}
