@@ -16,7 +16,7 @@ def build_card(obj, image_dict, tipo):
 
 def listings_view(request, tipo):
     if tipo == 'accomodations':
-        queryset = Accommodation.objects.filter(status='Aprobado')[:5]
+        queryset = Accommodation.objects.using('airbnb_user').filter(status='Aprobado')[:5]
         image_dict = {
             'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
             'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
@@ -30,7 +30,7 @@ def listings_view(request, tipo):
         banner = 'img/alojamientos/alojamientos.jpg'
 
     elif tipo == 'experiences':
-        queryset = Activity.objects.filter(status='Aprobado')[:5]
+        queryset = Activity.objects.using('airbnb_user').filter(status='Aprobado')[:5]
         image_dict = {
             'Tour en bote': 'img/experiencias/experiencias.jpg',
             'Clases de cocina': 'img/experiencias/experiencias2.jpg',
@@ -44,7 +44,7 @@ def listings_view(request, tipo):
         banner = 'img/experiencias/experiencias.jpg'
 
     elif tipo == 'services':
-        queryset = Service.objects.filter(status='Aprobado')[:5]
+        queryset = Service.objects.using('airbnb_user').filter(status='Aprobado')[:5]
         image_dict = {
             'Catering': 'img/servicios/servicios.jpg',
             'Spa': 'img/servicios/servicios2.jpeg',

@@ -60,8 +60,6 @@ INSTALLED_APPS = [
     'axes',
 
     # Apps
-    'apps.users',
-    'apps.properties',
     'apps.bookings',
     'apps.payment',
     'apps.core',
@@ -136,6 +134,8 @@ DATABASES = {
         }
     }
 }
+
+DATABASE_ROUTERS = ['db_routers.DataBaseRouter']
 
 
 # Password validation
