@@ -118,6 +118,7 @@
         if (selectedDates.length === 1) {
           const start = selectedDates[0];
           instance.set("disable", [
+            ...blockedDates,
             function (date) {
               return date < start;
             }
