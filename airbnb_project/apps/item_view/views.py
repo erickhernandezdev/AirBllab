@@ -1,5 +1,6 @@
+import json
 from django.shortcuts import render, get_object_or_404
-from apps.core.models import Accommodation, Service, Activity, Reservation
+from apps.core.models import Accommodation, Service, Activity, Reservation, ReservationService, ReservationActivity
 from django.utils.dateformat import format
 from datetime import timedelta
 
@@ -24,6 +25,18 @@ def item_view(request, tipo, id):
             while current <= r.end_date:
                 blocked.append(format(current, 'Y-m-d'))
                 current += timedelta(days=1)
+
+    elif tipo == 'services':
+        reservations = ReservationService.objects.filter(service=item)
+        for r in reservations:
+            blocked.append(format(r.date, 'Y-m-d'))
+
+    elif tipo == 'experiences':
+        reservations = ReservationActivity.objects.filter(activity=item)
+        for r in reservations:
+            blocked.append(format(r.date, 'Y-m-d'))
+
+    blocked = sorted(set(blocked))
 
     return render(request, 'item_view.html', {
         'item': item,
