@@ -3,7 +3,7 @@ from django.views import View
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_date
-from apps.core.models import Cart, CartActivity, CartService, Reservation, Invoice, InvoiceItem, ReservationActivity, ReservationService
+from apps.core.models import Cart, CartActivity, CartService, Reservation, Invoice, InvoiceItem, ReservationActivity, ReservationService, Accommodation, Service, Activity
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
@@ -88,11 +88,16 @@ def checkout(request):
         payment_token = str(uuid.uuid4())
         user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
         cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
+        
+        accommodation = None
+        if cart.accommodation_id:
+            accommodation = Accommodation.objects.using(DB_ALIAS).get(pk=cart.accommodation_id)
+
 
         if cart:
             reservation = Reservation.objects.using(DB_ALIAS).create(
                 guest=user,
-                accommodation=cart.accommodation,
+                accommodation=accommodation,
                 start_date=cart.start_date,
                 end_date=cart.end_date,
                 status="CONFIRMED"
@@ -106,6 +111,8 @@ def checkout(request):
             total_activities = sum(float(a.total_price) for a in activities_in_cart)
             grand_total = total_accommodation + total_services + total_activities
 
+            reservation = Reservation.objects.using(DB_ALIAS).get(pk=reservation.pk)
+            
             invoice = Invoice.objects.using(DB_ALIAS).create(
                 reservation=reservation,
                 amount=grand_total,
@@ -122,6 +129,7 @@ def checkout(request):
                 )
 
             for s in services_in_cart:
+                service_obj = Service.objects.using(DB_ALIAS).get(pk=s.service_id)
                 InvoiceItem.objects.using(DB_ALIAS).create(
                     invoice=invoice,
                     quantity=1,
@@ -130,12 +138,13 @@ def checkout(request):
                 )
                 ReservationService.objects.using(DB_ALIAS).create(
                     reservation=reservation,
-                    service=s.service,
+                    service=service_obj,
                     total_price=s.total_price,
                     date=s.date
                 )
 
             for a in activities_in_cart:
+                activity_obj = Activity.objects.using(DB_ALIAS).get(pk=a.activity_id)
                 InvoiceItem.objects.using(DB_ALIAS).create(
                     invoice=invoice,
                     quantity=1,
@@ -144,13 +153,13 @@ def checkout(request):
                 )
                 ReservationActivity.objects.using(DB_ALIAS).create(
                     reservation=reservation,
-                    activity=a.activity,
+                    activity=activity_obj,
                     total_price=a.total_price,
                     date=a.date
                 )
 
-            services_in_cart.delete()
-            activities_in_cart.delete()
+            services_in_cart.using(DB_ALIAS).delete()
+            activities_in_cart.using(DB_ALIAS).delete()
             cart.accommodation = None
             cart.start_date = None
             cart.end_date = None
@@ -223,7 +232,7 @@ class RemoveActivityView(LoginRequiredMixin, View):
         user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
         cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
         activity = get_object_or_404(CartActivity.objects.using(DB_ALIAS), pk=pk, cart=cart)
-        activity.delete()
+        activity.delete(using=DB_ALIAS)
         return redirect('cart')
 
 class RemoveServiceView(LoginRequiredMixin, View):
@@ -231,5 +240,5 @@ class RemoveServiceView(LoginRequiredMixin, View):
         user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
         cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
         service = get_object_or_404(CartService.objects.using(DB_ALIAS), pk=pk, cart=cart)
-        service.delete()
+        service.delete(using=DB_ALIAS)
         return redirect('cart')
