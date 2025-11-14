@@ -4,22 +4,26 @@ from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_date
 from apps.core.models import Cart, CartActivity, CartService, Reservation, Invoice, InvoiceItem, ReservationActivity, ReservationService
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
 from django.views.generic import TemplateView
 from django.utils import timezone
 from datetime import date
+User = get_user_model()
+DB_ALIAS = 'airbnb_user'
 
 class CartView(LoginRequiredMixin, TemplateView):
     template_name = 'cart/cart.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        cart = getattr(self.request.user, 'cart', None)
+        user = User.objects.using(DB_ALIAS).get(pk=self.request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
 
         if cart:
-            activities = CartActivity.objects.filter(cart=cart)
-            services = CartService.objects.filter(cart=cart)
+            activities = CartActivity.objects.using(DB_ALIAS).filter(cart=cart)
+            services = CartService.objects.using(DB_ALIAS).filter(cart=cart)
 
             total_accommodation = cart.price_total or 0
             total_activities = sum(float(a.total_price) for a in activities)
@@ -82,11 +86,12 @@ def checkout(request):
             return redirect("/cart?message=El pago fue rechazado: solo se aceptan tarjetas Visa")
 
         payment_token = str(uuid.uuid4())
-        cart = getattr(request.user, "cart", None)
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
 
         if cart:
-            reservation = Reservation.objects.create(
-                guest=request.user,
+            reservation = Reservation.objects.using(DB_ALIAS).create(
+                guest=user,
                 accommodation=cart.accommodation,
                 start_date=cart.start_date,
                 end_date=cart.end_date,
@@ -94,14 +99,14 @@ def checkout(request):
             )
 
             total_accommodation = cart.price_total or 0
-            services_in_cart = CartService.objects.filter(cart=cart)
-            activities_in_cart = CartActivity.objects.filter(cart=cart)
+            services_in_cart = CartService.objects.using(DB_ALIAS).filter(cart=cart)
+            activities_in_cart = CartActivity.objects.using(DB_ALIAS).filter(cart=cart)
 
             total_services = sum(float(s.total_price) for s in services_in_cart)
             total_activities = sum(float(a.total_price) for a in activities_in_cart)
             grand_total = total_accommodation + total_services + total_activities
 
-            invoice = Invoice.objects.create(
+            invoice = Invoice.objects.using(DB_ALIAS).create(
                 reservation=reservation,
                 amount=grand_total,
                 payment_method=f"Card-{payment_token}",
@@ -109,7 +114,7 @@ def checkout(request):
             )
 
             if cart.accommodation:
-                InvoiceItem.objects.create(
+                InvoiceItem.objects.using(DB_ALIAS).create(
                     invoice=invoice,
                     quantity=cart.nights or 1,
                     unit_price=cart.price_total or 0,
@@ -117,13 +122,13 @@ def checkout(request):
                 )
 
             for s in services_in_cart:
-                InvoiceItem.objects.create(
+                InvoiceItem.objects.using(DB_ALIAS).create(
                     invoice=invoice,
                     quantity=1,
                     unit_price=s.total_price,
                     total=s.total_price
                 )
-                ReservationService.objects.create(
+                ReservationService.objects.using(DB_ALIAS).create(
                     reservation=reservation,
                     service=s.service,
                     total_price=s.total_price,
@@ -131,13 +136,13 @@ def checkout(request):
                 )
 
             for a in activities_in_cart:
-                InvoiceItem.objects.create(
+                InvoiceItem.objects.using(DB_ALIAS).create(
                     invoice=invoice,
                     quantity=1,
                     unit_price=a.total_price,
                     total=a.total_price
                 )
-                ReservationActivity.objects.create(
+                ReservationActivity.objects.using(DB_ALIAS).create(
                     reservation=reservation,
                     activity=a.activity,
                     total_price=a.total_price,
@@ -151,15 +156,15 @@ def checkout(request):
             cart.end_date = None
             cart.nights = None
             cart.price_total = None
-            cart.save()
+            cart.save(using=DB_ALIAS)
 
         return redirect(f"/cart?message=Pago realizado con éxito. Código: {payment_token}")
 
 class AddToCartView(LoginRequiredMixin, View):
     def post(self, request):
-        user = request.user
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
         data = request.POST
-        cart, created = Cart.objects.get_or_create(user=user)
+        cart, created = Cart.objects.using(DB_ALIAS).get_or_create(user=user)
 
         if 'accommodation_id' in data:
             cart.accommodation_id = data.get('accommodation_id')
@@ -167,10 +172,10 @@ class AddToCartView(LoginRequiredMixin, View):
             cart.end_date = parse_date(data.get('end_date'))
             cart.nights = int(data.get('nights', 0))
             cart.price_total = int(data.get('price_total', 0))
-            cart.save()
+            cart.save(using=DB_ALIAS)
 
         elif 'service_id' in data:
-            CartService.objects.create(
+            CartService.objects.using(DB_ALIAS).create(
                 cart=cart,
                 service_id=data.get('service_id'),
                 total_price=data.get('total_price'),
@@ -178,7 +183,7 @@ class AddToCartView(LoginRequiredMixin, View):
             )
 
         elif 'activity_id' in data:
-            CartActivity.objects.create(
+            CartActivity.objects.using(DB_ALIAS).create(
                 cart=cart,
                 activity_id=data.get('activity_id'),
                 total_price=data.get('total_price'),
@@ -189,36 +194,42 @@ class AddToCartView(LoginRequiredMixin, View):
 
 class ClearCartView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        cart = getattr(request.user, 'cart', None)
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
         if cart:
             cart.accommodation = None
             cart.start_date = None
             cart.end_date = None
             cart.nights = None
             cart.price_total = None
-            cart.save()
+            cart.save(using=DB_ALIAS)
         return redirect('cart')
 
 class RemoveFromCartView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
-        cart = getattr(request.user, 'cart', None)
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
         if cart:
             cart.accommodation = None
             cart.start_date = None
             cart.end_date = None
             cart.nights = None
             cart.price_total = None
-            cart.save()
+            cart.save(using=DB_ALIAS)
         return redirect('cart')
 
 class RemoveActivityView(LoginRequiredMixin, View):
     def post(self, request, pk):
-        activity = get_object_or_404(CartActivity, pk=pk, cart=request.user.cart)
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
+        activity = get_object_or_404(CartActivity.objects.using(DB_ALIAS), pk=pk, cart=cart)
         activity.delete()
         return redirect('cart')
-    
+
 class RemoveServiceView(LoginRequiredMixin, View):
     def post(self, request, pk):
-        service = get_object_or_404(CartService, pk=pk, cart=request.user.cart)
+        user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
+        cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
+        service = get_object_or_404(CartService.objects.using(DB_ALIAS), pk=pk, cart=cart)
         service.delete()
         return redirect('cart')

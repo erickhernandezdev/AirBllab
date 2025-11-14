@@ -31,7 +31,7 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
                 'quantity': 1,
             })
 
-        services_in_cart = CartService.objects.filter(cart__user=user)
+        services_in_cart = CartService.objects.using('airbnb_user').filter(cart__user=user)
         for cart_service in services_in_cart:
             if cart_service.service:
                 line_items.append({
@@ -45,7 +45,7 @@ class CreateCheckoutSessionView(LoginRequiredMixin, View):
                     'quantity': 1,
                 })
 
-        activities_in_cart = CartActivity.objects.filter(cart__user=user)
+        activities_in_cart = CartActivity.objects.using('airbnb_user').filter(cart__user=user)
         for cart_activity in activities_in_cart:
             if cart_activity.activity:
                 line_items.append({

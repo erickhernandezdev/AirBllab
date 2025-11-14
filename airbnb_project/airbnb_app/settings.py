@@ -12,9 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from dotenv import load_dotenv
-#import sys
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
+
 try:
     import environ
 except Exception:
@@ -24,12 +24,11 @@ except Exception:
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 load_dotenv(os.path.join(BASE_DIR, '.env'))
+
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
@@ -38,10 +37,10 @@ STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-
+#ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+ALLOWED_HOSTS = ['172.24.131.77', 'localhost', '127.0.0.1', 'vm_131-077.unac.ucr.ac.cr']
 
 # Application definition
 
@@ -61,8 +60,6 @@ INSTALLED_APPS = [
     'axes',
 
     # Apps
-    'apps.users',
-    'apps.properties',
     'apps.bookings',
     'apps.payment',
     'apps.core',
@@ -82,7 +79,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    #'django_otp.middleware.OTPMiddleware', # Para 2FA Middleware
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
@@ -116,16 +112,31 @@ WSGI_APPLICATION = 'airbnb_app.wsgi.application'
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.postgresql'
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        #'NAME': env('DB_NAME', default='airbnb_dev'),
-        #'USER': env('DB_USER', default='airbnb_user'),
-        #'PASSWORD': env('DB_PASSWORD', default='airbnb_password'),
-        #'HOST': env('DB_HOST', default='localhost'),
-        #'PORT': env('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'airbnb_db'),
+        'USER': os.getenv('DB_USER', 'airbnb_admin'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'OPTIONS': {
+            'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
+        }
+    },
+
+    'airbnb_user': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'airbnb_db'),
+        'USER': os.getenv('DB_USER_READONLY', 'airbnb_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD_READONLY'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+        'OPTIONS': {
+            'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
+        }
     }
 }
+
+DATABASE_ROUTERS = ['db_routers.DataBaseRouter']
 
 
 # Password validation

@@ -15,11 +15,11 @@ def item_view(request, tipo, id):
         return render(request, '404.html', status=404)
 
     model = model_map[tipo]
-    item = get_object_or_404(model, pk=id)
+    item = get_object_or_404(model.objects.using('airbnb_user'), pk=id)
 
     blocked = []
     if tipo == 'accomodations':
-        reservations = Reservation.objects.filter(accommodation=item)
+        reservations = Reservation.objects.using('airbnb_user').filter(accommodation=item)
         for r in reservations:
             current = r.start_date
             while current <= r.end_date:
@@ -27,12 +27,12 @@ def item_view(request, tipo, id):
                 current += timedelta(days=1)
 
     elif tipo == 'services':
-        reservations = ReservationService.objects.filter(service=item)
+        reservations = ReservationService.objects.using('airbnb_user').filter(service=item)
         for r in reservations:
             blocked.append(format(r.date, 'Y-m-d'))
 
     elif tipo == 'experiences':
-        reservations = ReservationActivity.objects.filter(activity=item)
+        reservations = ReservationActivity.objects.using('airbnb_user').filter(activity=item)
         for r in reservations:
             blocked.append(format(r.date, 'Y-m-d'))
 

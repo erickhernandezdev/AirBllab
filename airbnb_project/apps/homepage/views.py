@@ -24,9 +24,9 @@ def homepage(request):
         }
     ]
 
-    accommodations = Accommodation.objects.filter(status='Aprobado')[:5]
-    experiences = Activity.objects.filter(status='Aprobado')[:5]
-    services = Service.objects.filter(status='Aprobado')[:5]
+    accommodations = Accommodation.objects.using('airbnb_user').filter(status='Aprobado')[:5]
+    experiences = Activity.objects.using('airbnb_user').filter(status='Aprobado')[:5]
+    services = Service.objects.using('airbnb_user').filter(status='Aprobado')[:5]
 
     accomodation_images = {
         'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',

@@ -1,90 +1,268 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pendientes de Aprobación - Admin Airbnb</title>
-  <style>
-    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-    .nav-menu { background: #34495e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    .nav-menu a { color: white; text-decoration: none; margin-right: 20px; padding: 10px 15px; border-radius: 4px; }
-    .nav-menu a:hover { background: #2c3e50; }
-    .section { margin-bottom: 40px; }
-    .item-list { display: grid; gap: 15px; }
-    .item-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); border-left: 4px solid #e74c3c; }
-    .item-actions { margin-top: 15px; }
-    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn-approve { background: #27ae60; color: white; }
-    .btn-reject { background: #e74c3c; color: white; }
-    .btn-details { background: #3498db; color: white; }
-    .empty-state { text-align: center; padding: 40px; color: #7f8c8d; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Pendientes de Aprobación</h1>
-    
-    <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
-      <a href="{% url 'admin_panel:admin_pending_approval' %}">Pendientes de Aprobación</a>
-      <a href="{% url 'admin_panel:admin_user_list' %}">Usuarios Registrados</a>
-      <a href="{% url 'home' %}">Volver al Sitio</a>
-    </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pendientes de Aprobación - Admin Airbnb</title>
+    <style>
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .nav-menu {
+        background: #34495e;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .nav-menu a {
+        color: white;
+        text-decoration: none;
+        margin-right: 20px;
+        padding: 10px 15px;
+        border-radius: 4px;
+      }
+      .nav-menu a:hover {
+        background: #2c3e50;
+      }
+      .section {
+        margin-bottom: 40px;
+      }
+      .item-list {
+        display: grid;
+        gap: 15px;
+      }
+      .item-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #e74c3c;
+      }
+      .item-actions {
+        margin-top: 15px;
+      }
+      .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+      }
+      .btn-approve {
+        background: #27ae60;
+        color: white;
+      }
+      .btn-reject {
+        background: #e74c3c;
+        color: white;
+      }
+      .btn-details {
+        background: #3498db;
+        color: white;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Pendientes de Aprobación</h1>
 
-    <!-- Propiedades Pendientes -->
-    <div class="section">
-      <h2>Propiedades Pendientes ({{ pending_properties.count }})</h2>
-      {% if pending_properties %}
-      <div class="item-list">
-        {% for property in pending_properties %}
-        <div class="item-card">
-          <h3>{{ property.name }}</h3>
-          <p><strong>Tipo:</strong> {{ property.get_property_type_display }}</p>
-          <p><strong>Precio por noche:</strong> ${{ property.price_per_night }}</p>
-          <p><strong>Ubicación:</strong> {{ property.location }}</p>
-          <p><strong>Propietario:</strong> {{ property.owner.username }}</p>
-          
-          <div class="item-actions">
-            <a href="{% url 'admin_panel:admin_approval_detail' 'property' property.id %}" class="btn btn-details">Ver Detalles</a>
-            <a href="{% url 'admin_panel:admin_approve_item' 'property' property.id %}" class="btn btn-approve" onclick="return confirm('¿Estás seguro de aprobar esta propiedad?')">Aprobar</a>
-            <a href="{% url 'admin_panel:admin_reject_item' 'property' property.id %}" class="btn btn-reject" onclick="return confirm('¿Estás seguro de rechazar esta propiedad?')">Rechazar</a>
-          </div>
-        </div>
-        {% endfor %}
+      <div class="nav-menu">
+        <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin_panel:admin_pending_approval' %}"
+          >Pendientes de Aprobación</a
+        >
+        <a href="{% url 'admin_panel:admin_user_list' %}"
+          >Usuarios Registrados</a
+        >
+        <a href="{% url 'homepage' %}">Volver al Sitio</a>
       </div>
-      {% else %}
-      <div class="empty-state">
-        <p>No hay propiedades pendientes de aprobación.</p>
-      </div>
-      {% endif %}
-    </div>
 
-    <!-- Actividades Pendientes -->
-    <div class="section">
-      <h2>Actividades Pendientes ({{ pending_activities.count }})</h2>
-      {% if pending_activities %}
-      <div class="item-list">
-        {% for activity in pending_activities %}
-        <div class="item-card">
-          <h3>{{ activity.name }}</h3>
-          <p><strong>Tipo:</strong> {{ activity.get_activity_type_display }}</p>
-          <p><strong>Precio:</strong> ${{ activity.price }}</p>
-          <p><strong>Proveedor:</strong> {{ activity.provider.username }}</p>
-          
-          <div class="item-actions">
-            <a href="{% url 'admin_panel:admin_approval_detail' 'activity' activity.id %}" class="btn btn-details">Ver Detalles</a>
-            <a href="{% url 'admin_panel:admin_approve_item' 'activity' activity.id %}" class="btn btn-approve" onclick="return confirm('¿Estás seguro de aprobar esta actividad?')">Aprobar</a>
-            <a href="{% url 'admin_panel:admin_reject_item' 'activity' activity.id %}" class="btn btn-reject" onclick="return confirm('¿Estás seguro de rechazar esta actividad?')">Rechazar</a>
+      <!-- Alojamientos Pendientes -->
+      <div class="section">
+        <h2>Alojamientos Pendientes ({{ pending_accommodations.count }})</h2>
+        {% if pending_accommodations %}
+        <div class="item-list">
+          {% for accommodation in pending_accommodations %}
+          <div class="item-card">
+            <h3>{{ accommodation.name }}</h3>
+            <p>
+              <strong>Tipo:</strong> {{ accommodation.accommodation_type.name }}
+            </p>
+            <p><strong>Precio:</strong> ₡{{ accommodation.price }}</p>
+            <p><strong>Ubicación:</strong> {{ accommodation.location }}</p>
+            <p><strong>Anfitrión:</strong> {{ accommodation.host.username }}</p>
+            <p>
+              <strong>Disponibilidad:</strong> {{ accommodation.available_from
+              }} - {{ accommodation.available_to }}
+            </p>
+
+            <div class="item-actions">
+              <a
+                href="{% url 'admin_panel:admin_approval_detail' 'accommodation' accommodation.id %}"
+                class="btn btn-details"
+                >Ver Detalles</a
+              >
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_approve_item' 'accommodation' accommodation.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-approve"
+                  onclick="return confirm('¿Estás seguro de aprobar este alojamiento?')"
+                >
+                  Aprobar
+                </button>
+              </form>
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_reject_item' 'accommodation' accommodation.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-reject"
+                  onclick="return confirm('¿Estás seguro de rechazar este alojamiento?')"
+                >
+                  Rechazar
+                </button>
+              </form>
+            </div>
           </div>
+          {% endfor %}
         </div>
-        {% endfor %}
+        {% else %}
+        <div class="empty-state">
+          <p>No hay alojamientos pendientes de aprobación.</p>
+        </div>
+        {% endif %}
       </div>
-      {% else %}
-      <div class="empty-state">
-        <p>No hay actividades pendientes de aprobación.</p>
+
+      <!-- Actividades Pendientes -->
+      <div class="section">
+        <h2>Actividades Pendientes ({{ pending_activities.count }})</h2>
+        {% if pending_activities %}
+        <div class="item-list">
+          {% for activity in pending_activities %}
+          <div class="item-card">
+            <h3>{{ activity.name }}</h3>
+            <p><strong>Tipo:</strong> {{ activity.activity_type.name }}</p>
+            <p><strong>Precio:</strong> ₡{{ activity.price }}</p>
+            <p><strong>Ubicación:</strong> {{ activity.location }}</p>
+            <p><strong>Anfitrión:</strong> {{ activity.host.username }}</p>
+
+            <div class="item-actions">
+              <a
+                href="{% url 'admin_panel:admin_approval_detail' 'activity' activity.id %}"
+                class="btn btn-details"
+                >Ver Detalles</a
+              >
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_approve_item' 'activity' activity.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-approve"
+                  onclick="return confirm('¿Estás seguro de aprobar esta actividad?')"
+                >
+                  Aprobar
+                </button>
+              </form>
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_reject_item' 'activity' activity.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-reject"
+                  onclick="return confirm('¿Estás seguro de rechazar esta actividad?')"
+                >
+                  Rechazar
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <p>No hay actividades pendientes de aprobación.</p>
+        </div>
+        {% endif %}
       </div>
-      {% endif %}
+
+      <!-- Servicios Pendientes -->
+      <div class="section">
+        <h2>Servicios Pendientes ({{ pending_services.count }})</h2>
+        {% if pending_services %}
+        <div class="item-list">
+          {% for service in pending_services %}
+          <div class="item-card">
+            <h3>{{ service.name }}</h3>
+            <p><strong>Tipo:</strong> {{ service.service_type.name }}</p>
+            <p><strong>Precio:</strong> ₡{{ service.price }}</p>
+            <p><strong>Anfitrión:</strong> {{ service.host.username }}</p>
+
+            <div class="item-actions">
+              <a
+                href="{% url 'admin_panel:admin_approval_detail' 'service' service.id %}"
+                class="btn btn-details"
+                >Ver Detalles</a
+              >
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_approve_item' 'service' service.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-approve"
+                  onclick="return confirm('¿Estás seguro de aprobar este servicio?')"
+                >
+                  Aprobar
+                </button>
+              </form>
+              <form
+                method="post"
+                action="{% url 'admin_panel:admin_reject_item' 'service' service.id %}"
+                style="display: inline"
+              >
+                {% csrf_token %}
+                <button
+                  type="submit"
+                  class="btn btn-reject"
+                  onclick="return confirm('¿Estás seguro de rechazar este servicio?')"
+                >
+                  Rechazar
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+          <p>No hay servicios pendientes de aprobación.</p>
+        </div>
+        {% endif %}
+      </div>
     </div>
-  </div>
-</body>
+  </body>
 </html>
