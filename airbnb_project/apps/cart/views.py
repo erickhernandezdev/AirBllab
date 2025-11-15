@@ -93,7 +93,6 @@ def checkout(request):
         if cart.accommodation_id:
             accommodation = Accommodation.objects.using(DB_ALIAS).get(pk=cart.accommodation_id)
 
-
         if cart:
             reservation = Reservation.objects.using(DB_ALIAS).create(
                 guest=user,
@@ -205,6 +204,9 @@ class ClearCartView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         user = User.objects.using(DB_ALIAS).get(pk=request.user.pk)
         cart = Cart.objects.using(DB_ALIAS).filter(user=user).first()
+        cartActivities = CartActivity.objects.using(DB_ALIAS).filter(cart=cart)
+        cartServices = CartService.objects.using(DB_ALIAS).filter(cart=cart)
+
         if cart:
             cart.accommodation = None
             cart.start_date = None
@@ -212,6 +214,12 @@ class ClearCartView(LoginRequiredMixin, View):
             cart.nights = None
             cart.price_total = None
             cart.save(using=DB_ALIAS)
+
+            if cartActivities:
+                cartActivities.using(DB_ALIAS).delete()
+            if cartServices:
+                cartServices.using(DB_ALIAS).delete()
+
         return redirect('cart')
 
 class RemoveFromCartView(LoginRequiredMixin, View):
