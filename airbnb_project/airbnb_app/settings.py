@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'apps.homepage',
     'apps.listings',
     'apps.login',
+    'apps.item_view',
     'apps.cart',
 ]
 
@@ -250,3 +251,6 @@ LOGGING = {
         },
     },
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
