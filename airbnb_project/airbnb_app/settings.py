@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     #'django_otp.plugins.otp_static',
     #'two_factor',
     'axes',
+    'multifactor',
 
     # Apps
     'apps.bookings',
@@ -208,11 +209,38 @@ AXES_LOCKOUT_TEMPLATE = 'lockout.html'
 AXES_VERBOSE = True
 
 # Configuración de login para Axes
-AXES_LOGIN_URL = 'two_factor:login'
-AXES_USERNAME_FORM_FIELD = 'auth-username'
+AXES_LOGIN_URL = 'login' # Nombre de URL del login actual (apps.login.urls -> name=login)
+AXES_USERNAME_FORM_FIELD = 'email' # Nuestro formulario de login usa el campo de email
 
 # Configuración OPT
 OTP_TOTP_ISSUER = 'Sistema de seguridad del Airbnb'
+
+# django-multifactor configuración
+MULTIFACTOR = {
+    # Random re-checks so long sessions occasionally reconfirm
+    'RECHECK': True,
+    'RECHECK_MIN': 60 * 60 * 3,   # 3 hours
+    'RECHECK_MAX': 60 * 60 * 6,   # 6 hours
+
+    # WebAuthn/FIDO2
+    # IMPORTANT: Usa tu dominio en producción. En dev, localhost está bien.
+    'FIDO_SERVER_ID': os.getenv('FIDO_SERVER_ID', 'localhost'),
+    'FIDO_SERVER_NAME': os.getenv('FIDO_SERVER_NAME', 'Airbnb CR'),
+    'TOKEN_ISSUER_NAME': os.getenv('TOKEN_ISSUER_NAME', 'Airbnb CR'),
+
+    # Solo permitir FIDO2.
+    'FACTORS': ['FIDO2'],
+
+    # Alentar configuración post-login
+    'SHOW_LOGIN_MESSAGE': True,
+    'LOGIN_MESSAGE': '<a href="{}">Activa la autenticación multifactor (YubiKey/Authenticator)</a>.',
+
+    # Solo-YubiKey hardening (server-side allowlist of AAGUIDs)
+    # autenticadores desconocidos y registrar su AAGUID para que puedas permitir explícitamente.
+    'ALLOWED_AAGUIDS': [
+        '2fc0579f-8113-47ea-b116-bb5a8db9202a',  # Auto-aprendido
+    ],
+}
 
 # SSL/HTTPS (hay que activarlo en producción)
 if not DEBUG:

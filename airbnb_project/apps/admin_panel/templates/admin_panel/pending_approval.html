@@ -1,9 +1,309 @@
-<!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pendientes de Aprobación - Admin Airbnb</title>
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block extra_head %}
+<style>
+  .container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 20px;
+  }
+
+  .admin-header {
+    background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .admin-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+  }
+
+  .admin-header p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .nav-menu {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-menu a {
+    color: #667eea;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .nav-menu a:hover {
+    background: #f0f4ff;
+    border-color: #667eea;
+  }
+
+  .nav-menu a.active {
+    background: #667eea;
+    color: white;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section h2 {
+    color: #1f2937;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+
+  .item-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .item-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #f59e0b;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .item-card:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .item-card h3 {
+    margin-top: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+
+  .item-card p {
+    margin: 0.5rem 0;
+    color: #4b5563;
+    line-height: 1.5;
+  }
+
+  .item-card strong {
+    color: #374151;
+    font-weight: 600;
+  }
+
+  .item-actions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.625rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+  }
+
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .btn-approve {
+    background: #10b981;
+    color: white;
+  }
+
+  .btn-approve:hover {
+    background: #059669;
+  }
+
+  .btn-reject {
+    background: #ef4444;
+    color: white;
+  }
+
+  .btn-reject:hover {
+    background: #dc2626;
+  }
+
+  .btn-details {
+    background: #3b82f6;
+    color: white;
+  }
+
+  .btn-details:hover {
+    background: #2563eb;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .empty-state p {
+    color: #9ca3af;
+    font-size: 1.125rem;
+    margin: 0;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    background: #fef3c7;
+    color: #92400e;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="admin-header">
+    <h1>⏳ Pendientes de Aprobación</h1>
+    <p>Revisa y aprueba contenido publicado por los usuarios</p>
+  </div>
+
+  <div class="nav-menu">
+    <a href="{% url 'admin_panel:admin_dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'admin_panel:admin_pending_approval' %}" class="active">⏳ Pendientes de Aprobación</a>
+    <a href="{% url 'admin_panel:admin_user_list' %}">👥 Usuarios Registrados</a>
+    <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
+  </div>
+
+  <!-- Alojamientos Pendientes -->
+  <div class="section">
+    <h2>🏠 Alojamientos Pendientes <span class="badge">{{ pending_accommodations.count }}</span></h2>
+    {% if pending_accommodations %}
+    <div class="item-list">
+      {% for accommodation in pending_accommodations %}
+      <div class="item-card">
+        <h3>{{ accommodation.name }}</h3>
+        <p><strong>Tipo:</strong> {{ accommodation.accommodation_type.name }}</p>
+        <p><strong>Precio:</strong> ₡{{ accommodation.price }}</p>
+        <p><strong>Ubicación:</strong> {{ accommodation.location }}</p>
+        <p><strong>Anfitrión:</strong> {{ accommodation.host.username }}</p>
+        <p><strong>Disponibilidad:</strong> {{ accommodation.available_from|date:"d/m/Y" }} - {{ accommodation.available_to|date:"d/m/Y" }}</p>
+
+        <div class="item-actions">
+          <a href="{% url 'admin_panel:admin_approval_detail' 'accommodation' accommodation.id %}" class="btn btn-details">👁️ Ver Detalles</a>
+          <form method="post" action="{% url 'admin_panel:admin_approve_item' 'accommodation' accommodation.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-approve" onclick="return confirm('¿Aprobar este alojamiento?')">✓ Aprobar</button>
+          </form>
+          <form method="post" action="{% url 'admin_panel:admin_reject_item' 'accommodation' accommodation.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-reject" onclick="return confirm('¿Rechazar este alojamiento?')">✗ Rechazar</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>✅ No hay alojamientos pendientes de aprobación</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Actividades Pendientes -->
+  <div class="section">
+    <h2>🎯 Actividades Pendientes <span class="badge">{{ pending_activities.count }}</span></h2>
+    {% if pending_activities %}
+    <div class="item-list">
+      {% for activity in pending_activities %}
+      <div class="item-card">
+        <h3>{{ activity.name }}</h3>
+        <p><strong>Tipo:</strong> {{ activity.activity_type.name }}</p>
+        <p><strong>Precio:</strong> ₡{{ activity.price }}</p>
+        <p><strong>Ubicación:</strong> {{ activity.location }}</p>
+        <p><strong>Anfitrión:</strong> {{ activity.host.username }}</p>
+
+        <div class="item-actions">
+          <a href="{% url 'admin_panel:admin_approval_detail' 'activity' activity.id %}" class="btn btn-details">👁️ Ver Detalles</a>
+          <form method="post" action="{% url 'admin_panel:admin_approve_item' 'activity' activity.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-approve" onclick="return confirm('¿Aprobar esta actividad?')">✓ Aprobar</button>
+          </form>
+          <form method="post" action="{% url 'admin_panel:admin_reject_item' 'activity' activity.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-reject" onclick="return confirm('¿Rechazar esta actividad?')">✗ Rechazar</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>✅ No hay actividades pendientes de aprobación</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Servicios Pendientes -->
+  <div class="section">
+    <h2>🛠️ Servicios Pendientes <span class="badge">{{ pending_services.count }}</span></h2>
+    {% if pending_services %}
+    <div class="item-list">
+      {% for service in pending_services %}
+      <div class="item-card">
+        <h3>{{ service.name }}</h3>
+        <p><strong>Tipo:</strong> {{ service.service_type.name }}</p>
+        <p><strong>Precio:</strong> ₡{{ service.price }}</p>
+        <p><strong>Anfitrión:</strong> {{ service.host.username }}</p>
+
+        <div class="item-actions">
+          <a href="{% url 'admin_panel:admin_approval_detail' 'service' service.id %}" class="btn btn-details">👁️ Ver Detalles</a>
+          <form method="post" action="{% url 'admin_panel:admin_approve_item' 'service' service.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-approve" onclick="return confirm('¿Aprobar este servicio?')">✓ Aprobar</button>
+          </form>
+          <form method="post" action="{% url 'admin_panel:admin_reject_item' 'service' service.id %}" style="display: inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-reject" onclick="return confirm('¿Rechazar este servicio?')">✗ Rechazar</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <p>✅ No hay servicios pendientes de aprobación</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
     <style>
       .container {
         max-width: 1200px;
