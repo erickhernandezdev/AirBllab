@@ -251,6 +251,9 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+LOG_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIR, exist_ok=True)
+
 # Configuración de logs para auditoría
 LOGGING = {
     'version': 1,
@@ -259,7 +262,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'security.log',
+            'filename': os.path.join(LOG_DIR, 'security.log'),
         },
         'console': {
             'level': 'DEBUG',
