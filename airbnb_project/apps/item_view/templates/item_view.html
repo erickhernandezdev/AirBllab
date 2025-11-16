@@ -1,0 +1,251 @@
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
+{% block content %}
+<main class="item_view">
+  <section class="item-header">
+    <div class="item-image">
+      {% if item.image %}
+      <img src="{{ item.image.url }}" alt="{{ item.name }}">
+      {% else %}
+      <img src="{% static 'img/alojamientos/alojamientos.jpg' %}" alt="Imagen por defecto">
+      {% endif %}
+    </div>
+
+    <div class="item-details">
+      <h1>{{ item.name }}</h1>
+
+      {% if tipo == 'accomodations' %}
+      <p><strong>Tipo:</strong> {{ item.accommodation_type.name }}</p>
+      <p><strong>Precio por noche:</strong> ₡{{ item.price|floatformat:0 }}</p>
+      <p><strong>Ubicación:</strong> {{ item.location }}</p>
+      {% elif tipo == 'services' %}
+      <p><strong>Tipo:</strong> {{ item.service_type.name }}</p>
+      <p><strong>Precio:</strong> ₡{{ item.price|floatformat:0 }}</p>
+      {% elif tipo == 'experiences' %}
+      <p><strong>Tipo:</strong> {{ item.activity_type.name }}</p>
+      <p><strong>Precio por unidad:</strong> ₡{{ item.price|floatformat:0 }}</p>
+      <p><strong>Ubicación:</strong> {{ item.location }}</p>
+      {% endif %}
+
+      <p><strong>Anfitrión:</strong> {{ item.host.name }}</p>
+      <p><strong>Calificación:</strong> ★{{ item.rating }}</p>
+      <p><strong>Acerca de:</strong></p>
+      <p>{{ item.description }}</p>
+    </div>
+  </section>
+
+  <div class="reservation_title">
+    <h2>
+      Realiza tu reservación
+    </h2>
+  </div>
+
+  <section class="calendar-section">
+    <div class="calendar-box">
+      <label for="date-range">
+        {% if tipo == 'accomodations' %}
+        Selecciona tus fechas:
+        <input type="text" id="date-range" placeholder="Llegada - Salida">
+        {% else %}
+        Selecciona la fecha:
+        <input type="text" id="date-range" placeholder="Fecha">
+        {% endif %}
+      </label>
+    </div>
+
+    <div class="reservation-summary">
+      <h2>Resumen de tu selección</h2>
+      {% if tipo == 'accomodations' %}
+      <p><strong>Cantidad de noches:</strong> <span id="nights-count">0</span></p>
+      <p><strong>Fecha de llegada:</strong> <span id="start-date">--</span></p>
+      <p><strong>Fecha de salida:</strong> <span id="end-date">--</span></p>
+      {% else %}
+      <p><strong>Fecha seleccionada:</strong> <span id="start-date">--</span></p>
+      {% endif %}
+      <p><strong>Precio final:</strong> ₡<span id="final-price">0</span></p>
+      <button class="add-to-cart" id="add-to-cart" disabled>Agregar al carrito</button>
+    </div>
+  </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+{{ blocked_dates|json_script:"blocked-dates" }}
+<script>
+  const tipo = "{{ tipo }}";
+  const price_unitary = parseInt("{{ item.price }}");
+  const today = new Date();
+  const nextYear = new Date();
+  nextYear.setFullYear(today.getFullYear() + 1);
+
+  const blockedDatesRaw = JSON.parse(document.getElementById("blocked-dates").textContent);
+  const blockedDates = blockedDatesRaw.map(d => new Date(d + "T00:00:00"));
+  console.log("Fechas bloqueadas:", blockedDates);
+
+  if (tipo === "accomodations") {
+    flatpickr("#date-range", {
+      inline: true,
+      mode: "range",
+      showMonths: 2,
+      dateFormat: "Y-m-d",
+      minDate: today,
+      maxDate: nextYear,
+      disable: blockedDates,
+      locale: {
+        firstDayOfWeek: 1,
+        weekdays: {
+          shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+          longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        },
+        months: {
+          shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+          longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        }
+      },
+      onChange: function (selectedDates, dateStr, instance) {
+        const button = document.getElementById("add-to-cart");
+
+        button.disabled = true;
+
+        if (selectedDates.length === 1) {
+          const start = selectedDates[0];
+          instance.set("disable", [
+            ...blockedDates,
+            function (date) {
+              return date < start;
+            }
+          ]);
+        }
+
+        if (selectedDates.length === 2) {
+          const start = selectedDates[0];
+          const end = selectedDates[1];
+          const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+          if (nights < 1) {
+            alert("Debes seleccionar al menos una noche.");
+            return;
+          }
+          if (nights > 20) {
+            alert("No puedes reservar más de 30 noches.");
+            return;
+          }
+          button.disabled = false;
+          const total = nights * price_unitary;
+
+          document.getElementById("start-date").textContent = start.toISOString().split('T')[0];
+          document.getElementById("end-date").textContent = end.toISOString().split('T')[0];
+          document.getElementById("nights-count").textContent = nights;
+          document.getElementById("final-price").textContent = total.toLocaleString();
+        }
+      }
+    });
+  } else if (tipo === "experiences" || tipo === "services") {
+    flatpickr("#date-range", {
+      inline: true,
+      mode: "single",
+      showMonths: 2,
+      dateFormat: "Y-m-d",
+      minDate: today,
+      maxDate: nextYear,
+      disable: blockedDates,
+      locale: {
+        firstDayOfWeek: 1,
+        weekdays: {
+          shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
+          longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        },
+        months: {
+          shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+          longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        }
+      },
+      onChange: function (selectedDates, dateStr, instance) {
+        const button = document.getElementById("add-to-cart");
+        button.disabled = true;
+
+        if (selectedDates.length === 1) {
+          const selected = selectedDates[0];
+          button.disabled = false;
+
+          document.getElementById("start-date").textContent = selected.toISOString().split('T')[0];
+          document.getElementById("final-price").textContent = price_unitary.toLocaleString();
+        }
+      }
+    });
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  document.getElementById('add-to-cart').addEventListener('click', function () {
+    const tipo = "{{ tipo }}";
+    const itemId = "{{ item.id }}";
+    const priceUnitary = parseInt("{{ item.price }}");
+    const csrfToken = getCookie('csrftoken');
+
+    const startDate = document.getElementById('start-date').textContent;
+    let bodyData = {};
+
+    if (tipo === 'accomodations') {
+      const endDate = document.getElementById('end-date').textContent;
+      const nights = parseInt(document.getElementById('nights-count').textContent);
+      const total = nights * priceUnitary;
+
+      bodyData = {
+        accommodation_id: itemId,
+        start_date: startDate,
+        end_date: endDate,
+        nights: nights,
+        price_total: total,
+      };
+    } else if (tipo === 'services') {
+      bodyData = {
+        service_id: itemId,
+        date: startDate,
+        total_price: priceUnitary,
+      };
+    } else if (tipo === 'experiences') {
+      bodyData = {
+        activity_id: itemId,
+        date: startDate,
+        total_price: priceUnitary,
+      };
+    }
+
+    fetch('/cart/add/', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': csrfToken,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(bodyData),
+    }).then(response => {
+      if (response.ok) {
+        alert('Agregado al carrito');
+      } else {
+        alert('Error al agregar al carrito');
+      }
+    });
+  });
+</script>
+{% endblock %}

@@ -112,6 +112,7 @@ class Accommodation(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='items/', blank=True, null=True)
     available_from = models.DateField(null=True, blank=True)
     available_to = models.DateField(null=True, blank=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
@@ -138,6 +139,7 @@ class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='items/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
@@ -151,6 +153,7 @@ class Activity(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='items/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
@@ -160,7 +163,6 @@ class Activity(models.Model):
 class ReservationActivity(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 
@@ -170,7 +172,6 @@ class ReservationActivity(models.Model):
 class ReservationService(models.Model):
     reservation = models.ForeignKey(Reservation, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField()
 
@@ -180,6 +181,10 @@ class ReservationService(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField('CustomUser', on_delete=models.CASCADE, related_name='cart')
     accommodation = models.ForeignKey(Accommodation, on_delete=models.SET_NULL, null=True, blank=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    nights = models.IntegerField(null=True)
+    price_total = models.IntegerField(null=True)
 
     class Meta:
         db_table = 'carts"."carts'
@@ -187,6 +192,8 @@ class Cart(models.Model):
 class CartActivity(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE)
+    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    date = models.DateField(null=True)
 
     class Meta:
         db_table = 'carts"."cart_activities'
@@ -194,6 +201,8 @@ class CartActivity(models.Model):
 class CartService(models.Model):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     service = models.ForeignKey(Service, on_delete=models.CASCADE)
+    total_price = models.DecimalField(null=True, max_digits=10, decimal_places=2)
+    date = models.DateField(null=True)
 
     class Meta:
         db_table = 'carts"."cart_services'

@@ -9,9 +9,9 @@ def build_card(obj, image_dict, tipo):
         'image': image_dict.get(name, image_dict['default']),
         'alt': name,
         'title': name,
-        'price': f"₡{obj.price_per_night:,} por noche" if hasattr(obj, 'price_per_night') else f"₡{obj.price:,}",
+        'price': f"₡{obj.price:,} por noche" if hasattr(obj, 'price') else f"₡{obj.price:,}",
         'rating': f"{obj.rating:.1f}",
-        'link': reverse('listing', kwargs={'tipo': tipo})
+        'link': reverse('detail', kwargs={'tipo': tipo, 'id': obj.id})
     }
 
 def listings_view(request, tipo):
@@ -19,10 +19,10 @@ def listings_view(request, tipo):
         queryset = Accommodation.objects.using('airbnb_user').filter(status='Aprobado')[:5]
         image_dict = {
             'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
-            'Cabaña Don Quijote': 'img/alojamientos/alojamientos2.jpg',
+            'Casa Don Quijote': 'img/alojamientos/alojamientos2.jpg',
             'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
             'Villa en Cahuita': 'img/alojamientos/alojamientos4.jpeg',
-            'Apartamento en Jacó': 'img/alojamientos/alojamientos3.jpg',
+            'Apartamento en Liberia': 'img/alojamientos/alojamientos3.jpg',
             'default': 'img/alojamientos/alojamientos.jpg'
         }
         title = "Tu próximo destino te espera"
@@ -34,7 +34,7 @@ def listings_view(request, tipo):
         image_dict = {
             'Tour en bote': 'img/experiencias/experiencias.jpg',
             'Clases de cocina': 'img/experiencias/experiencias2.jpg',
-            'Clases de fotografía': 'img/experiencias/experiencias3.jpg',
+            'Clases de fotografia': 'img/experiencias/experiencias3.jpg',
             'Canopy': 'img/experiencias/experiencias4.jpg',
             'Clases de baile': 'img/experiencias/experiencias5.png',
             'default': 'img/experiencias/experiencias.jpg'

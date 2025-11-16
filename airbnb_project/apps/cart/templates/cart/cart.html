@@ -1,12 +1,254 @@
-{% extends 'layout.html' %} {% load static %} {% block extra_head %}
-<link rel="stylesheet" href="{% static 'cart/styles.css'%}" />
-{% endblock %} {% block content %}
+{% extends 'layout.html' %}
+{% load static %}
 
-<div id="payment-form-container">
-  <form action="{% url 'checkout' %}" method="POST">
-    {% csrf_token %}
-    <button type="submit">Pagar con Stripe</button>
-  </form>
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'cart/cart.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.6.0/cleave.min.js"></script>
+{% endblock %}
+
+{% block content %}
+{% if cart.accommodation or activities or services %}
+<div class="cart-container">
+  <div class="cart-section">
+    <div class="cart-header">
+      <h1>Tu carrito</h1>
+      <span class="item-count">1 ítem</span>
+    </div>
+
+    <form method="POST" action="{% url 'clear_cart' %}">
+      {% csrf_token %}
+      <button class="empty-cart-btn" type="submit">Vaciar carrito</button>
+    </form>
+
+    {% if cart.accommodation %}
+    <div class="cart-item">
+      <img src="{{ cart.accommodation.image.url }}" alt="Alojamiento" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Nombre:</strong> {{ cart.accommodation.name }}</p>
+        <p class="item-info"><strong>Fecha de entrada:</strong> {{ cart.start_date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+        <p class="item-info"><strong>Fecha de salida:</strong> {{ cart.end_date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ cart.price_total|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_from_cart' %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    {% for activity in activities %}
+    <div class="cart-item">
+      <img src="{{ activity.activity.image.url }}" alt="Actividad" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Actividad:</strong> {{ activity.activity.name }}</p>
+        <p class="item-info"><strong>Fecha:</strong> {{ activity.date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+        <p class="item-info"><strong>Cantidad:</strong> {{ activity.quantity }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ activity.total_price|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_activity' activity.id %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+
+    {% for service in services %}
+    <div class="cart-item">
+      <img src="{{ service.service.image.url }}" alt="Servicio" class="item-image">
+
+      <div class="item-details">
+        <p class="item-info"><strong>Servicio:</strong> {{ service.service.name }}</p>
+        <p class="item-info"><strong>Fecha:</strong> {{ service.date|date:"j \\d\\e F \\d\\e\\l Y" }}</p>
+      </div>
+
+      <div class="item-actions">
+        <span class="item-price">₡{{ service.total_price|floatformat:0 }}</span>
+        <form method="POST" action="{% url 'remove_service' service.id %}">
+          {% csrf_token %}
+          <button class="remove-btn" type="submit">Eliminar</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="summary-section">
+    <h2>Resumen de compra</h2>
+
+    {% if cart.accommodation %}
+    <div class="summary-item">
+      <span>{{ cart.accommodation.name }}</span>
+      <span class="summary-price">₡{{ total_accommodation|floatformat:0 }}</span>
+    </div>
+    {% endif %}
+
+    {% for activity in activities %}
+    <div class="summary-item">
+      <span>{{ activity.activity.name }}</span>
+      <span class="summary-price">₡{{ activity.total_price|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+
+    {% for service in services %}
+    <div class="summary-item">
+      <span>{{ service.service.name }}</span>
+      <span class="summary-price">₡{{ service.total_price|floatformat:0 }}</span>
+    </div>
+    {% endfor %}
+
+    <div class="summary-divider"></div>
+
+    <div class="summary-total">
+      <span class="total-label">Total</span>
+      <span class="total-price">₡{{ grand_total|floatformat:0 }}</span>
+    </div>
+    <button type="button" class="pay-button" id="open-payment-modal">Pagar</button>
+  </div>
 </div>
 
+{% else %}
+<div class="no-item">
+  <p> No tienes ningún elemento en tu carrito.</p>
+</div>
+{% endif %}
+
+{% if message %}
+<script>
+  Swal.fire({
+    icon: '{% if "éxito" in message %}success{% elif "cancelado" in message %}error{% else %}info{% endif %}',
+    title: '{{ message }}',
+    timer: 5000,
+    showConfirmButton: false
+  });
+</script>
+{% endif %}
+
+<div id="payment-modal" class="modal" aria-hidden="true" role="dialog" aria-labelledby="payment-title" aria-modal="true">
+  <div class="modal-content">
+    <button class="modal-close" id="close-payment-modal" aria-label="Cerrar">×</button>
+
+    <div class="payment-header">
+      <h2 id="payment-title">Ingrese su tarjeta</h2>
+    </div>
+
+    <form action="{% url 'checkout' %}" method="POST" id="payment-form" novalidate>
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="card_number">Número de tarjeta</label>
+        <input id="card_number" name="card_number" type="text" maxlength="16" required>
+        <small id="card-error" class="error-message"></small>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="expiry">Expiración</label>
+          <input id="expiry" name="expiry" type="text" placeholder="MM/YY" required>
+          <small id="expiry-error" class="error-message"></small>
+        </div>
+        <div class="form-group">
+          <label for="cvv">CVV</label>
+          <input id="cvv" name="cvv" type="password" maxlength="3" required>
+          <small id="cvv-error" class="error-message"></small>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="secondary" id="cancel-payment">Cancelar</button>
+        <button type="submit" class="primary">Confirmar pago</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('payment-modal');
+  const openBtn = document.getElementById('open-payment-modal');
+  const closeBtn = document.getElementById('close-payment-modal');
+  const cancelBtn = document.getElementById('cancel-payment');
+
+  let lastFocused;
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.getElementById('card_number').focus();
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+    lastFocused && lastFocused.focus();
+  }
+
+  openBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  cancelBtn.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+document.getElementById('payment-form').addEventListener('submit', function (e) {
+  let valid = true;
+
+  const card = document.getElementById('card_number').value.trim();
+  const expiry = document.getElementById('expiry').value.trim();
+  const cvv = document.getElementById('cvv').value.trim();
+
+  document.getElementById('card-error').textContent = '';
+  document.getElementById('expiry-error').textContent = '';
+  document.getElementById('cvv-error').textContent = '';
+
+  if (!/^\d{16}$/.test(card)) {
+    document.getElementById('card-error').textContent = 'Debe contener 16 dígitos numéricos.';
+    valid = false;
+  }
+
+  if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+    document.getElementById('expiry-error').textContent = 'Formato inválido. Use MM/YY.';
+    valid = false;
+  } else {
+    const [month, year] = expiry.split('/');
+    const m = parseInt(month, 10);
+    const y = parseInt('20' + year, 10);
+    const now = new Date();
+    const currentMonth = now.getMonth() + 1;
+    const currentYear = now.getFullYear();
+    if (y < currentYear || (y === currentYear && m < currentMonth)) {
+      document.getElementById('expiry-error').textContent = 'La tarjeta está vencida.';
+      valid = false;
+    }
+  }
+
+  if (!/^\d{3}$/.test(cvv)) {
+    document.getElementById('cvv-error').textContent = 'Debe contener 3 dígitos numéricos.';
+    valid = false;
+  }
+
+  if (!valid) {
+    e.preventDefault();
+  }
+});
+</script>
+
+<script>
+  new Cleave('#expiry', {
+    date: true,
+    datePattern: ['m', 'y']
+  });
+</script>
 {% endblock %}
