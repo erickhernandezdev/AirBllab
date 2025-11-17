@@ -112,7 +112,7 @@ class Accommodation(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='items/', blank=True, null=True)
+    image = models.ImageField(upload_to='accommodations/', blank=True, null=True)
     available_from = models.DateField(null=True, blank=True)
     available_to = models.DateField(null=True, blank=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
@@ -139,7 +139,7 @@ class Service(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='items/', blank=True, null=True)
+    image = models.ImageField(upload_to='services/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 
@@ -153,7 +153,7 @@ class Activity(models.Model):
     description = models.TextField()
     location = models.CharField(max_length=100)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='items/', blank=True, null=True)
+    image = models.ImageField(upload_to='activities/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
 

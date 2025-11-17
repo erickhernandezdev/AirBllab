@@ -23,7 +23,11 @@
 
     {% if cart.accommodation %}
     <div class="cart-item">
-      <img src="{{ cart.accommodation.image.url }}" alt="Alojamiento" class="item-image">
+      {% if cart.accommodation.image %}
+          <img src="{{ cart.accommodation.image.url }}" alt="Alojamiento" class="item-image">
+      {% else %}
+          <img src="../../media/default.png" alt="Alojamiento" class="item-image">
+      {% endif %}
 
       <div class="item-details">
         <p class="item-info"><strong>Nombre:</strong> {{ cart.accommodation.name }}</p>
@@ -43,7 +47,11 @@
 
     {% for activity in activities %}
     <div class="cart-item">
-      <img src="{{ activity.activity.image.url }}" alt="Actividad" class="item-image">
+      {% if activity.activity.image %}
+          <img src="{{ activity.activity.image.url }}" alt="Actividad" class="item-image">
+      {% else %}
+          <img src="../../media/default.png" alt="Actividad" class="item-image">
+      {% endif %}
 
       <div class="item-details">
         <p class="item-info"><strong>Actividad:</strong> {{ activity.activity.name }}</p>
@@ -63,7 +71,11 @@
 
     {% for service in services %}
     <div class="cart-item">
-      <img src="{{ service.service.image.url }}" alt="Servicio" class="item-image">
+      {% if service.service.image %}
+          <img src="{{ service.service.image.url }}" alt="Servicio" class="item-image">
+      {% else %}
+          <img src="../../../media/default.png" alt="Servicio" class="item-image">
+      {% endif %}
 
       <div class="item-details">
         <p class="item-info"><strong>Servicio:</strong> {{ service.service.name }}</p>
