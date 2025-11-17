@@ -61,4 +61,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   toggleFields();
   typeField.addEventListener("change", toggleFields);
+
+
+  document.getElementById("image-input").addEventListener("change", function(){
+    document.getElementById("image-name").textContent = this.files[0].name;
+  });
+
 });
