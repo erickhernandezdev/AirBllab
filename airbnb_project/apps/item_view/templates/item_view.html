@@ -13,9 +13,9 @@
   <section class="item-header">
     <div class="item-image">
       {% if item.image %}
-      <img src="{{ item.image.url }}" alt="{{ item.name }}">
+        <img src="{{ item.image.url }}" alt="{{ item.name }}">
       {% else %}
-      <img src="{% static 'img/alojamientos/alojamientos.jpg' %}" alt="Imagen por defecto">
+        <img src="../../../media/default.png" alt="Imagen por defecto">
       {% endif %}
     </div>
 

@@ -13,4 +13,3 @@ migrations/
 security.log
 *.log
 apps/*/migrations/000*_auto_*.py
-media/

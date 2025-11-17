@@ -27,10 +27,12 @@
     <div class="cards-grid">
       {% for publication in publications %}
       <div class="card" data-status="{{ publication.status }}">
-        <img
-          src="{% static 'my_publications/default.jpg' %}"
-          alt="publication img"
-        />
+        {% if publication.image %}
+            <img src="{{ publication.image.url }}" alt="Imagen">
+        {% else %}
+            <img src="../../media/default.png" alt="Sin imagen">
+        {% endif %}
+
         <div class="card-info">
           <h3>Nombre: {{ publication.name }}</h3>
           <p>Descripcion: {{ publication.description }}</p>

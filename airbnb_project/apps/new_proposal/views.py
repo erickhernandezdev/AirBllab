@@ -10,7 +10,7 @@ def add_new_proposal(request):
 
     if request.method == 'POST':
         selected_type = request.POST.get('type')
-        form = NewProposalForm(request.POST, selected_type=selected_type)
+        form = NewProposalForm(request.POST, request.FILES, selected_type=selected_type)
         if form.is_valid():
             host = request.user
             name = form.cleaned_data['name']
@@ -20,6 +20,7 @@ def add_new_proposal(request):
             start_date = form.cleaned_data['start_date']
             end_date = form.cleaned_data['end_date']
             price = form.cleaned_data['price']
+            image=request.FILES.get('image')
 
             proposal_subtype = form.cleaned_data['subtype']
             if proposal_type == 'Alojamiento':
@@ -39,7 +40,8 @@ def add_new_proposal(request):
                     price=price,
                     available_from=start_date,
                     available_to=end_date,
-                    status='Pendiente'
+                    status='Pendiente',
+                    image=image
                 )
                 new_accommodation.save(using='airbnb_user')
 
@@ -51,7 +53,8 @@ def add_new_proposal(request):
                     description=description,
                     location=location,
                     price=price,
-                    status='Pendiente'
+                    status='Pendiente',
+                    image=image
                 )
                 new_activity.save(using='airbnb_user')
 
@@ -62,7 +65,8 @@ def add_new_proposal(request):
                     name=name,
                     description=description,
                     price=price,
-                    status='Pendiente'
+                    status='Pendiente',
+                    image=image
                 )
                 new_service.save(using='airbnb_user')
 

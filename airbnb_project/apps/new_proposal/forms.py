@@ -20,6 +20,14 @@ class NewProposalForm(forms.Form):
     start_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible desde', required=False)
     end_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), label='Disponible hasta', required=False)
     price = forms.DecimalField(max_digits = 20, decimal_places = 2, min_value=0, label='Precio')
+    image = forms.ImageField(
+        widget=forms.ClearableFileInput(attrs={
+            "id": "image-input", 
+            "hidden": True
+        }),
+        required=False, 
+        label="Imagen"
+    )
 
     def __init__(self, *args, **kwargs):
         selected_type = kwargs.pop('selected_type', None)

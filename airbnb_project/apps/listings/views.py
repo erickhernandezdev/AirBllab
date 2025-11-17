@@ -3,10 +3,10 @@ from django.urls import reverse
 from django.http import Http404
 from apps.core.models import Accommodation, Activity, Service
 
-def build_card(obj, image_dict, tipo):
+def build_card(obj, tipo):
     name = getattr(obj, 'name', 'Sin nombre')
     return {
-        'image': image_dict.get(name, image_dict['default']),
+        'image': obj.image.url if obj.image else '../../media/default.png',
         'alt': name,
         'title': name,
         'price': f"₡{obj.price:,} por noche" if hasattr(obj, 'price') else f"₡{obj.price:,}",
@@ -17,50 +17,26 @@ def build_card(obj, image_dict, tipo):
 def listings_view(request, tipo):
     if tipo == 'accomodations':
         queryset = Accommodation.objects.using('airbnb_user').filter(status='Aprobado')[:5]
-        image_dict = {
-            'Villa en Tamarindo': 'img/alojamientos/alojamientos.jpg',
-            'Casa Don Quijote': 'img/alojamientos/alojamientos2.jpg',
-            'Alojamiento en La Fortuna': 'img/alojamientos/alojamientos5.jpg',
-            'Villa en Cahuita': 'img/alojamientos/alojamientos4.jpeg',
-            'Apartamento en Liberia': 'img/alojamientos/alojamientos3.jpg',
-            'default': 'img/alojamientos/alojamientos.jpg'
-        }
         title = "Tu próximo destino te espera"
         subtitle = "Explora alojamientos únicos en los rincones más hermosos de Costa Rica"
-        banner = 'img/alojamientos/alojamientos.jpg'
+        banner = '../media/banners/banner-alojamientos.jpg'
 
     elif tipo == 'experiences':
         queryset = Activity.objects.using('airbnb_user').filter(status='Aprobado')[:5]
-        image_dict = {
-            'Tour en bote': 'img/experiencias/experiencias.jpg',
-            'Clases de cocina': 'img/experiencias/experiencias2.jpg',
-            'Clases de fotografia': 'img/experiencias/experiencias3.jpg',
-            'Canopy': 'img/experiencias/experiencias4.jpg',
-            'Clases de baile': 'img/experiencias/experiencias5.png',
-            'default': 'img/experiencias/experiencias.jpg'
-        }
         title = "Vive momentos que dejan huella"
         subtitle = "Sumérgete en experiencias que transformarán tu vida"
-        banner = 'img/experiencias/experiencias.jpg'
+        banner = '../media/banners/banner-experiencias.jpg'
 
     elif tipo == 'services':
         queryset = Service.objects.using('airbnb_user').filter(status='Aprobado')[:5]
-        image_dict = {
-            'Catering': 'img/servicios/servicios.jpg',
-            'Spa': 'img/servicios/servicios2.jpeg',
-            'Masajes': 'img/servicios/servicios3.jpg',
-            'Maquillaje': 'img/servicios/servicios4.jpg',
-            'Chef personal': 'img/servicios/servicios5.jpg',
-            'default': 'img/servicios/servicios.jpg'
-        }
         title = "Cuida tu cuerpo, tu tiempo y tu espacio"
         subtitle = "Servicios pensados para tu bienestar, productividad y comodidad personal"
-        banner = 'img/servicios/servicios.jpg'
+        banner = '../media/banners/banner-servicios.jpg'
 
     else:
         raise Http404("Tipo de listado no válido")
 
-    cards = [build_card(obj, image_dict, tipo) for obj in queryset]
+    cards = [build_card(obj, tipo) for obj in queryset]
 
     sections = [
         {'title': 'Cerca de ti', 'items': cards},

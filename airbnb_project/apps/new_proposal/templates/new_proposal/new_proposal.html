@@ -5,8 +5,13 @@
 <main>
   <div id="form-container">
     <h1>Ingrese la información del alojamiento, actividad o servicio.</h1>
-    <form method="post" id="proposal-form">
+    <form method="post" enctype="multipart/form-data" id="proposal-form">
       {% csrf_token %} {{ form.as_p}}
+      <label for="image-input" class="upload-bottom">
+        Subir Imagen
+      </label>
+      <span id="image-name">Ningún archivo seleccionado</span>
+
       <button id="submit-btn" type="submit">Enviar</button>
     </form>
   </div>
