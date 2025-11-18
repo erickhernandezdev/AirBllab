@@ -2,9 +2,59 @@
 {% load static %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="{% static 'history/history.css' %}" />
 {% endblock %}
 
 {% block content %}
-  <h1>Historial</h1>
-  <p>Este es el historial de reservaciones</p>
+  <h1 class="history-title">Historial de pedidos</h1>
+
+  <div class="history-container">
+    {% for inv in invoices %}
+      <div class="order-card">
+        <div class="order-header">
+          <h2>Pedido #{{ inv.id }}</h2>
+          <span class="order-status">{{ inv.reservation.status }}</span>
+        </div>
+
+        <div class="order-info">
+          <p><strong>Total:</strong> ₡{{ inv.amount }}</p>
+          <p><strong>Número de orden:</strong> {{ inv.payment_method }}</p>
+          <p><strong>Pagado el:</strong> {{ inv.paid_at }}</p>
+        </div>
+
+        <div class="order-section">
+          <h3>Alojamiento</h3>
+          {% if inv.reservation.accommodation %}
+            <p>{{ inv.reservation.accommodation.name }} del {{ inv.reservation.start_date }} al {{ inv.reservation.end_date }}</p>
+          {% else %}
+            <p>No hay alojamiento en este pedido</p>
+          {% endif %}
+        </div>
+
+        <div class="order-section">
+          <h3>Servicios</h3>
+          <ul>
+            {% for s in inv.reservation.reservationservice_set.all %}
+              <li>{{ s.service.name }} - {{ s.date }}</li>
+            {% empty %}
+              <li>No hay servicios en este pedido</li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="order-section">
+          <h3>Experiencias</h3>
+          <ul>
+            {% for a in inv.reservation.reservationactivity_set.all %}
+              <li>{{ a.activity.name }} - {{ a.date }}</li>
+            {% empty %}
+              <li>No hay experiencias en este pedido</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% empty %}
+      <p>No tienes pedidos registrados.</p>
+    {% endfor %}
+  </div>
 {% endblock %}
