@@ -9,14 +9,17 @@ def set_user_context(user):
 
 def login_view(request):
     if request.method == 'POST':
-      form = LoginForm(request.POST, request=request)
-      if form.is_valid():
-        user = form.cleaned_data['user']
-        login(request, user)
-        set_user_context(user)
-        return redirect('homepage')
-      
-      return render(request, 'login/login.html', {'form': form})
+        form = LoginForm(request.POST, request=request)
+        if form.is_valid():
+            user = form.cleaned_data['user']
+            login(request, user)
+            set_user_context(user)
+
+            if user.is_admin:
+                return redirect('admin_panel:admin_dashboard')
+            return redirect('homepage')
+
+        return render(request, 'login/login.html', {'form': form})
 
     form = LoginForm()
     return render(request, 'login/login.html', {'form': form})
