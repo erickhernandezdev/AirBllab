@@ -18,8 +18,6 @@ from django.core.management.utils import get_random_secret_key
 try:
     import environ
 except Exception:
-    # django-environ may be incompatible with this Python version (e.g. pkgutil.find_loader missing)
-    # or simply not installed. Fall back to os.getenv usage in that case.
     environ = None
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,11 +28,23 @@ load_dotenv(os.path.join(BASE_DIR, '.env'))
 #BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
+
+YUBIKEY_CLIENT_ID = os.getenv('YUBIKEY_CLIENT_ID')
+YUBIKEY_SECRET_KEY= os.getenv('YUBIKEY_SECRET_KEY')
+
+YUBIKEY_API_URLS = [
+    'https://api.yubico.com/wsapi/2.0/verify',
+    'https://api2.yubico.com/wsapi/2.0/verify',
+    'https://api3.yubico.com/wsapi/2.0/verify',
+    'https://api4.yubico.com/wsapi/2.0/verify',
+    'https://api5.yubico.com/wsapi/2.0/verify',
+]
+
+SECURE_ADMIN_OTP_REQUIRED = True
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
@@ -53,12 +63,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Seguridad
-    #'django_otp',
-    #'django_otp.plugins.otp_totp',
-    #'django_otp.plugins.otp_static',
-    #'two_factor',
+
+    'django_otp',
+    'django_otp.plugins.otp_static',
+    'django_otp.plugins.otp_totp',
     'axes',
-    'multifactor',
 
     # Apps
     'apps.bookings',
@@ -80,10 +89,16 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'axes.middleware.AxesMiddleware', # Para bloquear por intentos fallidos
+    'axes.middleware.AxesMiddleware',
 ]
+
+LOGIN_URL = 'account/login'
+LOGIN_REDIRECT_URL = '/homepage/'
+LOGOUT_REDIRECT_URL = '/homepage/'
+OTP_LOGIN_URL = '/account/otp-verify/'
 
 ROOT_URLCONF = 'airbnb_app.urls'
 
@@ -186,6 +201,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+
 # CONFIGURACIONES DE SEGURIDAD ADICIONALES
 
 # Configuración para django-two-factor-auth
@@ -211,36 +227,6 @@ AXES_VERBOSE = True
 # Configuración de login para Axes
 AXES_LOGIN_URL = 'login' # Nombre de URL del login actual (apps.login.urls -> name=login)
 AXES_USERNAME_FORM_FIELD = 'email' # Nuestro formulario de login usa el campo de email
-
-# Configuración OPT
-OTP_TOTP_ISSUER = 'Sistema de seguridad del Airbnb'
-
-# django-multifactor configuración
-MULTIFACTOR = {
-    # Random re-checks so long sessions occasionally reconfirm
-    'RECHECK': True,
-    'RECHECK_MIN': 60 * 60 * 3,   # 3 hours
-    'RECHECK_MAX': 60 * 60 * 6,   # 6 hours
-
-    # WebAuthn/FIDO2
-    # IMPORTANT: Usa tu dominio en producción. En dev, localhost está bien.
-    'FIDO_SERVER_ID': os.getenv('FIDO_SERVER_ID', 'localhost'),
-    'FIDO_SERVER_NAME': os.getenv('FIDO_SERVER_NAME', 'Airbnb CR'),
-    'TOKEN_ISSUER_NAME': os.getenv('TOKEN_ISSUER_NAME', 'Airbnb CR'),
-
-    # Solo permitir FIDO2.
-    'FACTORS': ['FIDO2'],
-
-    # Alentar configuración post-login
-    'SHOW_LOGIN_MESSAGE': True,
-    'LOGIN_MESSAGE': '<a href="{}">Activa la autenticación multifactor (YubiKey/Authenticator)</a>.',
-
-    # Solo-YubiKey hardening (server-side allowlist of AAGUIDs)
-    # autenticadores desconocidos y registrar su AAGUID para que puedas permitir explícitamente.
-    'ALLOWED_AAGUIDS': [
-        '2fc0579f-8113-47ea-b116-bb5a8db9202a',  # Auto-aprendido
-    ],
-}
 
 # SSL/HTTPS (hay que activarlo en producción)
 if not DEBUG:
