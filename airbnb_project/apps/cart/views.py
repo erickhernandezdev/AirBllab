@@ -175,6 +175,12 @@ class AddToCartView(LoginRequiredMixin, View):
         cart, created = Cart.objects.using(DB_ALIAS).get_or_create(user=user)
 
         if 'accommodation_id' in data:
+            if cart.accommodation_id:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Ya tienes un alojamiento en tu carrito'
+                })
+
             cart.accommodation_id = data.get('accommodation_id')
             cart.start_date = parse_date(data.get('start_date'))
             cart.end_date = parse_date(data.get('end_date'))
@@ -183,22 +189,32 @@ class AddToCartView(LoginRequiredMixin, View):
             cart.save(using=DB_ALIAS)
 
         elif 'service_id' in data:
+            service_id = data.get('service_id')
+            exists = CartService.objects.using(DB_ALIAS).filter(cart=cart, service_id=service_id).exists()
+            if exists:
+                return JsonResponse({'status': 'error', 'message': 'Este servicio ya está en tu carrito'})
+            
             CartService.objects.using(DB_ALIAS).create(
                 cart=cart,
-                service_id=data.get('service_id'),
+                service_id=service_id,
                 total_price=data.get('total_price'),
                 date=parse_date(data.get('date'))
             )
 
         elif 'activity_id' in data:
+            activity_id = data.get('activity_id')
+            exists = CartActivity.objects.using(DB_ALIAS).filter(cart=cart, activity_id=activity_id).exists()
+            if exists:
+                return JsonResponse({'status': 'error', 'message': 'Esta actividad ya está en tu carrito'})
+            
             CartActivity.objects.using(DB_ALIAS).create(
                 cart=cart,
-                activity_id=data.get('activity_id'),
+                activity_id=activity_id,
                 total_price=data.get('total_price'),
                 date=parse_date(data.get('date'))
             )
 
-        return JsonResponse({'status': 'ok'})
+        return JsonResponse({'status': 'success', 'message': 'Agregado al carrito'})
 
 class ClearCartView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
