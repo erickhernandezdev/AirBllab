@@ -1,6 +1,6 @@
 import json
 from django.shortcuts import render, get_object_or_404
-from apps.core.models import Accommodation, Service, Activity, Reservation, ReservationService, ReservationActivity
+from apps.core.models import Accommodation, Service, Activity, Reservation, ReservationService, ReservationActivity, Cart, CartService, CartActivity
 from django.utils.dateformat import format
 from datetime import timedelta
 
@@ -38,8 +38,22 @@ def item_view(request, tipo, id):
 
     blocked = sorted(set(blocked))
 
+    already_in_cart = False
+    if request.user.is_authenticated:
+        try:
+            cart = Cart.objects.using('airbnb_user').get(user=request.user)
+            if tipo == 'accomodations' and cart.accommodation_id == item.id:
+                already_in_cart = True
+            elif tipo == 'services' and CartService.objects.using('airbnb_user').filter(cart=cart, service=item).exists():
+                already_in_cart = True
+            elif tipo == 'experiences' and CartActivity.objects.using('airbnb_user').filter(cart=cart, activity=item).exists():
+                already_in_cart = True
+        except Cart.DoesNotExist:
+            pass
+
     return render(request, 'item_view.html', {
         'item': item,
         'tipo': tipo,
         'blocked_dates': blocked,
+        'already_in_cart': already_in_cart,
     })
