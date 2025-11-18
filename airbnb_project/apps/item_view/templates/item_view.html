@@ -2,11 +2,20 @@
 
 {% load static %}
 
+<!--
+  {% block extra_head %}
+  <link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  {% endblock %}
+  -->
+
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
 {% endblock %}
 
 {% block content %}
