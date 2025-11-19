@@ -5,9 +5,6 @@ from django.conf import settings
 from django_otp.models import Device
 
 class YubikeyDevice(Device):
-    """
-    Model to store Yubikey public IDs associated with users.
-    """
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE,
@@ -22,7 +19,7 @@ class YubikeyDevice(Device):
     
     name = models.CharField(
         max_length=64,
-        help_text="Nombre amigable para esta Yubikey (ej., 'Yubikey de Trabajo')"
+        help_text="Nombre para esta Yubikey (ej., 'Yubikey de Trabajo')"
     )
     
     confirmed = models.BooleanField(
@@ -35,16 +32,12 @@ class YubikeyDevice(Device):
     class Meta:
         verbose_name = "Dispositivo Yubikey"
         verbose_name_plural = "Dispositivos Yubikey"
-        db_table = 'django.login_yubikeydevice'  # Store in django schema
+        db_table = 'django"."login_yubikeydevice'
     
     def __str__(self):
         return f"{self.user.email} - {self.name} ({self.public_id})"
     
     def verify_token(self, token):
-        """
-        Verify a Yubikey OTP token.
-        Returns True if valid, False otherwise.
-        """
         from yubico_client import Yubico
         from django.conf import settings
         
@@ -54,7 +47,6 @@ class YubikeyDevice(Device):
         if token_public_id != self.public_id:
             return False
         
-        # Validate with Yubico servers
         try:
             client = Yubico(
                 settings.YUBIKEY_CLIENT_ID,
@@ -62,7 +54,6 @@ class YubikeyDevice(Device):
                 api_urls=settings.YUBIKEY_API_URLS
             )
             
-            # Verify the OTP
             client.verify(token)
             return True
             

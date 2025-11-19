@@ -12,12 +12,10 @@ def set_user_context(user):
         cursor.execute("SET app.current_user_id = %s;", [user.user_id])
 
 def login_view(request):
-    # If already authenticated and verified, go to homepage
     if request.user.is_authenticated:
         if request.user.is_verified():
             return redirect('homepage')
         else:
-            # Authenticated but not OTP verified
             return redirect('otp_verify')
     
     if request.method == 'POST':
@@ -29,7 +27,6 @@ def login_view(request):
             request.session['pre_otp_user_id'] = user.pk
             
             if YubikeyDevice.objects.filter(user=user, confirmed=True).exists():
-                # Redirect to OTP verification
                 return redirect('otp_verify')
             else:
                 login(request, user)
@@ -42,7 +39,6 @@ def login_view(request):
 
 
 def otp_verify_view(request):
-    # If already verified, redirect to homepage
     user_id = request.session.get('pre_otp_user_id')
     if not user_id:
         return redirect('login')
@@ -51,7 +47,6 @@ def otp_verify_view(request):
     User = get_user_model()
     user = User.objects.get(pk=user_id)
 
-    # Get user's Yubikey devices
     devices = YubikeyDevice.objects.filter(user=user, confirmed=True)
     
     if not devices.exists():
@@ -78,7 +73,6 @@ def otp_verify_view(request):
                 break
         
         if verified:
-            # Mark user as OTP verified
             from django.contrib.auth import get_backends
             backend = get_backends()[0]
             user.backend = get_backends()[0].__class__.__module__ + "." + get_backends()[0].__class__.__name__
