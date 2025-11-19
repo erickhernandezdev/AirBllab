@@ -17,21 +17,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from apps.login import yubikey_only
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.cart.views import AddToCartView, ClearCartView, RemoveFromCartView, RemoveActivityView, RemoveServiceView
+from .admin import secure_admin_site
 
 urlpatterns = [
-  path('admin/', admin.site.urls),
+  path('admin/', secure_admin_site.urls),
+  #path('admin/', admin.site.urls),
   #path('', TemplateView.as_view(template_name='home.html'), name='home'),
 
   # Multifactor 
   # Sobreescribir las vistas FIDO2 para usar solo YubiKeys
-  path('account/multifactor/fido2/register/', yubikey_only.YubiRegister.as_view(), name='fido2_register'),
-  path('account/multifactor/fido2/authenticate/', yubikey_only.YubiAuthenticate.as_view(), name='fido2_authenticate'),
+  # path('account/multifactor/fido2/register/', yubikey_only.YubiRegister.as_view(), name='fido2_register'),
+  # path('account/multifactor/fido2/authenticate/', yubikey_only.YubiAuthenticate.as_view(), name='fido2_authenticate'),
   # Luego incluir las URLs multifactor normales
-  path('account/multifactor/', include('multifactor.urls')),
+  # path('account/multifactor/', include('multifactor.urls')),
   # URLs de autenticación 2FA
   #path('account/', include('two_factor.urls')),
   #path('account/', include('two_factor.urls', 'two_factor')),
