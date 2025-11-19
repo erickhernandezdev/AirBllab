@@ -13,8 +13,11 @@ def set_user_context(user):
 
 def login_view(request):
     if request.user.is_authenticated:
-        if request.user.is_verified():
-            return redirect('homepage')
+        if hasattr(request.user, "is_verified") and request.user.is_verified():
+            if getattr(request.user, "is_admin", False):
+                return redirect('admin_panel:admin_dashboard')
+            else:
+                return redirect('homepage')
         else:
             return redirect('otp_verify')
     
@@ -23,20 +26,23 @@ def login_view(request):
         
         if form.is_valid():
             user = form.cleaned_data['user']
-
             request.session['pre_otp_user_id'] = user.pk
-            
+
             if YubikeyDevice.objects.filter(user=user, confirmed=True).exists():
                 return redirect('otp_verify')
             else:
                 login(request, user)
                 set_user_context(user)
-                return redirect('homepage')
+
+                if getattr(user, "is_admin", False):
+                    return redirect('admin_panel:admin_dashboard')
+                else:
+                    return redirect('homepage')
         
         return render(request, 'login/login.html', {'form': form})
+    
     form = LoginForm()
     return render(request, 'login/login.html', {'form': form})
-
 
 def otp_verify_view(request):
     user_id = request.session.get('pre_otp_user_id')
@@ -75,18 +81,20 @@ def otp_verify_view(request):
         if verified:
             from django.contrib.auth import get_backends
             backend = get_backends()[0]
-            user.backend = get_backends()[0].__class__.__module__ + "." + get_backends()[0].__class__.__name__
+            user.backend = backend.__module__ + "." + backend.__class__.__name__
             login(request, user)
             set_user_context(user)
             otp_login(request, device_used)
             del request.session['pre_otp_user_id']
-            next_url = request.GET.get('next', 'homepage')
-            return redirect(next_url)
+
+            if getattr(user, "is_admin", False):
+                return redirect('admin_panel:admin_dashboard')
+            else:
+                return redirect('homepage')
         else:            
             messages.error(request, 'OTP de Yubikey inválido. Por favor, intenta de nuevo.')
     
     return render(request, 'login/otp_verify.html', {'devices': devices})
-
 
 def logout_view(request):
     """Logout view."""

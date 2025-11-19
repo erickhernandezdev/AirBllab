@@ -209,13 +209,11 @@
     <ul>
       {% for approval in stats.recent_approvals %}
       <li>
-        <strong>{{ approval.get_status_display }}</strong> - {{
-        approval.item_name }}
-        <br />
-        <small
-          >{{ approval.created_at|date:"d/m/Y H:i" }} - por {{
-          approval.admin_user.username }}</small
-        >
+        <strong>{{ approval.get_status_display }}</strong> - {{ approval.item_name }}
+        <br>
+        <small>
+          {{ approval.created_at|date:"d/m/Y H:i" }} - por {{ approval.admin_user.username }}
+        </small>
       </li>
       {% endfor %}
     </ul>

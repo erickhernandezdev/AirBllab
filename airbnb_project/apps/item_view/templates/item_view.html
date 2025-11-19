@@ -5,7 +5,8 @@
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -88,7 +89,15 @@
 
   const blockedDatesRaw = JSON.parse(document.getElementById("blocked-dates").textContent);
   const blockedDates = blockedDatesRaw.map(d => new Date(d + "T00:00:00"));
-  console.log("Fechas bloqueadas:", blockedDates);
+
+  const alreadyInCart = "{{ already_in_cart|yesno:'true,false' }}" === "true";  
+  if (alreadyInCart) {
+    const btn = document.getElementById("add-to-cart");
+    if (btn) {
+      btn.disabled = true;
+      btn.innerText = "Agregado";
+    }
+  }
 
   if (tipo === "accomodations") {
     flatpickr("#date-range", {
@@ -130,11 +139,22 @@
           const end = selectedDates[1];
           const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
           if (nights < 1) {
-            alert("Debes seleccionar al menos una noche.");
+            Swal.fire({
+              icon: 'warning',
+              title: 'Debes seleccionar al menos una noche.',
+              timer: 3000,
+              showConfirmButton: false
+            });
             return;
           }
+
           if (nights > 20) {
-            alert("No puedes reservar más de 30 noches.");
+            Swal.fire({
+              icon: 'warning',
+              title: 'No puedes reservar más de 20 noches.',
+              timer: 3000,
+              showConfirmButton: false
+            });
             return;
           }
           button.disabled = false;
@@ -239,13 +259,30 @@
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: new URLSearchParams(bodyData),
-    }).then(response => {
-      if (response.ok) {
-        alert('Agregado al carrito');
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        Swal.fire({
+          icon: 'success',
+          title: data.message,
+          timer: 3000,
+          showConfirmButton: false
+        });
+        const btn = document.getElementById("add-to-cart");
+        if (btn) {
+          btn.disabled = true;
+          btn.innerText = "Agregado";
+        }
       } else {
-        alert('Error al agregar al carrito');
+        Swal.fire({
+          icon: 'info',
+          title: data.message,
+          timer: 3000,
+          showConfirmButton: false
+        });
       }
-    });
+    })
   });
 </script>
 {% endblock %}

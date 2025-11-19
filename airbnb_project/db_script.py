@@ -37,7 +37,7 @@ UserRole.objects.get_or_create(name='User')
 AccommodationType.objects.get_or_create(name='Estancias completas')
 AccommodationType.objects.get_or_create(name='Habitaciones privadas')
 AccommodationType.objects.get_or_create(name='Habitaciones compartidas')
-AccommodationType.objects.get_or_create(name='Alojamientos únicos')
+AccommodationType.objects.get_or_create(name='Alojamientos unicos')
 
 # Tipos de actividad
 ActivityType.objects.get_or_create(name='Tours locales')

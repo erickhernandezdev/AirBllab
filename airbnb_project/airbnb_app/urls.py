@@ -57,6 +57,7 @@ urlpatterns = [
   path('cart/remove/', RemoveFromCartView.as_view(), name='remove_from_cart'),
   path('cart/remove-activity/<int:pk>/', RemoveActivityView.as_view(), name='remove_activity'),
   path('cart/remove-service/<int:pk>/', RemoveServiceView.as_view(), name='remove_service'),
+  path('history/', include('apps.history.urls')),
 ]
 
 if settings.DEBUG:

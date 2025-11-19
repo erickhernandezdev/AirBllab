@@ -1,116 +1,112 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Detalle de Aprobación - Admin Airbnb</title>
-  <style>
-    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-    .nav-menu { background: #34495e; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-    .nav-menu a { color: white; text-decoration: none; margin-right: 20px; padding: 10px 15px; border-radius: 4px; }
-    .nav-menu a:hover { background: #2c3e50; }
-    .item-detail { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 30px; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .detail-section { margin-bottom: 20px; }
-    .actions { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1; }
-    .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-block; margin-right: 10px; }
-    .btn-approve { background: #27ae60; color: white; }
-    .btn-reject { background: #e74c3c; color: white; }
-    .btn-back { background: #7f8c8d; color: white; }
-    .history-item { padding: 15px; border-left: 4px solid #bdc3c7; margin-bottom: 10px; background: #f8f9fa; }
-    .history-approved { border-left-color: #27ae60; }
-    .history-rejected { border-left-color: #e74c3c; }
-    textarea { width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 4px; margin-top: 10px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Detalle para Aprobación</h1>
-    
-    <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}">Dashboard</a>
-      <a href="{% url 'admin_panel:admin_pending_approval' %}">Pendientes de Aprobación</a>
-      <a href="{% url 'admin_panel:admin_user_list' %}">Usuarios Registrados</a>
-      <a href="{% url 'home' %}">Volver al Sitio</a>
-    </div>
+{% extends 'layout.html' %} 
+{% load static %} 
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
+{% endblock %}
 
-    <!-- Detalles del Item -->
-    <div class="item-detail">
-      <h2>{{ item.name }}</h2>
-      
-      <div class="detail-grid">
-        <div class="detail-section">
-            <h3>Información General</h3>
-            <p><strong>Tipo:</strong> 
-              {% if item_type == 'property' %}
-                {{ item.get_property_type_display }}
-              {% else %}
-                {{ item.get_activity_type_display }}
-              {% endif %}
-            </p>
-            <p><strong>Precio:</strong> 
-              {% if item_type == 'property' %}
-                ${{ item.price_per_night }} por noche
-              {% else %}
-                ${{ item.price }}
-              {% endif %}
-            </p>
-            <p><strong>Propietario/Proveedor:</strong> {{ item.owner.username|default:item.provider.username }}</p>
-            <p><strong>Fecha de Creación:</strong> {{ item.created_at|date:"M d, Y H:i" }}</p>
-          </div>
-          
-          <div class="detail-section">
-            <h3>Descripción</h3>
-            <p>{{ item.description|default:"Sin descripción" }}</p>
-            
-            {% if item_type == 'property' %}
-            <p><strong>Ubicación:</strong> {{ item.location|default:"No especificada" }}</p>
-            {% endif %}
-          </div>
-        </div>
 
-        <!-- Historial de Aprobaciones -->
-        {% if approval_logs %}
-        <div class="detail-section">
-          <h3>Historial de Aprobaciones</h3>
-          {% for log in approval_logs %}
-          <div class="history-item {% if log.status == 'approved' %}history-approved{% elif log.status == 'rejected' %}history-rejected{% endif %}">
-            <strong>{{ log.get_status_display|upper }}</strong> 
-            - Por: {{ log.admin_user.username }}
-            - {{ log.created_at|date:"M d, Y H:i" }}
-            {% if log.notes %}
-            <br><em>Notas: {{ log.notes }}</em>
-            {% endif %}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
+{% block content %}
+<div class="page-container">
 
-        <!-- Acciones -->
-        <div class="actions">
-          <h3>Acciones</h3>
-          
-          <!-- Formulario para Aprobar -->
-          <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}" style="display: inline;">
-            {% csrf_token %}
-            <textarea name="notes" placeholder="Notas opcionales para la aprobación..." rows="2"></textarea>
-            <button type="submit" class="btn btn-approve" onclick="return confirm('¿Estás seguro de APROBAR este item?')">
-              Aprobar {{ item_type }}
-            </button>
-          </form>
-
-          <!-- Formulario para Rechazar -->
-          <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}" style="display: inline;">
-            {% csrf_token %}
-            <textarea name="notes" placeholder="Razón del rechazo (requerido)..." rows="2" required></textarea>
-            <button type="submit" class="btn btn-reject" onclick="return confirm('¿Estás seguro de RECHAZAR este item? Se eliminará permanentemente.')">
-              Rechazar {{ item_type }}
-            </button>
-          </form>
-
-          <a href="{% url 'admin_panel:admin_pending_approval' %}" class="btn btn-back">← Volver a Pendientes</a>
-        </div>
-      </div>
+  <!-- HEADER -->
+  <div class="admin-header">
+    <h1>📄 Detalle de Aprobación</h1>
+    <p>Revisa, aprueba o rechaza este elemento</p>
   </div>
-</body>
-</html>
+
+  <!-- MENU -->
+  <div class="nav-menu">
+    <a href="{% url 'admin_panel:admin_dashboard' %}">📊 Dashboard</a>
+    <a href="{% url 'admin_panel:admin_pending_approval' %}" class="active">⏳ Pendientes de Aprobación</a>
+    <a href="{% url 'admin_panel:admin_user_list' %}">👥 Usuarios</a>
+    <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
+  </div>
+
+  <!-- ITEM DETAIL -->
+  <div class="card">
+    <h2>{{ item.name }}</h2>
+
+    <div class="detail-grid">
+
+      <div class="detail-section">
+        <h3>Información General</h3>
+        <p><strong>Tipo:</strong>
+          {% if item_type == 'property' %}
+            {{ item.get_property_type_display }}
+          {% else %}
+            {{ item.get_activity_type_display }}
+          {% endif %}
+        </p>
+
+        <p><strong>Precio:</strong>
+          {% if item_type == 'property' %}
+            ${{ item.price_per_night }} por noche
+          {% else %}
+            ${{ item.price }}
+          {% endif %}
+        </p>
+
+        <p><strong>Propietario/Proveedor:</strong>
+          {{ item.owner.username|default:item.provider.username }}
+        </p>
+
+        <p><strong>Fecha de Creación:</strong>
+          {{ item.created_at|date:"d/m/Y H:i" }}
+        </p>
+      </div>
+
+      <div class="detail-section">
+        <h3>Descripción</h3>
+        <p>{{ item.description|default:"Sin descripción" }}</p>
+
+        {% if item_type == 'property' %}
+        <p><strong>Ubicación:</strong> {{ item.location|default:"No especificada" }}</p>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <!-- HISTORIAL -->
+  {% if approval_logs %}
+  <div class="card">
+    <h3>Historial de Aprobaciones</h3>
+
+    {% for log in approval_logs %}
+      <div class="history-item {% if log.status == 'approved' %}history-approved{% elif log.status == 'rejected' %}history-rejected{% endif %}">
+        <strong>{{ log.get_status_display|upper }}</strong>
+        — {{ log.created_at|date:"d/m/Y H:i" }}  
+        — por {{ log.admin_user.username }}
+
+        {% if log.notes %}
+        <br><em>Notas: {{ log.notes }}</em>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- ACCIONES -->
+  <div class="card actions">
+    <h3>Acciones</h3>
+
+    <!-- APROBAR -->
+    <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}">
+      {% csrf_token %}
+      <textarea name="notes" rows="2" placeholder="Notas opcionales..."></textarea>
+      <button type="submit" class="btn btn-approve">Aprobar {{ item_type }}</button>
+    </form>
+
+    <!-- RECHAZAR -->
+    <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}">
+      {% csrf_token %}
+      <textarea name="notes" rows="2" placeholder="Razón del rechazo..." required></textarea>
+      <button type="submit" class="btn btn-reject">Rechazar {{ item_type }}</button>
+    </form>
+
+    <br><br>
+    <a href="{% url 'admin_panel:admin_pending_approval' %}" class="btn btn-back">← Volver</a>
+  </div>
+
+</div>
+{% endblock %}

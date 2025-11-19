@@ -1,0 +1,159 @@
+body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: #2c3e50;
+  }
+
+  h1 {
+    margin-bottom: 25px;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    margin-bottom: 10px;
+  }
+
+  .nav-menu {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .nav-menu a {
+    color: #667eea;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .nav-menu a:hover {
+    background: #f0f4ff;
+    border-color: #667eea;
+  }
+
+  .nav-menu a.active {
+    background: #667eea;
+    color: white;
+  }
+
+  /* ITEM DETAIL */
+  .item-detail {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    margin-bottom: 30px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
+  }
+
+  .detail-section {
+    margin-bottom: 25px;
+  }
+
+  .detail-section p {
+    margin: 6px 0;
+    color: #34495e;
+    line-height: 1.5;
+  }
+
+  /* HISTORY */
+  .history-item {
+    padding: 18px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    border-left: 6px solid #bdc3c7;
+    margin-bottom: 12px;
+  }
+
+  .history-approved {
+    border-left-color: #27ae60;
+    background: #e9f7ef;
+  }
+
+  .history-rejected {
+    border-left-color: #e74c3c;
+    background: #fdecea;
+  }
+
+  /* FORMS & BUTTONS */
+  textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd3da;
+    border-radius: 6px;
+    resize: vertical;
+    margin-top: 8px;
+    font-size: 14px;
+  }
+
+  .actions {
+    margin-top: 35px;
+    padding-top: 25px;
+    border-top: 1px solid #e0e4e8;
+  }
+
+  .btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+
+  .btn-approve {
+    background: #27ae60;
+    color: white;
+  }
+  .btn-approve:hover {
+    background: #1d8a4a;
+  }
+
+  .btn-reject {
+    background: #e74c3c;
+    color: white;
+  }
+  .btn-reject:hover {
+    background: #c0392b;
+  }
+
+  .btn-back {
+    background: #7f8c8d;
+    color: white;
+  }
+  .btn-back:hover {
+    background: #5f6c6d;
+  }
