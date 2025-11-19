@@ -50,7 +50,7 @@ SECURE_ADMIN_OTP_REQUIRED = True
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 #ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
-ALLOWED_HOSTS = ['172.24.131.77', 'localhost', '127.0.0.1', 'vm_131-077.unac.ucr.ac.cr']
+ALLOWED_HOSTS = ['172.24.131.77', 'localhost', '127.0.0.1', 'vm_131-077.unac.ucr.ac.cr', 'www.airbllab.com', 'airbllab.com']
 
 # Application definition
 
