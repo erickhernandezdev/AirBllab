@@ -33,7 +33,7 @@ body {
 	padding: 10px 16px;
 	border-radius: 8px;
 	border: 1px solid #d0d7e0;
-	background: #ff0054;
+	background: #C97C5D;
 	cursor: pointer;
 	font-weight: 600;
 	color: white;
@@ -77,7 +77,7 @@ body {
 	padding: 10px 16px;
 	border-radius: 8px;
 	background: rgb(255, 255, 255);
-    border: #ff0054 solid 1px;
+    border: #C97C5D solid 1px;
 	color: #2b3a4a;
 	font-weight: 700;
 	cursor: pointer;
@@ -89,7 +89,7 @@ body {
 	padding: 10px 16px;
 	border-radius: 8px;
 	border: none;
-	background: linear-gradient(180deg, #ff0054, #ce0045);
+	background: linear-gradient(180deg, #C97C5D, #C97C5D);
 	color: #fff;
 	font-weight: 700;
     text-decoration: none;

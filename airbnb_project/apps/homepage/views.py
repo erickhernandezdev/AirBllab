@@ -7,7 +7,7 @@ def homepage(request):
         {
             'image': '../../media/accommodations/alojamientos.jpg',
             'alt': 'Alojamiento',
-            'title': 'Encuentra el lugar perfecto para tu estadía',
+            'title': 'El lugar perfecto para tu estadía',
             'link': reverse('listing', kwargs={'tipo': 'accomodations'})
         },
         {

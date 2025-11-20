@@ -1,6 +1,6 @@
 .login-container {
     max-width: 400px;
-    margin: 2rem auto;
+    margin: 6rem auto;
     padding: 2rem;
     background-color: #fff;
     border-radius: 8px;
@@ -48,7 +48,7 @@
 }
 
 .login-button {
-    background-color: #ff385c;
+    background-color: #C97C5D;
     color: white;
     padding: 1rem;
     margin-top: 1rem;
@@ -61,7 +61,7 @@
 }
 
 .login-button:hover {
-    background-color: #e31c5f;
+    background-color: #a65f42;
 }
 
 .error-message {

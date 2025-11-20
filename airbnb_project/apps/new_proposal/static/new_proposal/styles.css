@@ -87,7 +87,7 @@ textarea {
 }
 
 #form-container button[type="submit"] {
-    background: #ff0054;
+    background: #C97C5D;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -100,7 +100,7 @@ textarea {
 }
 
 #form-container button[type="submit"]:hover {
-    background: #fd397a;
+    background: #a65f42;
 }
 
 .toast {

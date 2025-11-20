@@ -31,9 +31,9 @@
 }
 
 .empty-cart-btn {
-  background-color: #ff0066;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
   padding: 12px 32px;
   border-radius: 50px;
   font-size: 16px;
@@ -44,7 +44,8 @@
 }
 
 .empty-cart-btn:hover {
-  background-color: #e6005c;
+  background-color: #dad9d9;
+  box-shadow: 0 0 0 2px #dad9d9 inset;
 }
 
 .cart-item {
@@ -97,9 +98,9 @@
 }
 
 .remove-btn {
-  background-color: #ff0066;
-  color: white;
-  border: none;
+  background-color: transparent;
+  color: black;
+  border: 2px solid black;
   padding: 10px 28px;
   border-radius: 50px;
   font-size: 16px;
@@ -109,7 +110,8 @@
 }
 
 .remove-btn:hover {
-  background-color: #e6005c;
+  background-color: #dad9d9;
+  box-shadow: 0 0 0 2px #dad9d9 inset;
 }
 
 .summary-section {
@@ -159,7 +161,7 @@
 
 .pay-button {
   width: 100%;
-  background-color: #ff0066;
+  background-color: #C97C5D;
   color: white;
   border: none;
   padding: 18px;
@@ -171,8 +173,8 @@
   transition: background-color 0.2s;
 }
 
-.checkout-btn:hover {
-  background-color: #e6005c;
+.pay-button:hover {
+  background-color: #a65f42;
 }
 
 .no-item {
@@ -254,7 +256,7 @@ input {
 }
 
 button.primary {
-  background: #ff0066;
+  background: #C97C5D;
   color: #fff;
   border: none;
   padding: 0.6rem 1rem;
