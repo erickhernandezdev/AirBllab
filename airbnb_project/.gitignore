@@ -1,16 +1,24 @@
-.venv
+# Virtual environment
+.venv/
+
+# Environment variables and secrets
 .env
-__pycache__/
-*.pyc
-*.pyo
-db.sqlite3
-*.db
-*.sqlite3
 config/secret.py
 *.key
 *.pem
-migrations/
-security.log
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Database
+db.sqlite3
+*.db
+*.sqlite3
+
+# Django generated files
+staticfiles/
+
+# Logs
+logs/
 *.log
-apps/*/migrations/000*_auto_*.py
-media/

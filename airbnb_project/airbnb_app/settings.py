@@ -33,24 +33,11 @@ SECRET_KEY = os.getenv('SECRET_KEY', default=get_random_secret_key())
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")
 
-YUBIKEY_CLIENT_ID = os.getenv('YUBIKEY_CLIENT_ID')
-YUBIKEY_SECRET_KEY= os.getenv('YUBIKEY_SECRET_KEY')
-
-YUBIKEY_API_URLS = [
-    'https://api.yubico.com/wsapi/2.0/verify',
-    'https://api2.yubico.com/wsapi/2.0/verify',
-    'https://api3.yubico.com/wsapi/2.0/verify',
-    'https://api4.yubico.com/wsapi/2.0/verify',
-    'https://api5.yubico.com/wsapi/2.0/verify',
-]
-
-SECURE_ADMIN_OTP_REQUIRED = True
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
 #ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
-ALLOWED_HOSTS = ['172.24.131.77', 'localhost', '127.0.0.1', 'vm_131-077.unac.ucr.ac.cr', 'www.airbllab.com', 'airbllab.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -63,10 +50,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Seguridad
-
-    'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
     'axes',
 
     # Apps
@@ -90,7 +73,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'axes.middleware.AxesMiddleware',
@@ -99,7 +81,6 @@ MIDDLEWARE = [
 LOGIN_URL = 'account/login'
 LOGIN_REDIRECT_URL = '/homepage/'
 LOGOUT_REDIRECT_URL = '/homepage/'
-OTP_LOGIN_URL = '/account/otp-verify/'
 
 ROOT_URLCONF = 'airbnb_app.urls'
 
@@ -139,22 +120,7 @@ DATABASES = {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
         }
     },
-
-    'airbnb_user': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'airbnb_db'),
-        'USER': os.getenv('DB_USER_READONLY', 'airbnb_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD_READONLY'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-        'OPTIONS': {
-            'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
-        }
-    }
 }
-
-DATABASE_ROUTERS = ['db_routers.DataBaseRouter']
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -201,15 +167,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
-# CONFIGURACIONES DE SEGURIDAD ADICIONALES
-
-# Configuración para django-two-factor-auth
-LOGIN_URL = '/account/login/'
-LOGIN_REDIRECT_URL = '/homepage/'
-LOGOUT_REDIRECT_URL = '/homepage/'
-#TWO_FACTOR_PATCH_ADMIN = True
 
 # Autenticación personalizada
 AUTHENTICATION_BACKENDS = [
