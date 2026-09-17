@@ -28,6 +28,11 @@ def login_view(request):
             if getattr(user, "is_admin", False):
                 return redirect('admin_panel:admin_dashboard')
 
+            next_url = request.POST.get('next') or request.GET.get('next')
+
+            if next_url:
+                return redirect(next_url)
+
             return redirect('homepage')
 
         return render(request, 'login/login.html', {'form': form})

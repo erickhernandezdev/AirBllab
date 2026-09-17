@@ -6,7 +6,10 @@
   <div class="login-container">
     <h2 class="login-title">Iniciar sesión</h2>
     <form method="post" class="login-form">
-      {% csrf_token %} {% for field in form %}
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}" />
+
+      {% for field in form %}
       <div class="form-group">
         {{ field.label_tag }} {{ field }} {% if field.errors %}
         <span class="error-message">{{ field.errors|join:", " }}</span>
@@ -15,6 +18,7 @@
       {% endfor %} {% if form.non_field_errors %}
       <div class="error-message">{{ form.non_field_errors|join:", " }}</div>
       {% endif %}
+
       <button type="submit" class="login-button">Iniciar sesión</button>
     </form>
   </div>

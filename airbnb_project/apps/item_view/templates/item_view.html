@@ -1,22 +1,19 @@
-{% extends 'layout.html' %}
-
-{% load static %}
-
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'item_view/item_view.css' %}">
-<link rel="stylesheet" href="{% static 'vendor/flatpickr/flatpickr.min.css' %}">
+{% extends 'layout.html' %} {% load static %} {% block extra_head %}
+<link rel="stylesheet" href="{% static 'item_view/item_view.css' %}" />
+<link
+  rel="stylesheet"
+  href="{% static 'vendor/flatpickr/flatpickr.min.css' %}"
+/>
 <script src="{% static 'vendor/flatpickr/flatpickr.min.js' %}"></script>
 <script src="{% static 'vendor/sweetalert2/sweetalert2.all.min.js' %}"></script>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <main class="item_view">
   <section class="item-header">
     <div class="item-image">
       {% if item.image %}
-        <img src="{{ item.image.url }}" alt="{{ item.name }}">
+      <img src="{{ item.image.url }}" alt="{{ item.name }}" />
       {% else %}
-        <img src="../../../media/default.png" alt="Imagen por defecto">
+      <img src="../../../media/default.png" alt="Imagen por defecto" />
       {% endif %}
     </div>
 
@@ -43,56 +40,83 @@
     </div>
   </section>
 
+  {% if request.user.is_authenticated %}
   <div class="reservation_title">
-    <h2>
-      Realiza tu reservación
-    </h2>
+    <h2>Realiza tu reservación</h2>
   </div>
 
   <section class="calendar-section">
     <div class="calendar-box">
       <label for="date-range">
-        {% if tipo == 'accomodations' %}
-        Selecciona tus fechas:
-        <input type="text" id="date-range" placeholder="Llegada - Salida">
-        {% else %}
-        Selecciona la fecha:
-        <input type="text" id="date-range" placeholder="Fecha">
+        {% if tipo == 'accomodations' %} Selecciona tus fechas:
+        <input type="text" id="date-range" placeholder="Llegada - Salida" />
+        {% else %} Selecciona la fecha:
+        <input type="text" id="date-range" placeholder="Fecha" />
         {% endif %}
       </label>
     </div>
 
     <div class="reservation-summary">
       <h2>Resumen de tu selección</h2>
+
       {% if tipo == 'accomodations' %}
-      <p><strong>Cantidad de noches:</strong> <span id="nights-count">0</span></p>
+      <p>
+        <strong>Cantidad de noches:</strong> <span id="nights-count">0</span>
+      </p>
       <p><strong>Fecha de llegada:</strong> <span id="start-date">--</span></p>
       <p><strong>Fecha de salida:</strong> <span id="end-date">--</span></p>
       {% else %}
-      <p><strong>Fecha seleccionada:</strong> <span id="start-date">--</span></p>
+      <p>
+        <strong>Fecha seleccionada:</strong> <span id="start-date">--</span>
+      </p>
       {% endif %}
+
       <p><strong>Precio final:</strong> ₡<span id="final-price">0</span></p>
-      <button class="add-to-cart" id="add-to-cart" disabled>Agregar al carrito</button>
+      <button class="add-to-cart" id="add-to-cart" disabled>
+        Agregar al carrito
+      </button>
     </div>
   </section>
+  {% else %}
+  <section class="login-prompt">
+    <h2>¿Quieres realizar una reservación?</h2>
+    <p>
+      Inicia sesión para seleccionar tus fechas y agregar esta opción a tu
+      carrito.
+    </p>
+    <a
+      href="{% url 'login' %}?next={{ request.get_full_path }}"
+      class="login-button"
+    >
+      Iniciar sesión
+    </a>
+  </section>
+  {% endif %}
 </main>
-{% endblock %}
+{% endblock %} {% block extra_js %} {% if request.user.is_authenticated %} {{
+blocked_dates|json_script:"blocked-dates" }}
 
-{% block extra_js %}
-{{ blocked_dates|json_script:"blocked-dates" }}
 <script>
   const tipo = "{{ tipo }}";
   const price_unitary = parseInt("{{ item.price }}");
   const today = new Date();
   const nextYear = new Date();
+
   nextYear.setFullYear(today.getFullYear() + 1);
 
-  const blockedDatesRaw = JSON.parse(document.getElementById("blocked-dates").textContent);
-  const blockedDates = blockedDatesRaw.map(d => new Date(d + "T00:00:00"));
+  const blockedDatesElement = document.getElementById("blocked-dates");
 
-  const alreadyInCart = "{{ already_in_cart|yesno:'true,false' }}" === "true";  
+  const blockedDatesRaw = blockedDatesElement
+    ? JSON.parse(blockedDatesElement.textContent)
+    : [];
+
+  const blockedDates = blockedDatesRaw.map((d) => new Date(d + "T00:00:00"));
+
+  const alreadyInCart = "{{ already_in_cart|yesno:'true,false' }}" === "true";
+
   if (alreadyInCart) {
     const btn = document.getElementById("add-to-cart");
+
     if (btn) {
       btn.disabled = true;
       btn.innerText = "Agregado";
@@ -108,17 +132,56 @@
       minDate: today,
       maxDate: nextYear,
       disable: blockedDates,
+
       locale: {
         firstDayOfWeek: 1,
+
         weekdays: {
-          shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-          longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+          shorthand: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+          longhand: [
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+          ],
         },
+
         months: {
-          shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-          longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-        }
+          shorthand: [
+            "Ene",
+            "Feb",
+            "Mar",
+            "Abr",
+            "May",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dic",
+          ],
+
+          longhand: [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre",
+          ],
+        },
       },
+
       onChange: function (selectedDates, dateStr, instance) {
         const button = document.getElementById("add-to-cart");
 
@@ -126,46 +189,62 @@
 
         if (selectedDates.length === 1) {
           const start = selectedDates[0];
+
           instance.set("disable", [
             ...blockedDates,
+
             function (date) {
               return date < start;
-            }
+            },
           ]);
         }
 
         if (selectedDates.length === 2) {
           const start = selectedDates[0];
           const end = selectedDates[1];
+
           const nights = Math.round((end - start) / (1000 * 60 * 60 * 24));
+
           if (nights < 1) {
             Swal.fire({
-              icon: 'warning',
-              title: 'Debes seleccionar al menos una noche.',
+              icon: "warning",
+              title: "Debes seleccionar al menos una noche.",
               timer: 3000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
+
             return;
           }
 
           if (nights > 20) {
             Swal.fire({
-              icon: 'warning',
-              title: 'No puedes reservar más de 20 noches.',
+              icon: "warning",
+              title: "No puedes reservar más de 20 noches.",
               timer: 3000,
-              showConfirmButton: false
+              showConfirmButton: false,
             });
+
             return;
           }
+
           button.disabled = false;
+
           const total = nights * price_unitary;
 
-          document.getElementById("start-date").textContent = start.toISOString().split('T')[0];
-          document.getElementById("end-date").textContent = end.toISOString().split('T')[0];
+          document.getElementById("start-date").textContent = start
+            .toISOString()
+            .split("T")[0];
+
+          document.getElementById("end-date").textContent = end
+            .toISOString()
+            .split("T")[0];
+
           document.getElementById("nights-count").textContent = nights;
-          document.getElementById("final-price").textContent = total.toLocaleString();
+
+          document.getElementById("final-price").textContent =
+            total.toLocaleString();
         }
-      }
+      },
     });
   } else if (tipo === "experiences" || tipo === "services") {
     flatpickr("#date-range", {
@@ -176,59 +255,114 @@
       minDate: today,
       maxDate: nextYear,
       disable: blockedDates,
+
       locale: {
         firstDayOfWeek: 1,
+
         weekdays: {
-          shorthand: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'],
-          longhand: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+          shorthand: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+          longhand: [
+            "Domingo",
+            "Lunes",
+            "Martes",
+            "Miércoles",
+            "Jueves",
+            "Viernes",
+            "Sábado",
+          ],
         },
+
         months: {
-          shorthand: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-          longhand: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-        }
+          shorthand: [
+            "Ene",
+            "Feb",
+            "Mar",
+            "Abr",
+            "May",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dic",
+          ],
+
+          longhand: [
+            "Enero",
+            "Febrero",
+            "Marzo",
+            "Abril",
+            "Mayo",
+            "Junio",
+            "Julio",
+            "Agosto",
+            "Septiembre",
+            "Octubre",
+            "Noviembre",
+            "Diciembre",
+          ],
+        },
       },
+
       onChange: function (selectedDates, dateStr, instance) {
         const button = document.getElementById("add-to-cart");
+
         button.disabled = true;
 
         if (selectedDates.length === 1) {
           const selected = selectedDates[0];
+
           button.disabled = false;
 
-          document.getElementById("start-date").textContent = selected.toISOString().split('T')[0];
-          document.getElementById("final-price").textContent = price_unitary.toLocaleString();
+          document.getElementById("start-date").textContent = selected
+            .toISOString()
+            .split("T")[0];
+
+          document.getElementById("final-price").textContent =
+            price_unitary.toLocaleString();
         }
-      }
+      },
     });
   }
 
   function getCookie(name) {
     let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
+
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+
       for (let i = 0; i < cookies.length; i++) {
         const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+
+        if (cookie.substring(0, name.length + 1) === name + "=") {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+
           break;
         }
       }
     }
+
     return cookieValue;
   }
 
-  document.getElementById('add-to-cart').addEventListener('click', function () {
+  document.getElementById("add-to-cart").addEventListener("click", function () {
     const tipo = "{{ tipo }}";
     const itemId = "{{ item.id }}";
     const priceUnitary = parseInt("{{ item.price }}");
-    const csrfToken = getCookie('csrftoken');
+    const csrfToken = getCookie("csrftoken");
 
-    const startDate = document.getElementById('start-date').textContent;
+    const startDate = document.getElementById("start-date").textContent;
+
     let bodyData = {};
 
-    if (tipo === 'accomodations') {
-      const endDate = document.getElementById('end-date').textContent;
-      const nights = parseInt(document.getElementById('nights-count').textContent);
+    if (tipo === "accomodations") {
+      const endDate = document.getElementById("end-date").textContent;
+
+      const nights = parseInt(
+        document.getElementById("nights-count").textContent,
+      );
+
       const total = nights * priceUnitary;
 
       bodyData = {
@@ -238,13 +372,13 @@
         nights: nights,
         price_total: total,
       };
-    } else if (tipo === 'services') {
+    } else if (tipo === "services") {
       bodyData = {
         service_id: itemId,
         date: startDate,
         total_price: priceUnitary,
       };
-    } else if (tipo === 'experiences') {
+    } else if (tipo === "experiences") {
       bodyData = {
         activity_id: itemId,
         date: startDate,
@@ -252,37 +386,43 @@
       };
     }
 
-    fetch('/cart/add/', {
-      method: 'POST',
+    fetch("/cart/add/", {
+      method: "POST",
+
       headers: {
-        'X-CSRFToken': csrfToken,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        "X-CSRFToken": csrfToken,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
+
       body: new URLSearchParams(bodyData),
     })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "success") {
-        Swal.fire({
-          icon: 'success',
-          title: data.message,
-          timer: 3000,
-          showConfirmButton: false
-        });
-        const btn = document.getElementById("add-to-cart");
-        if (btn) {
-          btn.disabled = true;
-          btn.innerText = "Agregado";
+      .then((response) => response.json())
+
+      .then((data) => {
+        if (data.status === "success") {
+          Swal.fire({
+            icon: "success",
+            title: data.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
+
+          const btn = document.getElementById("add-to-cart");
+
+          if (btn) {
+            btn.disabled = true;
+            btn.innerText = "Agregado";
+          }
+        } else {
+          Swal.fire({
+            icon: "info",
+            title: data.message,
+            timer: 3000,
+            showConfirmButton: false,
+          });
         }
-      } else {
-        Swal.fire({
-          icon: 'info',
-          title: data.message,
-          timer: 3000,
-          showConfirmButton: false
-        });
-      }
-    })
+      });
   });
 </script>
-{% endblock %}
+
+{% endif %} {% endblock %}
