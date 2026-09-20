@@ -2,3 +2,6 @@
 exclude = [
     "*/migrations/*",
 ]
+
+[tool.ruff.lint]
+extend-select = ["E402"]
