@@ -17,7 +17,7 @@ jobs:
         image: postgres:18
         env:
           POSTGRES_USER: airbnb_admin
-          POSTGRES_PASSWORD: admindb2026
+          POSTGRES_PASSWORD: test_password
           POSTGRES_DB: airbnb_db
         ports:
           - 5432:5432
@@ -47,11 +47,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Create test database template
+        env:
+          PGPASSWORD: test_password
+        run: |
+          psql -h localhost -U airbnb_admin -d postgres -c "CREATE DATABASE airbnb_test_template;"
+
       - name: Run tests with coverage
         env:
           DB_NAME: airbnb_db
           DB_USER: airbnb_admin
-          DB_PASSWORD: admindb2026
+          DB_PASSWORD: test_password
           DB_HOST: localhost
           DB_PORT: 5432
           DEBUG: "True"
