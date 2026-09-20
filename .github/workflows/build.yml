@@ -52,6 +52,13 @@ jobs:
           PGPASSWORD: test_password
         run: |
           psql -h localhost -U airbnb_admin -d postgres -c "CREATE DATABASE airbnb_test_template;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA django;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA carts;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA experiences;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA experiences_types;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA invoices;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA reservations;"
+          psql -h localhost -U airbnb_admin -d airbnb_test_template -c "CREATE SCHEMA users;"
 
       - name: Run tests with coverage
         env:
