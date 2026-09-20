@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'axes',
 
     # Apps
-    'apps.bookings',
     'apps.payment',
     'apps.core',
     'apps.admin_panel',
@@ -118,7 +117,10 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
         'OPTIONS': {
             'options': '-c search_path=django,carts,experiences,experiences_types,invoices,reservations,users,public'
-        }
+        },
+        'TEST': {
+            'TEMPLATE': 'airbnb_test_template',
+        },
     },
 }
 

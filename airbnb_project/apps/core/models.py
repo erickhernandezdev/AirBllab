@@ -116,7 +116,7 @@ class Accommodation(models.Model):
     available_from = models.DateField(null=True, blank=True)
     available_to = models.DateField(null=True, blank=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendiente')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -141,7 +141,7 @@ class Service(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='services/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendiente')
 
     class Meta:
         db_table = 'experiences"."services'
@@ -155,7 +155,7 @@ class Activity(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='activities/', blank=True, null=True)
     rating = models.DecimalField(max_digits=2, decimal_places=1, default=0.0)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pendiente')
 
     class Meta:
         db_table = 'experiences"."activities'
