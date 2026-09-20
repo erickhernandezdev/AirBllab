@@ -7,7 +7,6 @@ from apps.core.models import CustomUser
 
 
 class LoginViewTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser",
@@ -106,7 +105,6 @@ class LoginViewTest(TestCase):
 
 
 class LogoutViewTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser",

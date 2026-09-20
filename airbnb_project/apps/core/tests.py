@@ -1,14 +1,15 @@
-from decimal import Decimal
 from datetime import date
+from decimal import Decimal
 
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 
 from .models import (
-    Activity,
-    ActivityType,
     Accommodation,
     AccommodationType,
+    Activity,
+    ActivityType,
     Cart,
     CartActivity,
     CartService,
@@ -25,7 +26,6 @@ from .models import (
 
 
 class CustomUserTest(TestCase):
-
     def test_create_user(self):
         user = CustomUser.objects.create_user(
             username="testuser",
@@ -71,7 +71,6 @@ class CustomUserTest(TestCase):
 
 
 class AccommodationTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="host",
@@ -130,7 +129,6 @@ class AccommodationTest(TestCase):
 
 
 class UserRoleTest(TestCase):
-
     def test_create_user_role(self):
         role = UserRole.objects.create(name="Administrador")
 
@@ -139,7 +137,6 @@ class UserRoleTest(TestCase):
 
 
 class AccommodationTypeTest(TestCase):
-
     def test_create_accommodation_type(self):
         accommodation_type = AccommodationType.objects.create(
             name="Hotel",
@@ -151,7 +148,6 @@ class AccommodationTypeTest(TestCase):
 
 
 class ActivityTypeTest(TestCase):
-
     def test_create_activity_type(self):
         activity_type = ActivityType.objects.create(
             name="Tour",
@@ -162,7 +158,6 @@ class ActivityTypeTest(TestCase):
 
 
 class ServiceTypeTest(TestCase):
-
     def test_create_service_type(self):
         service_type = ServiceType.objects.create(
             name="Transporte",
@@ -173,7 +168,6 @@ class ServiceTypeTest(TestCase):
 
 
 class ActivityTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="host",
@@ -204,7 +198,6 @@ class ActivityTest(TestCase):
 
 
 class ServiceTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="host",
@@ -234,7 +227,6 @@ class ServiceTest(TestCase):
 
 
 class ReservationTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="guest",
@@ -279,7 +271,6 @@ class ReservationTest(TestCase):
 
 
 class CartTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="user",
@@ -306,7 +297,6 @@ class CartTest(TestCase):
 
 
 class ReservationActivityTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="user",
@@ -347,7 +337,6 @@ class ReservationActivityTest(TestCase):
 
 
 class ReservationServiceTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="user",
@@ -385,7 +374,6 @@ class ReservationServiceTest(TestCase):
 
 
 class InvoiceTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="user",
@@ -413,7 +401,6 @@ class InvoiceTest(TestCase):
 
 
 class InvoiceItemTest(TestCase):
-
     def test_create_invoice_item(self):
         user = CustomUser.objects.create_user(
             username="user",
@@ -445,8 +432,8 @@ class InvoiceItemTest(TestCase):
         self.assertEqual(item.quantity, 2)
         self.assertEqual(item.total, Decimal("50000.00"))
 
-class ModelRelationshipsTest(TestCase):
 
+class ModelRelationshipsTest(TestCase):
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="user",
@@ -455,9 +442,7 @@ class ModelRelationshipsTest(TestCase):
             name="Test User",
         )
 
-        self.accommodation_type = AccommodationType.objects.create(
-            name="Hotel"
-        )
+        self.accommodation_type = AccommodationType.objects.create(name="Hotel")
 
         self.accommodation = Accommodation.objects.create(
             host=self.user,
@@ -502,3 +487,321 @@ class ModelRelationshipsTest(TestCase):
         reservation.refresh_from_db()
 
         self.assertIsNone(reservation.accommodation)
+
+
+class CustomUserAdditionalTest(TestCase):
+    def test_user_str_uses_username_when_name_is_empty(self):
+        user = CustomUser.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="password123",
+            name="",
+        )
+
+        self.assertEqual(str(user), "testuser")
+
+    def test_admin_role_is_false_for_normal_user(self):
+        user = CustomUser.objects.create_user(
+            username="testuser",
+            email="test@example.com",
+            password="password123",
+            name="Test User",
+            role=CustomUser.Role.USER,
+        )
+
+        self.assertFalse(user.is_admin)
+
+    def test_user_email_must_be_unique(self):
+        CustomUser.objects.create_user(
+            username="user1",
+            email="same@example.com",
+            password="password123",
+            name="User 1",
+        )
+
+        with self.assertRaises(IntegrityError):
+            CustomUser.objects.create_user(
+                username="user2",
+                email="same@example.com",
+                password="password123",
+                name="User 2",
+            )
+
+    def test_user_username_must_be_unique(self):
+        CustomUser.objects.create_user(
+            username="sameuser",
+            email="user1@example.com",
+            password="password123",
+            name="User 1",
+        )
+
+        with self.assertRaises(IntegrityError):
+            CustomUser.objects.create_user(
+                username="sameuser",
+                email="user2@example.com",
+                password="password123",
+                name="User 2",
+            )
+
+
+class StatusValidationTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="host",
+            email="host@example.com",
+            password="password123",
+            name="Host",
+        )
+
+        self.accommodation_type = AccommodationType.objects.create(name="Hotel")
+
+        self.activity_type = ActivityType.objects.create(name="Tour")
+
+        self.service_type = ServiceType.objects.create(name="Transporte")
+
+    def test_accommodation_accepts_valid_status(self):
+        for status in ["Aprobado", "Rechazado", "Pendiente"]:
+            accommodation = Accommodation(
+                host=self.user,
+                accommodation_type=self.accommodation_type,
+                name="Hotel",
+                description="Hotel",
+                location="San José",
+                price=Decimal("50000.00"),
+                status=status,
+            )
+
+            accommodation.full_clean()
+
+    def test_activity_accepts_valid_status(self):
+        for status in ["Aprobado", "Rechazado", "Pendiente"]:
+            activity = Activity(
+                host=self.user,
+                activity_type=self.activity_type,
+                name="Tour",
+                description="Tour",
+                location="San José",
+                price=Decimal("20000.00"),
+                status=status,
+            )
+
+            activity.full_clean()
+
+    def test_service_accepts_valid_status(self):
+        for status in ["Aprobado", "Rechazado", "Pendiente"]:
+            service = Service(
+                host=self.user,
+                service_type=self.service_type,
+                name="Transporte",
+                description="Servicio",
+                price=Decimal("15000.00"),
+                status=status,
+            )
+
+            service.full_clean()
+
+    def test_activity_rejects_invalid_status(self):
+        activity = Activity(
+            host=self.user,
+            activity_type=self.activity_type,
+            name="Tour",
+            description="Tour",
+            location="San José",
+            price=Decimal("20000.00"),
+            status="InvalidStatus",
+        )
+
+        with self.assertRaises(ValidationError):
+            activity.full_clean()
+
+    def test_service_rejects_invalid_status(self):
+        service = Service(
+            host=self.user,
+            service_type=self.service_type,
+            name="Transporte",
+            description="Servicio",
+            price=Decimal("15000.00"),
+            status="InvalidStatus",
+        )
+
+        with self.assertRaises(ValidationError):
+            service.full_clean()
+
+
+class CartAdditionalTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="user",
+            email="user@example.com",
+            password="password123",
+            name="User",
+        )
+
+        self.activity_type = ActivityType.objects.create(name="Tour")
+
+        self.service_type = ServiceType.objects.create(name="Transporte")
+
+        self.activity = Activity.objects.create(
+            host=self.user,
+            activity_type=self.activity_type,
+            name="Tour Test",
+            description="Tour",
+            location="San José",
+            price=Decimal("20000.00"),
+        )
+
+        self.service = Service.objects.create(
+            host=self.user,
+            service_type=self.service_type,
+            name="Servicio Test",
+            description="Servicio",
+            price=Decimal("15000.00"),
+        )
+
+        self.cart = Cart.objects.create(user=self.user)
+
+    def test_user_cannot_have_two_carts(self):
+        with self.assertRaises(IntegrityError):
+            Cart.objects.create(user=self.user)
+
+    def test_create_cart_activity(self):
+        cart_activity = CartActivity.objects.create(
+            cart=self.cart,
+            activity=self.activity,
+            total_price=Decimal("20000.00"),
+            date=date(2026, 10, 1),
+        )
+
+        self.assertEqual(cart_activity.cart, self.cart)
+        self.assertEqual(cart_activity.activity, self.activity)
+        self.assertEqual(
+            cart_activity.total_price,
+            Decimal("20000.00"),
+        )
+
+    def test_create_cart_service(self):
+        cart_service = CartService.objects.create(
+            cart=self.cart,
+            service=self.service,
+            total_price=Decimal("15000.00"),
+            date=date(2026, 10, 1),
+        )
+
+        self.assertEqual(cart_service.cart, self.cart)
+        self.assertEqual(cart_service.service, self.service)
+        self.assertEqual(
+            cart_service.total_price,
+            Decimal("15000.00"),
+        )
+
+
+class CascadeDeleteTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="user",
+            email="user@example.com",
+            password="password123",
+            name="User",
+        )
+
+        self.activity_type = ActivityType.objects.create(name="Tour")
+
+        self.service_type = ServiceType.objects.create(name="Transporte")
+
+        self.activity = Activity.objects.create(
+            host=self.user,
+            activity_type=self.activity_type,
+            name="Tour",
+            description="Tour",
+            location="San José",
+            price=Decimal("20000.00"),
+        )
+
+        self.service = Service.objects.create(
+            host=self.user,
+            service_type=self.service_type,
+            name="Servicio",
+            description="Servicio",
+            price=Decimal("15000.00"),
+        )
+
+        self.reservation = Reservation.objects.create(
+            guest=self.user,
+            status="Pendiente",
+        )
+
+    def test_deleting_reservation_deletes_activity_items(self):
+        ReservationActivity.objects.create(
+            reservation=self.reservation,
+            activity=self.activity,
+            total_price=Decimal("20000.00"),
+            date=date(2026, 10, 1),
+        )
+
+        self.reservation.delete()
+
+        self.assertEqual(
+            ReservationActivity.objects.count(),
+            0,
+        )
+
+    def test_deleting_reservation_deletes_service_items(self):
+        ReservationService.objects.create(
+            reservation=self.reservation,
+            service=self.service,
+            total_price=Decimal("15000.00"),
+            date=date(2026, 10, 1),
+        )
+
+        self.reservation.delete()
+
+        self.assertEqual(
+            ReservationService.objects.count(),
+            0,
+        )
+
+    def test_deleting_reservation_deletes_invoice(self):
+        Invoice.objects.create(
+            reservation=self.reservation,
+            amount=Decimal("50000.00"),
+            payment_method="Tarjeta",
+            paid_at="2026-10-01T12:00:00Z",
+        )
+
+        self.reservation.delete()
+
+        self.assertEqual(Invoice.objects.count(), 0)
+
+
+class InvoiceItemValidationTest(TestCase):
+    def setUp(self):
+        self.user = CustomUser.objects.create_user(
+            username="user",
+            email="user@example.com",
+            password="password123",
+            name="User",
+        )
+
+        self.reservation = Reservation.objects.create(
+            guest=self.user,
+            status="Pendiente",
+        )
+
+        self.invoice = Invoice.objects.create(
+            reservation=self.reservation,
+            amount=Decimal("50000.00"),
+            payment_method="Tarjeta",
+            paid_at="2026-10-01T12:00:00Z",
+        )
+
+    def test_invoice_item_accepts_positive_quantity(self):
+        item = InvoiceItem(
+            invoice=self.invoice,
+            quantity=2,
+            unit_price=Decimal("25000.00"),
+            total=Decimal("50000.00"),
+        )
+
+        item.full_clean()
+
+        self.assertEqual(item.quantity, 2)

@@ -1,11 +1,11 @@
-from django.test import TestCase, RequestFactory
+from django.test import RequestFactory, TestCase
 
 from apps.core.models import CustomUser
+
 from .forms import LoginForm
 
 
 class LoginFormTest(TestCase):
-
     def setUp(self):
         self.user = CustomUser.objects.create_user(
             username="testuser",
