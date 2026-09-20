@@ -1,16 +1,16 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, render
 
-from .forms import NewProposalForm
 from ..core.models import (
     Accommodation,
-    Service,
-    Activity,
     AccommodationType,
+    Activity,
     ActivityType,
+    Service,
     ServiceType,
 )
+from .forms import NewProposalForm
 
 
 @login_required

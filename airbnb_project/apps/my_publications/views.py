@@ -1,7 +1,7 @@
-from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
 
-from ..core.models import Accommodation, Service, Activity
+from ..core.models import Accommodation, Activity, Service
 
 
 @login_required

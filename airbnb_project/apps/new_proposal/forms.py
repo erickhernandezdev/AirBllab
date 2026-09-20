@@ -1,12 +1,13 @@
-from datetime import date
+from typing import ClassVar
 
 from django import forms
+from django.utils import timezone
 
 from apps.core.models import AccommodationType, ActivityType, ServiceType
 
 
 class NewProposalForm(forms.Form):
-    TYPE_CHOICES = [
+    TYPE_CHOICES: ClassVar = [
         ("Alojamiento", "Alojamiento"),
         ("Actividad", "Actividad"),
         ("Servicio", "Servicio"),
@@ -40,7 +41,7 @@ class NewProposalForm(forms.Form):
         selected_type = kwargs.pop("selected_type", None)
         super().__init__(*args, **kwargs)
 
-        today_iso = date.today().isoformat()
+        today_iso = timezone.now().date().isoformat()
 
         if "start_date" in self.fields:
             self.fields["start_date"].widget.attrs.setdefault("min", today_iso)

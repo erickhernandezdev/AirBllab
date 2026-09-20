@@ -1,15 +1,23 @@
 from django.contrib import admin
 
 # Register your models here.
-from django.contrib import admin
 from .models import (
-    CustomUser, UserRole,
-    Accommodation, AccommodationType,
-    Activity, ActivityType,
-    Service, ServiceType,
-    Reservation, ReservationService, ReservationActivity,
-    Cart, CartService, CartActivity,
-    Invoice, InvoiceItem
+    Accommodation,
+    AccommodationType,
+    Activity,
+    ActivityType,
+    Cart,
+    CartActivity,
+    CartService,
+    CustomUser,
+    Invoice,
+    InvoiceItem,
+    Reservation,
+    ReservationActivity,
+    ReservationService,
+    Service,
+    ServiceType,
+    UserRole,
 )
 
 admin.site.register(CustomUser)

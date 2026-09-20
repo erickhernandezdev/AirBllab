@@ -1,11 +1,10 @@
 import stripe
-
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from apps.core.models import Cart, CartService, CartActivity
+from apps.core.models import Cart, CartActivity, CartService
 
 
 class CreateCheckoutSessionView(LoginRequiredMixin, View):

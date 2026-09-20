@@ -1,28 +1,27 @@
 import uuid
-from datetime import date
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.dateparse import parse_date
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 from django.views import View
 from django.views.generic import TemplateView
 
 from apps.core.models import (
+    Accommodation,
+    Activity,
     Cart,
     CartActivity,
     CartService,
-    Reservation,
     Invoice,
     InvoiceItem,
+    Reservation,
     ReservationActivity,
     ReservationService,
-    Accommodation,
     Service,
-    Activity,
 )
 
 User = get_user_model()
@@ -85,7 +84,7 @@ def expiry_valid(expiry):
         month, year = expiry.split("/")
         month = int(month)
         year = int("20" + year)
-        now = date.today()
+        now = timezone.now().date()
 
         return 1 <= month <= 12 and (
             year > now.year or (year == now.year and month >= now.month)
@@ -216,7 +215,7 @@ class AddToCartView(LoginRequiredMixin, View):
         user = User.objects.get(pk=request.user.pk)
         data = request.POST
 
-        cart, created = Cart.objects.get_or_create(user=user)
+        cart, _ = Cart.objects.get_or_create(user=user)
 
         if "accommodation_id" in data:
             if cart.accommodation_id:

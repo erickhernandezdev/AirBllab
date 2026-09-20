@@ -1,18 +1,18 @@
 from datetime import timedelta
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.dateformat import format
 
 from apps.core.models import (
     Accommodation,
-    Service,
     Activity,
-    Reservation,
-    ReservationService,
-    ReservationActivity,
     Cart,
-    CartService,
     CartActivity,
+    CartService,
+    Reservation,
+    ReservationActivity,
+    ReservationService,
+    Service,
 )
 
 
@@ -61,18 +61,17 @@ def item_view(request, tipo, id):
         try:
             cart = Cart.objects.get(user=request.user)
 
-            if tipo == "accomodations" and cart.accommodation_id == item.id:
-                already_in_cart = True
-
-            elif (
-                tipo == "services"
-                and CartService.objects.filter(cart=cart, service=item).exists()
-            ):
-                already_in_cart = True
-
-            elif (
-                tipo == "experiences"
-                and CartActivity.objects.filter(cart=cart, activity=item).exists()
+            if (
+                tipo == "accomodations"
+                and cart.accommodation_id == item.id
+                or (
+                    tipo == "services"
+                    and CartService.objects.filter(cart=cart, service=item).exists()
+                )
+                or (
+                    tipo == "experiences"
+                    and CartActivity.objects.filter(cart=cart, activity=item).exists()
+                )
             ):
                 already_in_cart = True
 

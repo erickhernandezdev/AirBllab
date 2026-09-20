@@ -1,18 +1,19 @@
 import os
+
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "airbnb_app.settings")
 django.setup()
 
-from apps.core.models import (
-    UserRole,
-    CustomUser,
-    AccommodationType,
-    ActivityType,
-    ServiceType,
+from apps.core.models import (  # noqa: E402
     Accommodation,
+    AccommodationType,
     Activity,
+    ActivityType,
+    CustomUser,
     Service,
+    ServiceType,
+    UserRole,
 )
 
 ACCOMMODATIONS_IMAGES = {
@@ -218,4 +219,4 @@ for name in activities:
         set_image(activity, image_path)
 
 
-print("Script ejecutado correctamente. " f"Usuario creado: {user_created}")
+print(f"Script ejecutado correctamente. Usuario creado: {user_created}")

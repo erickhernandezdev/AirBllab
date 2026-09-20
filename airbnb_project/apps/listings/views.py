@@ -1,6 +1,6 @@
+from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import Http404
 
 from apps.core.models import Accommodation, Activity, Service
 
