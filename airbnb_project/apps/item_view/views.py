@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.shortcuts import get_object_or_404, render
 from django.utils.dateformat import format
+from django.views.decorators.http import require_GET
 
 from apps.core.models import (
     Accommodation,
@@ -16,6 +17,7 @@ from apps.core.models import (
 )
 
 
+@require_GET
 def item_view(request, tipo, id):
     model_map = {
         "accomodations": Accommodation,

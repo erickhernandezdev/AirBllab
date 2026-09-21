@@ -116,7 +116,12 @@ class LogoutViewTest(TestCase):
     def test_logout_redirects_to_homepage(self):
         self.client.force_login(self.user)
 
-        response = self.client.get(reverse("logout"))
+        response = self.client.post(reverse("logout"))
 
         self.assertRedirects(response, reverse("homepage"))
         self.assertFalse(response.wsgi_request.user.is_authenticated)
+
+    def test_logout_rejects_get(self):
+        response = self.client.get(reverse("logout"))
+
+        self.assertEqual(response.status_code, 405)

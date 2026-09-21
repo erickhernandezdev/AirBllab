@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from apps.core.models import Accommodation, Activity, Service
 
@@ -20,6 +21,7 @@ def build_card(obj, tipo):
     }
 
 
+@require_GET
 def listings_view(request, tipo):
     if tipo == "accomodations":
         queryset = Accommodation.objects.filter(status="Aprobado")[:5]

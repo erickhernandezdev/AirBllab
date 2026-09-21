@@ -1,10 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.views.decorators.http import require_GET
 
 from ..core.models import Accommodation, Activity, Service
 
 
 @login_required
+@require_GET
 def my_publications(request):
     current_user = request.user
 

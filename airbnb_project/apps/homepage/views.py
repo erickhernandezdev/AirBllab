@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.http import require_GET
 
 from apps.core.models import Accommodation, Activity, Service
 
 
+@require_GET
 def homepage(request):
     cards = [
         {

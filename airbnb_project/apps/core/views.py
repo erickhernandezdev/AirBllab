@@ -1,8 +1,10 @@
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 from .models import AccommodationType, ActivityType, ServiceType
 
 
+@require_GET
 def get_subtypes(request):
     type_selected = request.GET.get("type")
     subtypes = []

@@ -2,6 +2,7 @@ from django.contrib.auth import login, logout
 from django.db import connection
 from django.shortcuts import redirect, render
 from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
 
 from .forms import LoginForm
 
@@ -46,6 +47,7 @@ def login_view(request):
     return render(request, "login/login.html", {"form": form})
 
 
+@require_POST
 def logout_view(request):
     logout(request)
     return redirect("homepage")
