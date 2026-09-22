@@ -56,7 +56,7 @@ body {
   }
 
   .nav-menu a.active {
-    background: #667eea;
+    background: #4f63c7;
     color: white;
   }
 
@@ -135,7 +135,7 @@ body {
   }
 
   .btn-approve {
-    background: #27ae60;
+    background: #218c4d;
     color: white;
   }
   .btn-approve:hover {
@@ -143,7 +143,7 @@ body {
   }
 
   .btn-reject {
-    background: #e74c3c;
+    background: #c0392b;
     color: white;
   }
   .btn-reject:hover {
@@ -151,7 +151,7 @@ body {
   }
 
   .btn-back {
-    background: #7f8c8d;
+    background: #687576;
     color: white;
   }
   .btn-back:hover {

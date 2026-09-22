@@ -1,24 +1,19 @@
-{% extends 'layout.html' %} 
-{% load static %} 
+{% extends 'layout.html' %}
+{% load static %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
+<link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
 {% endblock %}
 
 {% block content %}
+
 <body>
   <div class="container">
     <h1>Detalle de Servicio para Aprobación</h1>
 
     <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active"
-        >📊 Dashboard</a
-      >
-      <a href="{% url 'admin_panel:admin_pending_approval' %}"
-        >⏳ Pendientes de Aprobación</a
-      >
-      <a href="{% url 'admin_panel:admin_user_list' %}"
-        >👥 Usuarios Registrados</a
-      >
+      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active">📊 Dashboard</a>
+      <a href="{% url 'admin_panel:admin_pending_approval' %}">⏳ Pendientes de Aprobación</a>
+      <a href="{% url 'admin_panel:admin_user_list' %}">👥 Usuarios Registrados</a>
       <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
     </div>
 
@@ -66,13 +61,11 @@
         <!-- APROBAR -->
         <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Notas opcionales..."></textarea>
+          <label for="approval-notes">Notas opcionales</label>
+          <textarea id="approval-notes" name="notes" placeholder="Notas opcionales..." rows="2"></textarea>
 
-          <button
-            type="submit"
-            class="btn btn-approve"
-            onclick="return confirm('¿Estás seguro de APROBAR este servicio?')"
-          >
+          <button type="submit" class="btn btn-approve"
+            onclick="return confirm('¿Estás seguro de APROBAR este servicio?')">
             ✓ Aprobar Servicio
           </button>
         </form>
@@ -80,13 +73,11 @@
         <!-- RECHAZAR -->
         <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Razón del rechazo..." required></textarea>
+          <label for="rejection-notes">Razón del rechazo</label>
+          <textarea id="rejection-notes" name="notes" placeholder="Razón del rechazo..." rows="2" required></textarea>
 
-          <button
-            type="submit"
-            class="btn btn-reject"
-            onclick="return confirm('¿Estás seguro de RECHAZAR este servicio?')"
-          >
+          <button type="submit" class="btn btn-reject"
+            onclick="return confirm('¿Estás seguro de RECHAZAR este servicio?')">
             ✗ Rechazar Servicio
           </button>
         </form>

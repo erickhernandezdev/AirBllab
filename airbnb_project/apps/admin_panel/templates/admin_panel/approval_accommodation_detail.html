@@ -1,7 +1,7 @@
-{% extends 'layout.html' %} 
-{% load static %} 
+{% extends 'layout.html' %}
+{% load static %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
+<link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
 {% endblock %}
 
 {% block content %}
@@ -11,15 +11,9 @@
     <h1>Detalle de Alojamiento para Aprobación</h1>
 
     <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active"
-        >📊 Dashboard</a
-      >
-      <a href="{% url 'admin_panel:admin_pending_approval' %}"
-        >⏳ Pendientes de Aprobación</a
-      >
-      <a href="{% url 'admin_panel:admin_user_list' %}"
-        >👥 Usuarios Registrados</a
-      >
+      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active">📊 Dashboard</a>
+      <a href="{% url 'admin_panel:admin_pending_approval' %}">⏳ Pendientes de Aprobación</a>
+      <a href="{% url 'admin_panel:admin_user_list' %}">👥 Usuarios Registrados</a>
       <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
     </div>
 
@@ -73,18 +67,23 @@
       <div class="actions">
         <h3>Acciones</h3>
 
-        <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}" style="margin-bottom: 15px">
+        <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}"
+          style="margin-bottom: 15px">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Notas opcionales para la aprobación..."></textarea>
-          <button type="submit" class="btn btn-approve" onclick="return confirm('¿Estás seguro de APROBAR este alojamiento?')">
+          <label for="approval-notes">Notas opcionales para la aprobación</label>
+          <textarea id="approval-notes" name="notes" placeholder="Notas opcionales para la aprobación..."></textarea>
+          <button type="submit" class="btn btn-approve"
+            onclick="return confirm('¿Estás seguro de APROBAR este alojamiento?')">
             ✓ Aprobar Alojamiento
           </button>
         </form>
 
         <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Razón del rechazo..." required></textarea>
-          <button type="submit" class="btn btn-reject" onclick="return confirm('¿Estás seguro de RECHAZAR este alojamiento?')">
+          <label for="rejection-notes">Razón del rechazo</label>
+          <textarea id="rejection-notes" name="notes" placeholder="Razón del rechazo..." required></textarea>
+          <button type="submit" class="btn btn-reject"
+            onclick="return confirm('¿Estás seguro de RECHAZAR este alojamiento?')">
             ✗ Rechazar Alojamiento
           </button>
         </form>

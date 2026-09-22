@@ -1,24 +1,19 @@
-{% extends 'layout.html' %} 
-{% load static %} 
+{% extends 'layout.html' %}
+{% load static %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
+<link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
 {% endblock %}
 
 {% block content %}
+
 <body>
   <div class="container">
     <h1>Detalle de Actividad para Aprobación</h1>
 
     <div class="nav-menu">
-      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active"
-        >📊 Dashboard</a
-      >
-      <a href="{% url 'admin_panel:admin_pending_approval' %}"
-        >⏳ Pendientes de Aprobación</a
-      >
-      <a href="{% url 'admin_panel:admin_user_list' %}"
-        >👥 Usuarios Registrados</a
-      >
+      <a href="{% url 'admin_panel:admin_dashboard' %}" class="active">📊 Dashboard</a>
+      <a href="{% url 'admin_panel:admin_pending_approval' %}">⏳ Pendientes de Aprobación</a>
+      <a href="{% url 'admin_panel:admin_user_list' %}">👥 Usuarios Registrados</a>
       <a href="{% url 'homepage' %}">🏠 Volver al Sitio</a>
     </div>
 
@@ -50,13 +45,13 @@
         <div class="history-item 
           {% if log.status == 'approved' %}history-approved
           {% elif log.status == 'rejected' %}history-rejected{% endif %}">
-          
-          <strong>{{ log.get_status_display|upper }}</strong> — 
-          Por: {{ log.admin_user.username }} — 
+
+          <strong>{{ log.get_status_display|upper }}</strong> —
+          Por: {{ log.admin_user.username }} —
           {{ log.created_at|date:"d/m/Y H:i" }}
 
           {% if log.notes %}
-            <br /><em>Notas: {{ log.notes }}</em>
+          <br /><em>Notas: {{ log.notes }}</em>
           {% endif %}
         </div>
         {% endfor %}
@@ -67,36 +62,24 @@
         <h3>Acciones</h3>
 
         <!-- Aprobar -->
-        <form
-          method="post"
-          action="{% url 'admin_panel:admin_approve_item' item_type item.id %}"
-          style="margin-bottom: 20px"
-        >
+        <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}"
+          style="margin-bottom: 20px">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Notas opcionales..." rows="2"></textarea>
+          <label for="approval-notes">Notas opcionales</label>
+          <textarea id="approval-notes" name="notes" placeholder="Notas opcionales..." rows="2"></textarea>
 
-          <button
-            type="submit"
-            class="btn btn-approve"
-            onclick="return confirm('¿Seguro de aprobar esta actividad?')"
-          >
+          <button type="submit" class="btn btn-approve" onclick="return confirm('¿Seguro de aprobar esta actividad?')">
             ✓ Aprobar Actividad
           </button>
         </form>
 
         <!-- Rechazar -->
-        <form
-          method="post"
-          action="{% url 'admin_panel:admin_reject_item' item_type item.id %}"
-        >
+        <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}">
           {% csrf_token %}
-          <textarea name="notes" placeholder="Razón del rechazo..." rows="2" required></textarea>
+          <label for="rejection-notes">Razón del rechazo</label>
+          <textarea id="rejection-notes" name="notes" placeholder="Razón del rechazo..." rows="2" required></textarea>
 
-          <button
-            type="submit"
-            class="btn btn-reject"
-            onclick="return confirm('¿Seguro de rechazar esta actividad?')"
-          >
+          <button type="submit" class="btn btn-reject" onclick="return confirm('¿Seguro de rechazar esta actividad?')">
             ✗ Rechazar Actividad
           </button>
         </form>

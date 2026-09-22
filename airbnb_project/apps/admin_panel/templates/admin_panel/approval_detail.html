@@ -1,7 +1,7 @@
-{% extends 'layout.html' %} 
-{% load static %} 
+{% extends 'layout.html' %}
+{% load static %}
 {% block extra_head %}
-  <link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
+<link rel="stylesheet" href="{% static 'admin_panel/styles.css'%}" />
 {% endblock %}
 
 
@@ -32,17 +32,17 @@
         <h3>Información General</h3>
         <p><strong>Tipo:</strong>
           {% if item_type == 'property' %}
-            {{ item.get_property_type_display }}
+          {{ item.get_property_type_display }}
           {% else %}
-            {{ item.get_activity_type_display }}
+          {{ item.get_activity_type_display }}
           {% endif %}
         </p>
 
         <p><strong>Precio:</strong>
           {% if item_type == 'property' %}
-            ${{ item.price_per_night }} por noche
+          ${{ item.price_per_night }} por noche
           {% else %}
-            ${{ item.price }}
+          ${{ item.price }}
           {% endif %}
         </p>
 
@@ -73,15 +73,16 @@
     <h3>Historial de Aprobaciones</h3>
 
     {% for log in approval_logs %}
-      <div class="history-item {% if log.status == 'approved' %}history-approved{% elif log.status == 'rejected' %}history-rejected{% endif %}">
-        <strong>{{ log.get_status_display|upper }}</strong>
-        — {{ log.created_at|date:"d/m/Y H:i" }}  
-        — por {{ log.admin_user.username }}
+    <div
+      class="history-item {% if log.status == 'approved' %}history-approved{% elif log.status == 'rejected' %}history-rejected{% endif %}">
+      <strong>{{ log.get_status_display|upper }}</strong>
+      — {{ log.created_at|date:"d/m/Y H:i" }}
+      — por {{ log.admin_user.username }}
 
-        {% if log.notes %}
-        <br><em>Notas: {{ log.notes }}</em>
-        {% endif %}
-      </div>
+      {% if log.notes %}
+      <br><em>Notas: {{ log.notes }}</em>
+      {% endif %}
+    </div>
     {% endfor %}
   </div>
   {% endif %}
@@ -93,14 +94,16 @@
     <!-- APROBAR -->
     <form method="post" action="{% url 'admin_panel:admin_approve_item' item_type item.id %}">
       {% csrf_token %}
-      <textarea name="notes" rows="2" placeholder="Notas opcionales..."></textarea>
+      <label for="approval-notes">Notas opcionales</label>
+      <textarea id="approval-notes" name="notes" placeholder="Notas opcionales..." rows="2"></textarea>
       <button type="submit" class="btn btn-approve">Aprobar {{ item_type }}</button>
     </form>
 
     <!-- RECHAZAR -->
     <form method="post" action="{% url 'admin_panel:admin_reject_item' item_type item.id %}">
       {% csrf_token %}
-      <textarea name="notes" rows="2" placeholder="Razón del rechazo..." required></textarea>
+      <label for="rejection-notes">Razón del rechazo</label>
+      <textarea id="rejection-notes" name="notes" placeholder="Razón del rechazo..." rows="2" required></textarea>
       <button type="submit" class="btn btn-reject">Rechazar {{ item_type }}</button>
     </form>
 
