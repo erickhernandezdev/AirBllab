@@ -13,7 +13,7 @@
       {% if item.image %}
       <img src="{{ item.image.url }}" alt="{{ item.name }}" />
       {% else %}
-      <img src="../../../media/default.png" alt="Imagen por defecto" />
+      <img src="../../../media/default.png" alt="Defecto" />
       {% endif %}
     </div>
 
@@ -93,12 +93,12 @@
   </section>
   {% endif %}
 </main>
-{% endblock %} {% block extra_js %} {% if request.user.is_authenticated %} {{
-blocked_dates|json_script:"blocked-dates" }}
+{% endblock %} {% block extra_js %} {% if request.user.is_authenticated %} 
+{{ blocked_dates|json_script:"blocked-dates" }}
 
 <script>
   const tipo = "{{ tipo }}";
-  const price_unitary = parseInt("{{ item.price }}");
+  const price_unitary = Number.parseInt("{{ item.price }}");
   const today = new Date();
   const nextYear = new Date();
 
@@ -116,12 +116,57 @@ blocked_dates|json_script:"blocked-dates" }}
 
   if (alreadyInCart) {
     const btn = document.getElementById("add-to-cart");
-
     if (btn) {
       btn.disabled = true;
       btn.innerText = "Agregado";
     }
   }
+
+  const localeEs = {
+    firstDayOfWeek: 1,
+    weekdays: {
+      shorthand: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
+      longhand: [
+        "Domingo",
+        "Lunes",
+        "Martes",
+        "Miércoles",
+        "Jueves",
+        "Viernes",
+        "Sábado",
+      ],
+    },
+    months: {
+      shorthand: [
+        "Ene",
+        "Feb",
+        "Mar",
+        "Abr",
+        "May",
+        "Jun",
+        "Jul",
+        "Ago",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dic",
+      ],
+      longhand: [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+      ],
+    },
+  };
 
   if (tipo === "accomodations") {
     flatpickr("#date-range", {
@@ -132,67 +177,16 @@ blocked_dates|json_script:"blocked-dates" }}
       minDate: today,
       maxDate: nextYear,
       disable: blockedDates,
-
-      locale: {
-        firstDayOfWeek: 1,
-
-        weekdays: {
-          shorthand: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
-          longhand: [
-            "Domingo",
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado",
-          ],
-        },
-
-        months: {
-          shorthand: [
-            "Ene",
-            "Feb",
-            "Mar",
-            "Abr",
-            "May",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dic",
-          ],
-
-          longhand: [
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Noviembre",
-            "Diciembre",
-          ],
-        },
-      },
+      locale: localeEs,
 
       onChange: function (selectedDates, dateStr, instance) {
         const button = document.getElementById("add-to-cart");
-
-        button.disabled = true;
+        if (button) button.disabled = true;
 
         if (selectedDates.length === 1) {
           const start = selectedDates[0];
-
           instance.set("disable", [
             ...blockedDates,
-
             function (date) {
               return date < start;
             },
@@ -212,7 +206,6 @@ blocked_dates|json_script:"blocked-dates" }}
               timer: 3000,
               showConfirmButton: false,
             });
-
             return;
           }
 
@@ -223,24 +216,20 @@ blocked_dates|json_script:"blocked-dates" }}
               timer: 3000,
               showConfirmButton: false,
             });
-
             return;
           }
 
-          button.disabled = false;
+          if (button) button.disabled = false;
 
           const total = nights * price_unitary;
 
-          document.getElementById("start-date").textContent = start
-            .toISOString()
-            .split("T")[0];
-
-          document.getElementById("end-date").textContent = end
-            .toISOString()
-            .split("T")[0];
-
+          document.getElementById("start-date").textContent =
+            instance.formatDate(start, "Y-m-d");
+          document.getElementById("end-date").textContent = instance.formatDate(
+            end,
+            "Y-m-d",
+          );
           document.getElementById("nights-count").textContent = nights;
-
           document.getElementById("final-price").textContent =
             total.toLocaleString();
         }
@@ -255,70 +244,19 @@ blocked_dates|json_script:"blocked-dates" }}
       minDate: today,
       maxDate: nextYear,
       disable: blockedDates,
-
-      locale: {
-        firstDayOfWeek: 1,
-
-        weekdays: {
-          shorthand: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
-          longhand: [
-            "Domingo",
-            "Lunes",
-            "Martes",
-            "Miércoles",
-            "Jueves",
-            "Viernes",
-            "Sábado",
-          ],
-        },
-
-        months: {
-          shorthand: [
-            "Ene",
-            "Feb",
-            "Mar",
-            "Abr",
-            "May",
-            "Jun",
-            "Jul",
-            "Ago",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dic",
-          ],
-
-          longhand: [
-            "Enero",
-            "Febrero",
-            "Marzo",
-            "Abril",
-            "Mayo",
-            "Junio",
-            "Julio",
-            "Agosto",
-            "Septiembre",
-            "Octubre",
-            "Noviembre",
-            "Diciembre",
-          ],
-        },
-      },
+      locale: localeEs,
 
       onChange: function (selectedDates, dateStr, instance) {
         const button = document.getElementById("add-to-cart");
-
-        button.disabled = true;
+        if (button) button.disabled = true;
 
         if (selectedDates.length === 1) {
           const selected = selectedDates[0];
 
-          button.disabled = false;
+          if (button) button.disabled = false;
 
-          document.getElementById("start-date").textContent = selected
-            .toISOString()
-            .split("T")[0];
-
+          document.getElementById("start-date").textContent =
+            instance.formatDate(selected, "Y-m-d");
           document.getElementById("final-price").textContent =
             price_unitary.toLocaleString();
         }
@@ -328,101 +266,90 @@ blocked_dates|json_script:"blocked-dates" }}
 
   function getCookie(name) {
     let cookieValue = null;
-
     if (document.cookie && document.cookie !== "") {
       const cookies = document.cookie.split(";");
-
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-
+      for (const item of cookies) {
+        const cookie = item.trim();
         if (cookie.substring(0, name.length + 1) === name + "=") {
           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-
           break;
         }
       }
     }
-
     return cookieValue;
   }
 
-  document.getElementById("add-to-cart").addEventListener("click", function () {
-    const tipo = "{{ tipo }}";
-    const itemId = "{{ item.id }}";
-    const priceUnitary = parseInt("{{ item.price }}");
-    const csrfToken = getCookie("csrftoken");
+  const addToCartBtn = document.getElementById("add-to-cart");
+  if (addToCartBtn) {
+    addToCartBtn.addEventListener("click", function () {
+      const itemId = "{{ item.id }}";
+      const priceUnitary = Number.parseInt("{{ item.price }}");
+      const csrfToken = getCookie("csrftoken");
+      const startDate = document.getElementById("start-date").textContent;
 
-    const startDate = document.getElementById("start-date").textContent;
+      let bodyData = {};
 
-    let bodyData = {};
+      if (tipo === "accomodations") {
+        const endDate = document.getElementById("end-date").textContent;
+        const nights = Number.parseInt(
+          document.getElementById("nights-count").textContent,
+        );
+        const total = nights * priceUnitary;
 
-    if (tipo === "accomodations") {
-      const endDate = document.getElementById("end-date").textContent;
+        bodyData = {
+          accommodation_id: itemId,
+          start_date: startDate,
+          end_date: endDate,
+          nights: nights,
+          price_total: total,
+        };
+      } else if (tipo === "services") {
+        bodyData = {
+          service_id: itemId,
+          date: startDate,
+          total_price: priceUnitary,
+        };
+      } else if (tipo === "experiences") {
+        bodyData = {
+          activity_id: itemId,
+          date: startDate,
+          total_price: priceUnitary,
+        };
+      }
 
-      const nights = parseInt(
-        document.getElementById("nights-count").textContent,
-      );
+      fetch("/cart/add/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams(bodyData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            Swal.fire({
+              icon: "success",
+              title: data.message,
+              timer: 3000,
+              showConfirmButton: false,
+            });
 
-      const total = nights * priceUnitary;
-
-      bodyData = {
-        accommodation_id: itemId,
-        start_date: startDate,
-        end_date: endDate,
-        nights: nights,
-        price_total: total,
-      };
-    } else if (tipo === "services") {
-      bodyData = {
-        service_id: itemId,
-        date: startDate,
-        total_price: priceUnitary,
-      };
-    } else if (tipo === "experiences") {
-      bodyData = {
-        activity_id: itemId,
-        date: startDate,
-        total_price: priceUnitary,
-      };
-    }
-
-    fetch("/cart/add/", {
-      method: "POST",
-
-      headers: {
-        "X-CSRFToken": csrfToken,
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-
-      body: new URLSearchParams(bodyData),
-    })
-      .then((response) => response.json())
-
-      .then((data) => {
-        if (data.status === "success") {
-          Swal.fire({
-            icon: "success",
-            title: data.message,
-            timer: 3000,
-            showConfirmButton: false,
-          });
-
-          const btn = document.getElementById("add-to-cart");
-
-          if (btn) {
-            btn.disabled = true;
-            btn.innerText = "Agregado";
+            if (addToCartBtn) {
+              addToCartBtn.disabled = true;
+              addToCartBtn.innerText = "Agregado";
+            }
+          } else {
+            Swal.fire({
+              icon: "info",
+              title: data.message,
+              timer: 3000,
+              showConfirmButton: false,
+            });
           }
-        } else {
-          Swal.fire({
-            icon: "info",
-            title: data.message,
-            timer: 3000,
-            showConfirmButton: false,
-          });
-        }
-      });
-  });
+        });
+    });
+  }
 </script>
 
 {% endif %} {% endblock %}

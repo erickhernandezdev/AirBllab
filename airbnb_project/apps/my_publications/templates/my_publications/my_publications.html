@@ -17,6 +17,7 @@
         <input
           type="text"
           id="search-input"
+          aria-label="Buscar publicaciones"
           placeholder="Buscar publicaciones..."
         />
         <button id="search-btn">Buscar</button>
@@ -28,9 +29,9 @@
       {% for publication in publications %}
       <div class="card" data-status="{{ publication.status }}">
         {% if publication.image %}
-            <img src="{{ publication.image.url }}" alt="Imagen">
+            <img src="{{ publication.image.url }}" alt="Publication">
         {% else %}
-            <img src="../../media/default.png" alt="Sin imagen">
+            <img src="../../media/default.png" alt="Default">
         {% endif %}
 
         <div class="card-info">

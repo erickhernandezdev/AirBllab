@@ -17,6 +17,47 @@ from apps.core.models import (
 )
 
 
+def _get_blocked_dates(tipo, item):
+    blocked = []
+
+    if tipo == "accomodations":
+        for r in Reservation.objects.filter(accommodation=item):
+            current = r.start_date
+            while current <= r.end_date:
+                blocked.append(format(current, "Y-m-d"))
+                current += timedelta(days=1)
+
+    elif tipo == "services":
+        for r in ReservationService.objects.filter(service=item):
+            blocked.append(format(r.date, "Y-m-d"))
+
+    elif tipo == "experiences":
+        for r in ReservationActivity.objects.filter(activity=item):
+            blocked.append(format(r.date, "Y-m-d"))
+
+    return sorted(set(blocked))
+
+
+def _is_item_in_cart(user, tipo, item):
+    if not user.is_authenticated:
+        return False
+
+    cart = Cart.objects.filter(user=user).first()
+    if not cart:
+        return False
+
+    if tipo == "accomodations":
+        return cart.accommodation_id == item.id
+
+    if tipo == "services":
+        return CartService.objects.filter(cart=cart, service=item).exists()
+
+    if tipo == "experiences":
+        return CartActivity.objects.filter(cart=cart, activity=item).exists()
+
+    return False
+
+
 @require_GET
 def item_view(request, tipo, id):
     model_map = {
@@ -28,57 +69,9 @@ def item_view(request, tipo, id):
     if tipo not in model_map:
         return render(request, "404.html", status=404)
 
-    model = model_map[tipo]
-    item = get_object_or_404(model, pk=id)
-
-    blocked = []
-
-    if tipo == "accomodations":
-        reservations = Reservation.objects.filter(accommodation=item)
-
-        for r in reservations:
-            current = r.start_date
-
-            while current <= r.end_date:
-                blocked.append(format(current, "Y-m-d"))
-                current += timedelta(days=1)
-
-    elif tipo == "services":
-        reservations = ReservationService.objects.filter(service=item)
-
-        for r in reservations:
-            blocked.append(format(r.date, "Y-m-d"))
-
-    elif tipo == "experiences":
-        reservations = ReservationActivity.objects.filter(activity=item)
-
-        for r in reservations:
-            blocked.append(format(r.date, "Y-m-d"))
-
-    blocked = sorted(set(blocked))
-
-    already_in_cart = False
-
-    if request.user.is_authenticated:
-        try:
-            cart = Cart.objects.get(user=request.user)
-
-            if (
-                tipo == "accomodations"
-                and cart.accommodation_id == item.id
-                or (
-                    tipo == "services"
-                    and CartService.objects.filter(cart=cart, service=item).exists()
-                )
-                or (
-                    tipo == "experiences"
-                    and CartActivity.objects.filter(cart=cart, activity=item).exists()
-                )
-            ):
-                already_in_cart = True
-
-        except Cart.DoesNotExist:
-            pass
+    item = get_object_or_404(model_map[tipo], pk=id)
+    blocked = _get_blocked_dates(tipo, item)
+    already_in_cart = _is_item_in_cart(request.user, tipo, item)
 
     return render(
         request,
