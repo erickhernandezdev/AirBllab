@@ -161,7 +161,7 @@
 
 .pay-button {
   width: 100%;
-  background-color: #C97C5D;
+  background-color: #a85f45;
   color: white;
   border: none;
   padding: 18px;
@@ -256,7 +256,7 @@ input {
 }
 
 button.primary {
-  background: #C97C5D;
+  background: #a85f45;
   color: #fff;
   border: none;
   padding: 0.6rem 1rem;

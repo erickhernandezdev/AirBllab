@@ -63,13 +63,12 @@ textarea:focus {
 
 .upload-bottom {
     width: 100%;
-    background: #4a90e2;
+    background: #2563a8;
     color: white;
     padding: 10px 12px;
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 1rem;
-    background: #fafafa;
     cursor: pointer;
     display: inline-block;
     font-weight: bold;
@@ -87,7 +86,7 @@ textarea {
 }
 
 #form-container button[type="submit"] {
-    background: #C97C5D;
+    background: #a85f45;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -106,7 +105,7 @@ textarea {
 .toast {
     visibility: hidden;
     min-width: 250px;
-    background-color: #4bb543;
+    background-color: #2e7d32;
     color: #fff;
     text-align: center;
     border-radius: 8px;
