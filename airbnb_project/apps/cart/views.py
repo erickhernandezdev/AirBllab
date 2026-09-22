@@ -93,121 +93,123 @@ def expiry_valid(expiry):
         return False
 
 
+def _validate_payment(card_number, expiry, cvv):
+    if not card_number or not card_number.isdigit() or len(card_number) != 16:
+        return "Pago rechazado: número de tarjeta inválido"
+
+    if not luhn_check(card_number):
+        return "Pago rechazado: tarjeta no válida"
+
+    if not expiry_valid(expiry):
+        return "Pago rechazado: tarjeta vencida"
+
+    if not cvv or not cvv.isdigit() or len(cvv) != 3 or cvv == "000":
+        return "Pago rechazado: CVV inválido"
+
+    if not card_number.startswith("4"):
+        return "El pago fue rechazado: solo se aceptan tarjetas Visa"
+
+    return None
+
+
+def _process_cart_checkout(user, cart, payment_token):
+    accommodation = (
+        Accommodation.objects.filter(pk=cart.accommodation_id).first()
+        if cart.accommodation_id
+        else None
+    )
+
+    reservation = Reservation.objects.create(
+        guest=user,
+        accommodation=accommodation,
+        start_date=cart.start_date,
+        end_date=cart.end_date,
+        status="CONFIRMED",
+    )
+
+    services_in_cart = CartService.objects.filter(cart=cart)
+    activities_in_cart = CartActivity.objects.filter(cart=cart)
+
+    total_accommodation = cart.price_total or 0
+    total_services = sum(float(s.total_price) for s in services_in_cart)
+    total_activities = sum(float(a.total_price) for a in activities_in_cart)
+    grand_total = total_accommodation + total_services + total_activities
+
+    invoice = Invoice.objects.create(
+        reservation=reservation,
+        amount=grand_total,
+        payment_method=f"Card-{payment_token}",
+        paid_at=timezone.now(),
+    )
+
+    if cart.accommodation:
+        InvoiceItem.objects.create(
+            invoice=invoice,
+            quantity=cart.nights or 1,
+            unit_price=cart.price_total or 0,
+            total=cart.price_total or 0,
+        )
+
+    for s in services_in_cart:
+        service_obj = Service.objects.get(pk=s.service_id)
+        InvoiceItem.objects.create(
+            invoice=invoice,
+            quantity=1,
+            unit_price=s.total_price,
+            total=s.total_price,
+        )
+        ReservationService.objects.create(
+            reservation=reservation,
+            service=service_obj,
+            total_price=s.total_price,
+            date=s.date,
+        )
+
+    for a in activities_in_cart:
+        activity_obj = Activity.objects.get(pk=a.activity_id)
+        InvoiceItem.objects.create(
+            invoice=invoice,
+            quantity=1,
+            unit_price=a.total_price,
+            total=a.total_price,
+        )
+        ReservationActivity.objects.create(
+            reservation=reservation,
+            activity=activity_obj,
+            total_price=a.total_price,
+            date=a.date,
+        )
+
+    services_in_cart.delete()
+    activities_in_cart.delete()
+    cart.accommodation = None
+    cart.start_date = None
+    cart.end_date = None
+    cart.nights = None
+    cart.price_total = None
+    cart.save()
+
+
 @login_required
 def checkout(request):
-    if request.method == "POST":
-        card_number = request.POST.get("card_number")
-        expiry = request.POST.get("expiry")
-        cvv = request.POST.get("cvv")
+    if request.method != "POST":
+        return redirect("/cart")
 
-        if not card_number or not card_number.isdigit() or len(card_number) != 16:
-            return redirect("/cart?message=Pago rechazado: número de tarjeta inválido")
+    error_message = _validate_payment(
+        request.POST.get("card_number"),
+        request.POST.get("expiry"),
+        request.POST.get("cvv"),
+    )
+    if error_message:
+        return redirect(f"/cart?message={error_message}")
 
-        if not luhn_check(card_number):
-            return redirect("/cart?message=Pago rechazado: tarjeta no válida")
+    cart = Cart.objects.filter(user=request.user).first()
+    payment_token = str(uuid.uuid4())
 
-        if not expiry_valid(expiry):
-            return redirect("/cart?message=Pago rechazado: tarjeta vencida")
+    if cart:
+        _process_cart_checkout(request.user, cart, payment_token)
 
-        if not cvv or not cvv.isdigit() or len(cvv) != 3 or cvv == "000":
-            return redirect("/cart?message=Pago rechazado: CVV inválido")
-
-        if not card_number.startswith("4"):
-            return redirect(
-                "/cart?message=El pago fue rechazado: solo se aceptan tarjetas Visa"
-            )
-
-        payment_token = str(uuid.uuid4())
-
-        user = User.objects.get(pk=request.user.pk)
-        cart = Cart.objects.filter(user=user).first()
-
-        if cart:
-            accommodation = None
-
-            if cart.accommodation_id:
-                accommodation = Accommodation.objects.get(pk=cart.accommodation_id)
-
-            reservation = Reservation.objects.create(
-                guest=user,
-                accommodation=accommodation,
-                start_date=cart.start_date,
-                end_date=cart.end_date,
-                status="CONFIRMED",
-            )
-
-            total_accommodation = cart.price_total or 0
-
-            services_in_cart = CartService.objects.filter(cart=cart)
-            activities_in_cart = CartActivity.objects.filter(cart=cart)
-
-            total_services = sum(float(s.total_price) for s in services_in_cart)
-            total_activities = sum(float(a.total_price) for a in activities_in_cart)
-
-            grand_total = total_accommodation + total_services + total_activities
-
-            invoice = Invoice.objects.create(
-                reservation=reservation,
-                amount=grand_total,
-                payment_method=f"Card-{payment_token}",
-                paid_at=timezone.now(),
-            )
-
-            if cart.accommodation:
-                InvoiceItem.objects.create(
-                    invoice=invoice,
-                    quantity=cart.nights or 1,
-                    unit_price=cart.price_total or 0,
-                    total=cart.price_total or 0,
-                )
-
-            for s in services_in_cart:
-                service_obj = Service.objects.get(pk=s.service_id)
-
-                InvoiceItem.objects.create(
-                    invoice=invoice,
-                    quantity=1,
-                    unit_price=s.total_price,
-                    total=s.total_price,
-                )
-
-                ReservationService.objects.create(
-                    reservation=reservation,
-                    service=service_obj,
-                    total_price=s.total_price,
-                    date=s.date,
-                )
-
-            for a in activities_in_cart:
-                activity_obj = Activity.objects.get(pk=a.activity_id)
-
-                InvoiceItem.objects.create(
-                    invoice=invoice,
-                    quantity=1,
-                    unit_price=a.total_price,
-                    total=a.total_price,
-                )
-
-                ReservationActivity.objects.create(
-                    reservation=reservation,
-                    activity=activity_obj,
-                    total_price=a.total_price,
-                    date=a.date,
-                )
-
-            services_in_cart.delete()
-            activities_in_cart.delete()
-
-            cart.accommodation = None
-            cart.start_date = None
-            cart.end_date = None
-            cart.nights = None
-            cart.price_total = None
-            cart.save()
-
-        return redirect(
-            f"/cart?message=Pago realizado con éxito. Código: {payment_token}"
-        )
+    return redirect(f"/cart?message=Pago realizado con éxito. Código: {payment_token}")
 
 
 class AddToCartView(LoginRequiredMixin, View):

@@ -42,7 +42,7 @@ class CustomUser(AbstractUser):
         help_text="Rol del usuario en el sistema",
     )
     date_of_birth = models.DateField(null=True, blank=True)
-    contact_phone = models.CharField(max_length=20, null=True, blank=True)
+    contact_phone = models.CharField(max_length=20, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -88,7 +88,7 @@ class CustomUser(AbstractUser):
 
 class AccommodationType(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, default="")
 
     def __str__(self):
         return self.name
@@ -99,7 +99,7 @@ class AccommodationType(models.Model):
 
 class ActivityType(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True, default="")
 
     def __str__(self):
         return self.name
@@ -110,7 +110,7 @@ class ActivityType(models.Model):
 
 class ServiceType(models.Model):
     name = models.CharField(max_length=50)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(blank=True, default="")
 
     def __str__(self):
         return self.name

@@ -1,11 +1,13 @@
 from django.contrib import messages
-from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
 from apps.core.models import Accommodation, Activity, CustomUser, Service
 
 from .models import ApprovalLog
+
+INVALID_ITEM_TYPE_MSG = "Tipo de ítem inválido."
+PENDING_APPROVAL_URL = "admin_panel:admin_pending_approval"
 
 
 def admin_required(view_func):
@@ -69,17 +71,12 @@ def approval_detail(request, item_type, item_id):
         item = get_object_or_404(Service, id=item_id)
         template = "admin_panel/approval_service_detail.html"
     else:
-        messages.error(request, "Tipo de ítem inválido.")
-        return redirect("admin_panel:admin_pending_approval")
+        messages.error(request, INVALID_ITEM_TYPE_MSG)
+        return redirect(PENDING_APPROVAL_URL)
 
     # Obtener historial de aprobaciones
-    approval_logs = ApprovalLog.objects.filter(
-        Q(accommodation=item)
-        if item_type == "accommodation"
-        else Q(activity=item)
-        if item_type == "activity"
-        else Q(service=item)
-    ).order_by("-created_at")
+    filter_kwargs = {item_type: item}
+    approval_logs = ApprovalLog.objects.filter(**filter_kwargs).order_by("-created_at")
 
     context = {"item": item, "item_type": item_type, "approval_logs": approval_logs}
 
@@ -97,8 +94,8 @@ def approve_item(request, item_type, item_id):
         elif item_type == "service":
             item = get_object_or_404(Service, id=item_id)
         else:
-            messages.error(request, "Tipo de ítem inválido.")
-            return redirect("admin_panel:admin_pending_approval")
+            messages.error(request, INVALID_ITEM_TYPE_MSG)
+            return redirect(PENDING_APPROVAL_URL)
 
         # Aprobar el item
         item.status = "Aprobado"
@@ -123,9 +120,9 @@ def approve_item(request, item_type, item_id):
         messages.success(
             request, f"{item_type.capitalize()} '{item.name}' aprobado exitosamente!"
         )
-        return redirect("admin_panel:admin_pending_approval")
+        return redirect(PENDING_APPROVAL_URL)
 
-    return redirect("admin_panel:admin_pending_approval")
+    return redirect(PENDING_APPROVAL_URL)
 
 
 @admin_required
@@ -139,8 +136,8 @@ def reject_item(request, item_type, item_id):
         elif item_type == "service":
             item = get_object_or_404(Service, id=item_id)
         else:
-            messages.error(request, "Tipo de ítem inválido.")
-            return redirect("admin_panel:admin_pending_approval")
+            messages.error(request, INVALID_ITEM_TYPE_MSG)
+            return redirect(PENDING_APPROVAL_URL)
 
         notes = request.POST.get("notes", "Razón no especificada")
 
@@ -168,9 +165,9 @@ def reject_item(request, item_type, item_id):
         messages.warning(
             request, f"{item_type.capitalize()} '{item_name}' ha sido rechazado."
         )
-        return redirect("admin_panel:admin_pending_approval")
+        return redirect(PENDING_APPROVAL_URL)
 
-    return redirect("admin_panel:admin_pending_approval")
+    return redirect(PENDING_APPROVAL_URL)
 
 
 @admin_required

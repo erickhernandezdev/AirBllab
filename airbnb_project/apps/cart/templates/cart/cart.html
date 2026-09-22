@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="{% static 'cart/cart.css' %}" />
 <script
   src="https://cdn.jsdelivr.net/npm/sweetalert2@11.26.25/dist/sweetalert2.all.min.js"
-  integrity="sha512-KaIyHb30iXTXfGyI9cyKFUIRSSuekJt6/vqXtyQKhQP6ozZEGY8nOtRS6fExqE4+RbYHus2yGyYg1BrqxzV6YA=="
+  integrity="sha256-Tobw4i5HcbW4qsJMYTxmGAameLGvooTQPPatA9PiGgo="
   crossorigin="anonymous"
 ></script>
 <script
@@ -40,12 +40,10 @@
           <strong>Nombre:</strong> {{ cart.accommodation.name }}
         </p>
         <p class="item-info">
-          <strong>Fecha de entrada:</strong> {{ cart.start_date|date:"j \\d\\e F
-          \\d\\e\\l Y" }}
+          <strong>Fecha de entrada:</strong> {{ cart.start_date|date:"j \d\e F \d\e\l Y" }}
         </p>
         <p class="item-info">
-          <strong>Fecha de salida:</strong> {{ cart.end_date|date:"j \\d\\e F
-          \\d\\e\\l Y" }}
+          <strong>Fecha de salida:</strong> {{ cart.end_date|date:"j \d\e F \d\e\l Y" }}
         </p>
       </div>
 
@@ -74,8 +72,7 @@
           <strong>Actividad:</strong> {{ activity.activity.name }}
         </p>
         <p class="item-info">
-          <strong>Fecha:</strong> {{ activity.date|date:"j \\d\\e F \\d\\e\\l Y"
-          }}
+          <strong>Fecha:</strong> {{ activity.date|date:"j \d\e F \d\e\l Y" }}
         </p>
       </div>
 
@@ -106,8 +103,7 @@
           <strong>Servicio:</strong> {{ service.service.name }}
         </p>
         <p class="item-info">
-          <strong>Fecha:</strong> {{ service.date|date:"j \\d\\e F \\d\\e\\l Y"
-          }}
+          <strong>Fecha:</strong> {{ service.date|date:"j \d\e F \d\e\l Y" }}
         </p>
       </div>
 
@@ -175,13 +171,10 @@
 </script>
 {% endif %}
 
-<div
+<dialog
   id="payment-modal"
   class="modal"
-  aria-hidden="true"
-  role="dialog"
   aria-labelledby="payment-title"
-  aria-modal="true"
 >
   <div class="modal-content">
     <button class="modal-close" id="close-payment-modal" aria-label="Cerrar">
@@ -238,7 +231,7 @@
       </div>
     </form>
   </div>
-</div>
+</dialog>
 
 <script>
   const modal = document.getElementById("payment-modal");
@@ -298,8 +291,8 @@
         valid = false;
       } else {
         const [month, year] = expiry.split("/");
-        const m = parseInt(month, 10);
-        const y = parseInt("20" + year, 10);
+        const m = Number.parseInt(month, 10);
+        const y = Number.parseInt("20" + year, 10);
         const now = new Date();
         const currentMonth = now.getMonth() + 1;
         const currentYear = now.getFullYear();
@@ -323,7 +316,7 @@
 </script>
 
 <script>
-  new Cleave("#expiry", {
+  const cleaveExpiry = new Cleave("#expiry", {
     date: true,
     datePattern: ["m", "y"],
   });

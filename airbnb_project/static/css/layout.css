@@ -189,7 +189,8 @@ body {
   border-radius: 6px;
 }
 
-.dropdown-content a {
+.dropdown-content a,
+.dropdown-content button {
   font-size: 0.95rem;
   font-weight: 500;
   color: black;
@@ -197,10 +198,21 @@ body {
   text-decoration: none;
   display: block;
   text-align: center;
+  width: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
-.dropdown-content a:hover {
+.dropdown-content a:hover,
+.dropdown-content button:hover {
   background-color: #f1f1f1;
+}
+
+.dropdown-content form {
+  margin: 0;
+  padding: 0;
 }
 
 .dropdown:hover .dropdown-content {
