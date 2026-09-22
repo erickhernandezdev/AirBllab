@@ -335,10 +335,9 @@
               showConfirmButton: false,
             });
 
-            if (addToCartBtn) {
-              addToCartBtn.disabled = true;
-              addToCartBtn.innerText = "Agregado";
-            }
+            addToCartBtn.disabled = true;
+            addToCartBtn.innerText = "Agregado";
+
           } else {
             Swal.fire({
               icon: "info",
