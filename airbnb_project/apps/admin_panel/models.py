@@ -38,7 +38,7 @@ class ApprovalLog(models.Model):
     status = models.CharField(
         max_length=10, choices=APPROVAL_TYPE_CHOICES, default="pending"
     )
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
