@@ -17,6 +17,7 @@ from apps.cart.views import (
     RemoveFromCartView,
     RemoveServiceView,
 )
+from apps.core.views import health_check
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -45,6 +46,7 @@ urlpatterns = [
         name="remove_service",
     ),
     path("history/", include("apps.history.urls")),
+    path("health/", health_check, name="health_check"),
 ]
 
 urlpatterns += [

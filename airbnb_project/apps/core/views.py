@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_http_methods
 
 from .models import AccommodationType, ActivityType, ServiceType
 
@@ -17,3 +17,8 @@ def get_subtypes(request):
         subtypes = list(ActivityType.objects.values_list("name", flat=True))
 
     return JsonResponse({"subtypes": subtypes})
+
+
+@require_http_methods(["GET", "HEAD"])
+def health_check(request):
+    return JsonResponse({"status": "ok"}, status=200)
