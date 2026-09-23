@@ -1,4 +1,4 @@
-name: Build
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  sonarqube:
-    name: SonarQube
+  test-and-scan:
+    name: Tests, Coverage & SonarQube
     runs-on: ubuntu-latest
 
     services:
@@ -76,3 +76,51 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  build:
+    name: Build & Production Check
+    needs: test-and-scan
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: airbnb_project
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Collect static files
+        env:
+          SECRET_KEY: "ci-build-secret-key"
+          DEBUG: "False"
+        run: |
+          python manage.py collectstatic --noinput
+
+      - name: Security Check
+        env:
+          SECRET_KEY: "ci-build-secret-key"
+          DEBUG: "False"
+        run: |
+          python manage.py check --deploy
+
+  deploy:
+    name: Deploy to Production
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/demo'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Deploy Hook
+        run: |
+          curl -X POST "${{ secrets.DEPLOY_HOOK_URL }}"
