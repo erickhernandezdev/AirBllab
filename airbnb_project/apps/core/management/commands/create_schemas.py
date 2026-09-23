@@ -17,7 +17,9 @@ class Command(BaseCommand):
         ]
         with connection.cursor() as cursor:
             for schema in schemas:
-                cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {schema};")
+                quoted_schema = connection.ops.quote_name(schema)
+                sql = f"CREATE SCHEMA IF NOT EXISTS {quoted_schema};"
+                cursor.execute(sql)  # NOSONAR
                 self.stdout.write(
                     self.style.SUCCESS(f"Esquema '{schema}' verificado/creado.")
                 )
