@@ -1,0 +1,23 @@
+from django.core.management.base import BaseCommand
+from django.db import connection
+
+
+class Command(BaseCommand):
+    help = "Crea los esquemas de PostgreSQL necesarios si no existen"
+
+    def handle(self, *args, **options):
+        schemas = [
+            "django",
+            "carts",
+            "experiences",
+            "experiences_types",
+            "invoices",
+            "reservations",
+            "users",
+        ]
+        with connection.cursor() as cursor:
+            for schema in schemas:
+                cursor.execute(f"CREATE SCHEMA IF NOT EXISTS {schema};")
+                self.stdout.write(
+                    self.style.SUCCESS(f"Esquema '{schema}' verificado/creado.")
+                )
