@@ -1,10 +1,18 @@
+.main-content {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)), url('../../../../media/accommodations/alojamientos3.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
 .login-container {
     max-width: 400px;
     margin: 6rem auto;
     padding: 2rem;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 1px 0px 10px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
 }
 
 .login-title {
@@ -40,6 +48,8 @@
     border-radius: 4px;
     font-size: 16px;
     transition: border-color 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .form-group input:focus {
@@ -69,4 +79,16 @@
     font-size: 14px;
     text-align: center;
     margin-top: 1rem;
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        max-width: 90%;
+        margin: 3rem auto;
+        padding: 1.5rem;
+    }
+
+    .login-title {
+        font-size: 20px;
+    }
 }
