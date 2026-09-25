@@ -10,7 +10,10 @@
 {% block content %}
 <main class="homepage">
   <section class="banner">
-    <img src="../../../media/banners/banner-bienvenida.png" alt="banner-bienvenida" class="banner-img">
+    <picture>
+      <source media="(max-width: 768px)" srcset="../../../media/banners/banner-bienvenida-movil.png">
+      <img src="../../../media/banners/banner-bienvenida.png" alt="banner-bienvenida" class="banner-img">
+    </picture>
   </section>
 
   <section class="welcome">
