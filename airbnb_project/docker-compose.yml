@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: airbllab_db
+    environment:
+      POSTGRES_DB: airbllab_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  web:
+    build: .
+    container_name: airbllab_web
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=django-insecure-docker-local-key-airbllab
+      - DATABASE_URL=postgres://postgres:postgrespassword@db:5432/airbllab_db
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
