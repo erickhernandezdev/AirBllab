@@ -1,9 +1,3 @@
-.item-view {
-  padding: 5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .item-header {
   display: flex;
   gap: 6rem;
@@ -14,6 +8,7 @@
 
 .item-image img {
   width: 800px;
+  max-width: 100%;
   height: 525px;
   border-radius: 30px;
   object-fit: cover;
@@ -95,6 +90,76 @@
   opacity: 0.6;
 }
 
+.flatpickr-calendar {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: 12px;
+  border: 1px solid #eee;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+.flatpickr-months {
+  padding: 0.5rem 0;
+}
+
+.flatpickr-current-month {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.flatpickr-current-month input.cur-year {
+  font-weight: 600;
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+  transition: opacity 0.2s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+  opacity: 0.6;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+  fill: #a85f45;
+}
+
+.flatpickr-weekday {
+  font-weight: 600;
+  color: #888;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+}
+
+.flatpickr-day {
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.flatpickr-day:hover {
+  background-color: #fbe9e4;
+  border-color: transparent;
+}
+
+.flatpickr-day.today {
+  border: 1.5px solid #a85f45;
+}
+
+.flatpickr-day.today:hover {
+  background-color: #a85f45;
+  color: #fff;
+}
+
+.flatpickr-day.inRange {
+  background-color: #fbe9e4;
+  border-color: #fbe9e4;
+  box-shadow: -5px 0 0 #fbe9e4, 5px 0 0 #fbe9e4;
+}
+
 .flatpickr-day.selected {
   background-color: #a85f45 !important;
   color: #ffffff;
@@ -106,13 +171,64 @@
   color: #ffffff;
 }
 
+.flatpickr-day.flatpickr-disabled {
+  color: #ccc;
+  text-decoration: line-through;
+  background-color: transparent;
+}
+
+.flatpickr-day.flatpickr-disabled:hover {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.flatpickr-day.day-occupied {
+  position: relative;
+  color: #c0392b;
+  text-decoration: line-through;
+}
+
+.flatpickr-day.day-occupied:hover {
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.flatpickr-day.day-occupied::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background-color: rgba(231, 76, 60, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+  color: #ccc;
+}
+
+.flatpickr-calendar.multiMonth
+  .flatpickr-days
+  .dayContainer:nth-child(n + 2) {
+  border-left: 1px solid #eee;
+}
+
+.flatpickr-calendar.inline {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
 .login-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   padding: 3rem 2rem;
-  margin: 2rem 5rem 3rem 12rem;
+  max-width: 600px;
+  margin: 2rem auto 3rem auto;
   border-radius: 8px;
 }
 
@@ -138,4 +254,103 @@
 
 .login-button:hover {
   background-color: #a65f42;
+}
+
+@media (max-width: 1200px) {
+  .item_view {
+    padding: 3rem 2rem;
+  }
+
+  .item-header {
+    margin: 2rem 0;
+    gap: 3rem;
+  }
+
+  .reservation_title {
+    margin: 0 0 0 2rem;
+  }
+
+  .calendar-section {
+    margin: 1rem 2rem 3rem 2rem;
+  }
+
+  .reservation-summary {
+    margin: 0 2rem 0 2rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .item-image img {
+    height: 400px;
+  }
+}
+
+@media (max-width: 600px) {
+  .item_view {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .item-header {
+    margin: 1rem 0;
+    gap: 1.25rem;
+  }
+
+  .item-image img {
+    height: 220px;
+    border-radius: 14px;
+  }
+
+  .item-details h1 {
+    font-size: 1.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .item-details p {
+    font-size: 0.9rem;
+    margin: 0.75rem 0;
+  }
+
+  .reservation_title {
+      margin: 0;
+    }
+
+  .reservation_title h2 {
+    font-size: 1.15rem;
+  }
+
+  .calendar-section {
+    margin: 0;
+    padding: 1rem 0 1rem 0;
+    gap: 1rem;
+  }
+
+  .calendar-box label {
+    font-size: 1rem;
+  }
+
+  .reservation-summary {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .reservation-summary h2 {
+    font-size: 1.1rem;
+  }
+
+  .reservation-summary p {
+    font-size: 0.9rem;
+  }
+
+  .login-prompt {
+    margin: 1rem 1.25rem 1.5rem 1.25rem;
+    padding: 2rem 1.25rem;
+  }
+
+  .login-prompt h2 {
+    font-size: 1.2rem;
+  }
+
+  .login-prompt p {
+    font-size: 0.9rem;
+  }
 }

@@ -168,11 +168,20 @@
     },
   };
 
+  function isBlockedDate(date) {
+    return blockedDates.some(
+      (blocked) => blocked.toDateString() === date.toDateString(),
+    );
+  }
+
+  const isSmallScreen = window.matchMedia("(max-width: 600px)").matches;
+  const monthsToShow = isSmallScreen ? 1 : 2;
+
   if (tipo === "accomodations") {
     flatpickr("#date-range", {
       inline: true,
       mode: "range",
-      showMonths: 2,
+      showMonths: monthsToShow,
       dateFormat: "Y-m-d",
       minDate: today,
       maxDate: nextYear,
@@ -183,14 +192,12 @@
         const button = document.getElementById("add-to-cart");
         if (button) button.disabled = true;
 
-        if (selectedDates.length === 1) {
-          const start = selectedDates[0];
-          instance.set("disable", [
-            ...blockedDates,
-            function (date) {
-              return date < start;
-            },
-          ]);
+        if (selectedDates.length === 0) {
+          document.getElementById("start-date").textContent = "--";
+          document.getElementById("end-date").textContent = "--";
+          document.getElementById("nights-count").textContent = "0";
+          document.getElementById("final-price").textContent = "0";
+          return;
         }
 
         if (selectedDates.length === 2) {
@@ -234,12 +241,28 @@
             total.toLocaleString();
         }
       },
+
+      onDayCreate: function (dObj, dStr, fp, dayElem) {
+        if (isBlockedDate(dayElem.dateObj)) {
+          dayElem.classList.add("day-occupied");
+        }
+
+        dayElem.addEventListener("click", function () {
+          if (
+            fp.selectedDates.length === 1 &&
+            fp.selectedDates[0].toDateString() ===
+              dayElem.dateObj.toDateString()
+          ) {
+            fp.clear();
+          }
+        });
+      },
     });
   } else if (tipo === "experiences" || tipo === "services") {
     flatpickr("#date-range", {
       inline: true,
       mode: "single",
-      showMonths: 2,
+      showMonths: monthsToShow,
       dateFormat: "Y-m-d",
       minDate: today,
       maxDate: nextYear,
@@ -249,6 +272,12 @@
       onChange: function (selectedDates, dateStr, instance) {
         const button = document.getElementById("add-to-cart");
         if (button) button.disabled = true;
+
+        if (selectedDates.length === 0) {
+          document.getElementById("start-date").textContent = "--";
+          document.getElementById("final-price").textContent = "0";
+          return;
+        }
 
         if (selectedDates.length === 1) {
           const selected = selectedDates[0];
@@ -260,6 +289,22 @@
           document.getElementById("final-price").textContent =
             price_unitary.toLocaleString();
         }
+      },
+
+      onDayCreate: function (dObj, dStr, fp, dayElem) {
+        if (isBlockedDate(dayElem.dateObj)) {
+          dayElem.classList.add("day-occupied");
+        }
+
+        dayElem.addEventListener("click", function () {
+          if (
+            fp.selectedDates.length === 1 &&
+            fp.selectedDates[0].toDateString() ===
+              dayElem.dateObj.toDateString()
+          ) {
+            fp.clear();
+          }
+        });
       },
     });
   }
@@ -337,7 +382,6 @@
 
             addToCartBtn.disabled = true;
             addToCartBtn.innerText = "Agregado";
-
           } else {
             Swal.fire({
               icon: "info",
