@@ -215,6 +215,8 @@
   border-radius: 8px;
   max-width: 500px;
   width: 100%;
+  position: relative;
+  box-sizing: border-box;
 }
 
 .modal-close {
@@ -254,6 +256,7 @@ input {
   border-radius: 8px;
   padding: 0.6rem 0.7rem;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
 .modal-actions {
@@ -286,4 +289,125 @@ button.secondary {
   font-size: 0.8rem;
   margin-top: 4px;
   display: block;
+}
+
+@media (max-width: 1100px) {
+  .cart-container {
+    flex-direction: column;
+    padding: 0 1.5rem;
+  }
+
+  .cart-section {
+    width: 100%;
+  }
+
+  .summary-section {
+    width: 100%;
+    position: static;
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+@media (max-width: 700px) {
+  .cart-section,
+  .summary-section {
+    padding: 24px;
+  }
+
+  .cart-header h1 {
+    font-size: 28px;
+  }
+
+  .item-count {
+    font-size: 20px;
+  }
+
+  .cart-item {
+    flex-wrap: wrap;
+  }
+
+  .item-image {
+    width: 180px;
+    height: 160px;
+  }
+
+  .item-details {
+    padding: 16px 16px 16px 8px;
+  }
+
+  .item-info {
+    font-size: 16px;
+  }
+
+  .item-actions {
+    padding: 20px 16px;
+  }
+}
+
+@media (max-width: 500px) {
+  .cart-container {
+    padding: 0 1rem;
+  }
+
+  .cart-section,
+  .summary-section {
+    padding: 20px;
+  }
+
+  .cart-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .cart-item {
+    flex-direction: column;
+  }
+
+  .item-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .item-details {
+    padding: 16px;
+  }
+
+  .item-actions {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+  }
+
+  .item-price {
+    padding-right: 0;
+  }
+
+  .summary-section h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .summary-item {
+    font-size: 16px;
+  }
+
+  .summary-total {
+    font-size: 20px;
+  }
+
+  .form-row {
+    flex-wrap: wrap;
+  }
+
+  .form-row .form-group {
+    min-width: 120px;
+  }
+
+  .modal-content {
+    margin: 0 1rem;
+    width: auto;
+  }
 }
