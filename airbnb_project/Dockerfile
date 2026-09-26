@@ -8,14 +8,16 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    && rm -rf /var/lib/apt-get/lists/*
+    && rm -rf /var/lib/apt-get/lists/* \
+    && adduser --disabled-password --gecos "" appuser
 
-COPY requirements.txt /app/
-
+COPY --chown=appuser:appuser requirements.txt /app/
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+    && pip install --no-cache-dir --prefer-binary -r requirements.txt
 
-COPY . /app/
+COPY --chown=appuser:appuser . /app/
+
+USER appuser
 
 EXPOSE 8000
 
