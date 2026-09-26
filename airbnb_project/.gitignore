@@ -29,3 +29,7 @@ htmlcov/
 .pytest_cache/
 .ruff_cache/
 coverage.xml
+
+# SonarQube / SonarScanner local execution artifacts
+../.scannerwork/
+../.sonar/

@@ -11,11 +11,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && adduser --disabled-password --gecos "" appuser
 
-COPY --chown=appuser:appuser requirements.txt /app/
-RUN pip install --no-cache-dir --only-binary=:all: --upgrade pip==25.2 \
-    && pip install --no-cache-dir --only-binary=:all: -r requirements.txt
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir --only-binary=:all: --require-hashes -r requirements.txt
 
-COPY --chown=appuser:appuser . /app/
+COPY airbnb_app /app/airbnb_app
+COPY apps /app/apps
+COPY templates /app/templates
+COPY static /app/static
+COPY utils /app/utils
+COPY manage.py /app/
+
+COPY --chown=appuser:appuser media /app/media
 
 USER appuser
 

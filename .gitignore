@@ -1,0 +1,3 @@
+# SonarQube / SonarScanner local execution artifacts
+.scannerwork/
+.sonar/
